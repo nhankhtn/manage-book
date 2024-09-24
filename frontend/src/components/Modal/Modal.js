@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./Modal.module.scss";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
-export default function Modal({ show, success = false, onHide }) {
+export default function Modal({ show, success = true, onHide }) {
     useEffect(() => {
         if (show) {
             const timer = setTimeout(() => {

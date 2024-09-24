@@ -5,9 +5,11 @@ import Modal from "@/components/Modal";
 import Context from "./Context";
 
 const Provider = ({ children }) => {
-    const [isOpenModal, setOpenModal] = useState(true);
+    const [isOpenModal, setOpenModal] = useState();
+    const [successModal, setSuccessModal] = useState(true);
 
-    const openModal = () => {
+    const openModal = (success) => {
+        setSuccessModal(success)
         setOpenModal(true);
     }
 
@@ -18,7 +20,7 @@ const Provider = ({ children }) => {
     return (
         <Context.Provider value={{ openModal, hideModal }}>
             {children}
-            <Modal show={isOpenModal} onHide={hideModal} />
+            <Modal show={isOpenModal} success={successModal} onHide={hideModal} />
         </Context.Provider>
     );
 };

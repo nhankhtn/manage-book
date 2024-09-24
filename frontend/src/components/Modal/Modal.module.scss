@@ -1,0 +1,58 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.content {
+  background-color: #fff;
+  width: 300px;
+  height: 180px;
+  position: relative;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+.btn-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  font-size: 1.8rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.7;
+  }
+}
+.wrapper-icon {
+  width: 60px;
+  height: 60px;
+  padding: 12px;
+  border-radius: 50%;
+}
+.icon-success {
+  color: #fff;
+  background-color: #3a9f40;
+}
+.icon-fail {
+  color: #fff;
+  background-color: #cc2626;
+}
+.icon {
+  width: 36px;
+  height: 36px;
+}
+.message {
+  font-size: 1.4rem;
+  margin-top: 8px;
+}

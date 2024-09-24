@@ -1,6 +1,10 @@
 :root {
-  --background: #ffffff;
+  --bg-color: #ffffff;
   --foreground: #171717;
+
+  --height-header: 90px;
+  --bg-header: #4284e8;
+  --width-sidebar: 240px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,7 +18,7 @@ body {
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: var(----bg-color);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -31,5 +35,10 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
+.root {
+  display: flex;
+  flex-direction: column;
+}
+.container {
+  display: flex;
 }

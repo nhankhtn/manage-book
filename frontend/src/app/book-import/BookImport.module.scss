@@ -15,4 +15,12 @@
   display: flex;
   column-gap: 50px;
   margin: 20px 20px 30px;
+  & input {
+     width: "200px",
+     height: "30px",
+     marginRight: "10px",
+     padding: "20px 10px",
+     placaeholder: "Ngày nhập sách",
+     borderRadius: "5px",
+  }
 }

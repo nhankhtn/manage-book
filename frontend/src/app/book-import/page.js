@@ -67,7 +67,7 @@ export default function BookImport() {
             <input id="date" type="date"/>
             <Button>Thêm sách</Button>
         </div>
-        <Table data= {books} deleteRow= {deleteAt}/>
+        <Table data= {books} deleteRow= {deleteAt}  placaeholder="Ngày nhập sách"/>
         <Button style={{
             marginTop: "40px",
         }}>Hoàn tất</Button>

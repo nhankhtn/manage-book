@@ -15,7 +15,7 @@
   background-color: var(--bg-header);
 
   &.active {
-    background-color: #ebebeb;
+    opacity: 1;
   }
   &.outline {
     background-color: #fff;

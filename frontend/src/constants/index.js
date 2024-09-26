@@ -24,3 +24,5 @@ export const MENU_ITEMS = [
         to: "/change-rules"
     }
 ]
+
+export const BOOK_FIELDS = ["Ten sach", "Tac gia", "The loai", "So luong", "Gia"];

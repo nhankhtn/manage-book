@@ -18,7 +18,7 @@ export default function Modal({ show, success = true, onHide }) {
 
     return <div className={styles.overlay}>
         <div className={styles.content}>
-            <button className={styles["btn-close"]} onClick={onHide}>
+            <button type="button" title="Close" className={styles["btn-close"]} onClick={onHide}>
                 <span>&times;</span>
             </button>
             {

@@ -2,8 +2,8 @@
   --bg-color: #ffffff;
   --foreground: #171717;
 
-  --height-header: 90px;
-  --bg-header: #4284e8;
+  --height-header: 60px;
+  --bg-header: #399dd5;
   --width-sidebar: 240px;
 }
 
@@ -14,6 +14,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  height: 100vh;
 }
 
 body {
@@ -40,7 +41,12 @@ a {
   display: flex;
   flex-direction: column;
   position: relative;
+  height: 100%;
 }
 .container {
   display: flex;
+  flex: 1;
+}
+.content {
+  flex: 1;
 }

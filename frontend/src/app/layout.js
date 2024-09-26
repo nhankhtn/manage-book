@@ -1,8 +1,5 @@
 import localFont from "next/font/local";
-import "./globals.css";
-import Header from "@/components/Header";
-import Sidebar from "@/components/Sidebar";
-import { ModalProvider } from "@/context/Modal"
+import LayoutClient from "./layout.client";
 
 
 const geistSans = localFont({
@@ -25,17 +22,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ModalProvider>
-          <div class='root'>
-            <Header />
-            <div class='container'>
-              <Sidebar />
-              <main class='content'>
-                {children}
-              </main>
-            </div>
-          </div>
-        </ModalProvider>
+        <LayoutClient>
+          {children}
+        </LayoutClient>
       </body>
     </html>
   );

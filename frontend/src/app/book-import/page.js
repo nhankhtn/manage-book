@@ -64,14 +64,7 @@ export default function BookImport() {
             Phiếu nhập sách
         </div>
         <div className ={styles.date_add}>
-            <input id="date" type="date" style= {{
-                width: "200px",
-                height: "30px",
-                marginRight: "10px",
-                padding: "20px 10px",
-                placaeholder: "Ngày nhập sách",
-                borderRadius: "5px",
-            }} />
+            <input id="date" type="date"/>
             <Button>Thêm sách</Button>
         </div>
         <Table data= {books} Delete= {deleteAt}/>

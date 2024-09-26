@@ -5,6 +5,8 @@
   --height-header: 60px;
   --bg-header: #399dd5;
   --width-sidebar: 240px;
+  --spacer-tb: 32px;
+  --spacer-lr: 24px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -49,4 +51,5 @@ a {
 }
 .content {
   flex: 1;
+  padding: var(--spacer-tb) var(--spacer-lr);
 }

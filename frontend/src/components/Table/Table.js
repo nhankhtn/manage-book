@@ -1,5 +1,5 @@
 import styles from "./Table.module.scss";
-import { IMPORT_COLUMNS as columns } from "@/constants";
+import { BOOK_FIELDS as columns } from "@/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 export default function Table({ data ,deleteRow}) {

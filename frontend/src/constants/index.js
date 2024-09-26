@@ -25,4 +25,4 @@ export const MENU_ITEMS = [
     }
 ]
 
-export const IMPORT_COLUMNS = ["Ten sach", "Tac gia", "The loai", "So luong", "Gia"];
+export const BOOK_FIELDS = ["Ten sach", "Tac gia", "The loai", "So luong", "Gia"];

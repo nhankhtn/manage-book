@@ -1,0 +1,39 @@
+.container{
+  display:flex;
+  flex-direction:column;
+  // justify-content:center;
+  // align-items:center;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  width: 100%;
+  border-radius: 10px;
+  display: inline-block;
+  overflow: hidden;
+}
+.row{
+  display:flex;
+  flex:1;
+}
+
+.column{
+  flex:1;
+  font-size: 1rem;
+  padding: 10px 20px;
+  height: 60px;
+  text-align:center;
+  display: flex;
+  border: 0.5px solid #bebebeed;
+}
+.title{
+  background-color: rgba(0, 136, 255, 0.295);
+  font-size: 1.2rem;
+}
+.icon{
+  justify-content: center;
+  flex: 0.3;
+}
+.data_container{
+  flex:1;
+  overflow-y: scroll;
+  max-height: 290px;
+}

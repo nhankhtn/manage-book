@@ -24,3 +24,5 @@ export const MENU_ITEMS = [
         to: "/change-rules"
     }
 ]
+
+export const IMPORT_COLUMNS = ["Ten sach", "Tac gia", "The loai", "So luong", "Gia"];

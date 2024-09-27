@@ -1,7 +1,7 @@
 import styles from "./Table.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp, faTrash } from "@fortawesome/free-solid-svg-icons";
-export default function Table({ fieldCols, data, deleteRow }) {
+export default function Table({ fieldCols, data, deleteRow = () => { } }) {
   function handleClick(index) {
     deleteRow(index);
   }

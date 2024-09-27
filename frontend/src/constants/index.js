@@ -79,3 +79,27 @@ export const SELL_BOOK_FIELDS = [{
     name: "quantity",
     type: "input"
 }]
+
+export const SEARCH_BOOK_FIELDS = [{
+    title: "Tên sách",
+    name: "title",
+    type: "text"
+}, {
+    title: "Tác giả",
+    name: "author",
+    type: "text"
+},
+{
+    title: "Thể loại",
+    name: "genre",
+    type: "text"
+}, {
+    title: "Số lượng",
+    name: "available",
+    type: "text"
+},
+{
+    title: "Giá",
+    name: "price",
+    type: "text"
+}]

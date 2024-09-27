@@ -32,12 +32,7 @@ export default function Table({ data ,deleteRow}) {
             <td className={styles.column}>{row.quantity}</td>
             <td className={styles.column}>{row.price}</td>
             <td className={`${styles.column} ${styles.icon}`} >
-              <button style = {{
-                backgroundColor: "transparent",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "17px",
-              }} onClick={() => {handleClick(index)}}>
+              <button type="butotn" title="Xoá" className={styles["btn-trash"]} onClick={() => {handleClick(index)}}>
               <FontAwesomeIcon icon={faTrash} />
               </button>
             </td>

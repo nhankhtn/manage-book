@@ -70,7 +70,7 @@ a {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 5px grey; 
+  box-shadow: inset 0 0 3px grey; 
   border-radius: 10px;
 }
  
@@ -84,3 +84,4 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(102, 116, 118); 
 }
+

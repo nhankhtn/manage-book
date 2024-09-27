@@ -1,5 +1,6 @@
 "use client";
 
+import { BOOK_FIELDS } from "@/constants";
 import { useState } from "react";
 import styles from "./BookImport.module.scss"
 import useModal from "@/hooks/useModal";
@@ -48,11 +49,52 @@ export default function BookImport() {
             genre: "tasy",
             price: 10.00,
             quantity: 5,
-        }
+        },
+        {
+            title: "Harry Potter",
+            author: "J.K. Rowling",
+            genre: "Fantasy",
+            price: 20.00,
+            quantity: 5,
+        },
+        {
+            title: "Potter",
+            author: "Rowling",
+            genre: "Fan",
+            price: 25.00,
+            quantity: 5,
+        },
+        {
+            title: "Harry",
+            author: "J.K.",
+            genre: "tasy",
+            price: 10.00,
+            quantity: 5,
+        },
+        {
+            title: "Harry Potter",
+            author: "J.K. Rowling",
+            genre: "Fantasy",
+            price: 20.00,
+            quantity: 5,
+        },
+        {
+            title: "Potter",
+            author: "Rowling",
+            genre: "Fan",
+            price: 25.00,
+            quantity: 5,
+        },
+        {
+            title: "Harry",
+            author: "J.K.",
+            genre: "tasy",
+            price: 10.00,
+            quantity: 5,
+        },
     ]);
 
     function deleteAt(index) {
-        console.log(books.length);
         setBooks(preValues => {
             return preValues.filter((value, i) => i !== index);
         }
@@ -64,10 +106,12 @@ export default function BookImport() {
                 Phiếu nhập sách
             </div>
             <div className={styles.date_add}>
-                <input id="date" type="date" placaeholder="Ngày nhập sách" />
+                <input id="date" type="date" placeholder="Ngày nhập sách" />
                 <Button>Thêm sách</Button>
             </div>
-            <Table data={books} deleteRow={deleteAt} />
+            <div className={styles.content}>
+                <Table data={books} fieldCols={BOOK_FIELDS} deleteRow={deleteAt} />
+            </div>
             <Button style={{
                 marginTop: "40px",
             }}>Hoàn tất</Button>

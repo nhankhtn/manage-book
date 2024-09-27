@@ -1,15 +1,25 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  // justify-content:center;
-  // align-items:center;
-  margin-top: 20px;
+  border-collapse: collapse;
   border: 1px solid #ccc;
   width: 100%;
-  border-radius: 10px;
-  display: inline-block;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
+
+.header {
+  border-bottom: 0px;
+  width: 100%;
+  background-color: rgba(0, 136, 255, 0.295);
+  font-size: 1.2rem;
+}
+.data_container {
+  overflow-y: auto;
+  border-radius: 0 0 10px 10px;
+  width: 100%;
+}
+
 .row {
   display: flex;
   flex: 1;
@@ -19,21 +29,45 @@
   flex: 1;
   font-size: 1rem;
   padding: 10px 20px;
-  height: 60px;
-  text-align: center;
+  min-height: 48px;
   display: flex;
-  border: 0.5px solid #bebebeed;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e0e0e0ed;
 }
-.title {
-  background-color: rgba(0, 136, 255, 0.295);
-  font-size: 1.2rem;
+
+.btn-trash {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 17px;
+  padding: 0 8px;
 }
 .icon {
-  justify-content: center;
   flex: 0.3;
 }
-.data_container {
-  flex: 1;
-  overflow-y: auto;
-  max-height: 290px;
+.input-field {
+  width: 100%;
+  border: none;
+  font-size: 1rem;
+
+  &:focus-within {
+    outline: none;
+  }
+}
+.wrap-input {
+  display: flex;
+}
+.input-field::-webkit-inner-spin-button {
+  visibility: hidden;
+}
+.btn-up-down {
+  display: flex;
+  flex-direction: column;
+  & button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0 4px;
+  }
 }

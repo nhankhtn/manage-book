@@ -19,7 +19,8 @@
   }
   &.outline {
     background-color: #fff;
-    border-color: #666;
+    border-color: var(--bg-header);
+    color: var(--bg-header);
     &.active {
       background-color: #000;
       color: #d1d1d1;

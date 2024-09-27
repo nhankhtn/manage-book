@@ -6,7 +6,6 @@
 }
 .info {
   display: flex;
-  margin-bottom: var(--spacer-tb);
 }
 .form-info {
   flex: 1;
@@ -27,8 +26,31 @@
 }
 .content {
   flex: 1;
+  max-height: 323px;
+  margin: var(--spacer-tb) 0;
 }
 .wrap-btn {
   display: flex;
   justify-content: space-around;
+}
+.wrapper-content-modal {
+  width: 80vw;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacer-lr);
+}
+.heading-modal {
+  text-align: center;
+}
+.list-books {
+  flex: 1;
+  padding: var(--spacer-lr) 0;
+  max-height: 509px;
+}
+
+.btn-modal {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }

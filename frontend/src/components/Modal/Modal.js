@@ -7,7 +7,7 @@ export default function Modal({ show, onHide, children, className }) {
     useEffect(() => {
         if (show) {
             const timer = setTimeout(() => {
-                onHide();
+                // onHide();
             }, 3000);
             return () => clearTimeout(timer);
         }

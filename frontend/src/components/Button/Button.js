@@ -14,8 +14,6 @@ export default function Button({
   disabled,
   active,
   outline,
-  alignTitle = "center",
-  theme = "light",
   type,
   ...passProps
 }) {
@@ -41,7 +39,7 @@ export default function Button({
   return (
     <Comp className={classes} type={type} {...props}>
       {leftIcon && <span className={styles.icon}>{leftIcon}</span>}
-      <span className={styles.title} style={{ textAlign: alignTitle }}>
+      <span className={styles.title} >
         {children}
       </span>
       {rightIcon && <span className={styles.icon}>{rightIcon}</span>}

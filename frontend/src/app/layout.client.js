@@ -2,7 +2,7 @@
 
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import { ModalProvider } from "@/context/Modal"
+import { ModalAlertProvider } from "@/context/ModalAlert"
 import "./globals.css";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ export default function LayoutClient({ children }) {
         setShowSidebar(!isShowSidebar);
     }
 
-    return <ModalProvider>
+    return <ModalAlertProvider>
         <div className='root'>
             <Header toggleSidebar={toggleSidebar} />
             <div className='container'>
@@ -23,5 +23,5 @@ export default function LayoutClient({ children }) {
                 </main>
             </div>
         </div>
-    </ModalProvider>
+    </ModalAlertProvider>
 }

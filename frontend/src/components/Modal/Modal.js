@@ -4,15 +4,6 @@ import styles from "./Modal.module.scss";
 
 
 export default function Modal({ show, onHide, children, className }) {
-    useEffect(() => {
-        if (show) {
-            const timer = setTimeout(() => {
-                onHide();
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [show, onHide]);
-
     const classes = `${styles.content} ${className}`
 
     if (!show) return null;

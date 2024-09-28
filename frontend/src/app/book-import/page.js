@@ -1,5 +1,6 @@
 "use client";
 
+import { BOOK_FIELDS } from "@/constants";
 import { useState } from "react";
 import styles from "./BookImport.module.scss"
 import useModal from "@/hooks/useModal";
@@ -11,51 +12,92 @@ export default function BookImport() {
     const [showModalAdd, setShowModalAdd] = useState(false);   
     const [books, setBooks] = useState([
         {
-            title: "Harry Potter", 
+            title: "Harry Potter",
             author: "J.K. Rowling",
             genre: "Fantasy",
             price: 20.00,
             quantity: 5,
         },
         {
-            title: "Harry Potter", 
+            title: "Harry Potter",
             author: "J.K. Rowling",
             genre: "Fantasy",
             price: 20.00,
             quantity: 5,
         },
         {
-            title: "Harry Potter", 
+            title: "Harry Potter",
             author: "J.K. Rowling",
             genre: "Fantasy",
             price: 20.00,
             quantity: 5,
         },
         {
-            title: "Harry Potter", 
+            title: "Harry Potter",
             author: "J.K. Rowling",
             genre: "Fantasy",
             price: 20.00,
             quantity: 5,
         },
         {
-            title: "Potter", 
+            title: "Potter",
             author: "Rowling",
             genre: "Fan",
             price: 25.00,
             quantity: 5,
         },
         {
-            title: "Harry", 
+            title: "Harry",
             author: "J.K.",
             genre: "tasy",
             price: 10.00,
             quantity: 5,
-        }
+        },
+        {
+            title: "Harry Potter",
+            author: "J.K. Rowling",
+            genre: "Fantasy",
+            price: 20.00,
+            quantity: 5,
+        },
+        {
+            title: "Potter",
+            author: "Rowling",
+            genre: "Fan",
+            price: 25.00,
+            quantity: 5,
+        },
+        {
+            title: "Harry",
+            author: "J.K.",
+            genre: "tasy",
+            price: 10.00,
+            quantity: 5,
+        },
+        {
+            title: "Harry Potter",
+            author: "J.K. Rowling",
+            genre: "Fantasy",
+            price: 20.00,
+            quantity: 5,
+        },
+        {
+            title: "Potter",
+            author: "Rowling",
+            genre: "Fan",
+            price: 25.00,
+            quantity: 5,
+        },
+        {
+            title: "Harry",
+            author: "J.K.",
+            genre: "tasy",
+            price: 10.00,
+            quantity: 5,
+        },
     ]);
 
     function deleteAt(index) {
-        console.log(books.length);
         setBooks(preValues => {
             return preValues.filter((value, i) => i !== index);
         }

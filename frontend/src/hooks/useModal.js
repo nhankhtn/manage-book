@@ -1,8 +1,11 @@
 import { useContext } from "react";
-import { ModalContext } from "@/context/Modal";
+import { ModalAlertContext } from "@/context/ModalAlert";
 
-export default function useModal() {
-    const context = useContext(ModalContext);
+export default function useModalAlert() {
+    const {
+        openModal: openModalAlert,
+        hideModal: hideModalAlert
+    } = useContext(ModalAlertContext);
 
-    return context;
+    return { openModalAlert, hideModalAlert };
 }

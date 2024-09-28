@@ -6,7 +6,10 @@ import styles from "./BookImport.module.scss"
 import useModal from "@/hooks/useModal";
 import Table from "@/components/Table";
 import Button from "@/components/Button";
+import Modal from "@/components/Modal";
+import FormAddBook from "@/components/FormAddBook/FormAddBook";
 export default function BookImport() {
+    const [showModalAdd, setShowModalAdd] = useState(false);   
     const [books, setBooks] = useState([
         {
             title: "Harry Potter",
@@ -101,19 +104,23 @@ export default function BookImport() {
         );
     }
     return (
-        <div className={styles.container}>
-            <div className={styles.title}>
-                Phiếu nhập sách
+        <>
+            <div className={styles.container}>
+                <div className={styles.title}>
+                    Phiếu nhập sách
+                </div>
+                <div className ={styles.date_add}>
+                    <input id="date" type="date"/>
+                    <Button onClick={() => setShowModalAdd(true)} >Thêm sách</Button>
+                </div>
+                <Table data= {books} deleteRow= {deleteAt}  placaeholder="Ngày nhập sách"/>
+                <Button style={{
+                    marginTop: "40px",
+                }} >Hoàn tất</Button>
             </div>
-            <div className={styles.date_add}>
-                <input id="date" type="date" placeholder="Ngày nhập sách" />
-                <Button>Thêm sách</Button>
-            </div>
-            <div className={styles.content}>
-                <Table data={books} fieldCols={BOOK_FIELDS} deleteRow={deleteAt} />
-            </div>
-            <Button style={{
-                marginTop: "40px",
-            }}>Hoàn tất</Button>
-        </div>)
+            <Modal show={showModalAdd} onHide={() => setShowModalAdd(false)}>
+                <FormAddBook    />
+            </Modal>
+        </>
+    )
 }

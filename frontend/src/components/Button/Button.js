@@ -14,7 +14,7 @@ export default function Button({
   disabled,
   active,
   outline,
-  type,
+  type = "button",
   ...passProps
 }) {
   let Comp = "button";

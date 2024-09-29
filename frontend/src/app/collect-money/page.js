@@ -13,14 +13,6 @@ export default function CollectMoney() {
         address: ''
     })
     const formRef = useRef();
-    const dateInputRef = useRef();
-    const latestInvoiceInputRef = useRef();
-    const debtInputRef = useRef();
-    const moneyCollectedInputRef = useRef();
-
-    const handleClickWrapBtn = (inputRef) => {
-        inputRef?.current.focus();
-    }
 
     const handleChangeForm = (e) => {
         const { name, value } = e.target;
@@ -42,35 +34,34 @@ export default function CollectMoney() {
                 <div className={styles["info-invoice"]}>
                     <div
                         className={styles['wrap-input']}
-                        onClick={e => handleClickWrapBtn(dateInputRef)}
-                        data-label="Ngày thu tiền:"
                     >
+                        <label htmlFor="collection-date">Ngày thu tiền:</label>
                         <input
-                            ref={dateInputRef}
                             type="date"
+                            id="collection-date"
+                            name="collection-date"
                             title="Ngày thu tiền"
-                            className={styles["collection-date"]}
                         />
                     </div>
                     <div
                         className={`${styles['wrap-input']} ${styles['input-money']}`}
-                        data-label="Hoá đơn mới nhất:"
-                        onClick={e => handleClickWrapBtn(latestInvoiceInputRef)}
                     >
+                        <label htmlFor="latest-invoice">Hoá đơn mới nhất:</label>
                         <input
-                            ref={latestInvoiceInputRef}
                             type="number"
+                            id="latest-invoice"
+                            name="latest-invoice"
                             title="Hoá đơn mới nhất"
                         />
                     </div>
                     <div
                         className={`${styles['wrap-input']} ${styles['input-money']}`}
-                        data-label="Tiền nợ:"
-                        onClick={e => handleClickWrapBtn(debtInputRef)}
                     >
+                        <label htmlFor="debt">Tiền nợ:</label>
                         <input
-                            ref={debtInputRef}
                             type="number"
+                            id="debt"
+                            name="debt"
                             title="Tiền nợ"
                         />
                     </div>
@@ -79,11 +70,11 @@ export default function CollectMoney() {
             <div className={styles['money-collect']}>
                 <div
                     className={`${styles['wrap-input']} ${styles['input-money']}`}
-                    data-label="Số tiền thu:"
-                    onClick={e => handleClickWrapBtn(moneyCollectedInputRef)}
                 >
+                    <label htmlFor="money-collected">Số tiền thu:</label>
                     <input
-                        ref={moneyCollectedInputRef}
+                        id="money-collected"
+                        name="money-collected"
                         type="number"
                         title="Số tiền thu"
                     />

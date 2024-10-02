@@ -1,4 +1,4 @@
-const Book = require('../models/BookModel');
+const Book = require('../services/bookService');
 
 const getBooks = (req, res) => {
     Book.getAllBooks((err, books) => {
@@ -8,7 +8,6 @@ const getBooks = (req, res) => {
         res.json(books);
     });
 };
-
 
 const getBook = (req, res) => {
     const id = req.body.id;
@@ -26,11 +25,11 @@ const getBook = (req, res) => {
 
 const createBook = (req, res) => {
     const newBook = {
-        id : req.body.id,
-        title : req.body.title,
-        genre : req.body.genre,
-        author : req.body.author,
-        quantity : req.body.quantity
+        id: req.body.id,
+        title: req.body.title,
+        genre: req.body.genre,
+        author: req.body.author,
+        quantity: req.body.quantity
     };
     Book.addBook(newBook, (err, result) => {
         if (err) {
@@ -63,7 +62,7 @@ const importBooks = (req, res) => {
                 return res.status(500).json({ error: err.message });
             }
 
-            res.status(200).json({ message: 'Nhập sách thành công', newStock: currentStock + quantity});
+            res.status(200).json({ message: 'Nhập sách thành công', newStock: currentStock + quantity });
         });
     });
 };

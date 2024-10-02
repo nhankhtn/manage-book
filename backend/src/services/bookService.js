@@ -1,5 +1,4 @@
-const connection = require('../config/connection');
-
+const connection = require('../config/database');
 
 const getAllBooks = (callback) => {
     connection.query('SELECT * FROM sach', (error, results) => {
@@ -10,7 +9,6 @@ const getAllBooks = (callback) => {
     });
 };
 
-
 const getBookById = (id, callback) => {
     connection.query('SELECT * FROM sach WHERE id_sach = ?', [id], (error, results) => {
         if (error) {
@@ -19,7 +17,6 @@ const getBookById = (id, callback) => {
         callback(null, results[0]);
     });
 };
-
 
 const addBook = (book, callback) => {
     const { title, author, price, stock } = book;

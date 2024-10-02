@@ -8,7 +8,9 @@ const route = require("./routes")
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+
 // Apply middleware
+app.use(express.json());
 app.use(morgan("dev"))
 app.use(cors({
     origin: process.env.URL_FE,

@@ -9,9 +9,9 @@ router.get("/", bookController.getBooks);
 router.get("/:id", bookController.getBook);
 
 // addBook
-router.post("/", bookController.createBook);
+router.post("/", bookController.importBooks );
 
 // importBooks
-router.post("/import", bookController.importBooks);
+router.put("/", bookController.importBooks);
 
 module.exports = router;

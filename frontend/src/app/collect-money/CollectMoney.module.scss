@@ -38,10 +38,6 @@
     &:focus-within {
       outline: none;
     }
-
-    &::-webkit-inner-spin-button {
-      visibility: hidden;
-    }
   }
 }
 .input-money::after {

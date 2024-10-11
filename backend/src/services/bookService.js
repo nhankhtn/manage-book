@@ -2,9 +2,7 @@ const connection = require('../config/database');
 
 const getAllBooks = (callback) => {
     connection.query('SELECT * FROM sach', (error, results) => {
-        if (error) {
-            return callback(error, null);
-        }
+        if (error) return callback(error, null);
         callback(null, results);
     });
 };
@@ -19,9 +17,9 @@ const getBookById = (id, callback) => {
 };
 
 const addBook = (book, callback) => {
-    const { title, author, price, stock } = book;
-    connection.query('INSERT INTO sach (ID_SACH, TEN_SACH, THE_LOAI, TAC_GIA, SO_LUONG) VALUES (?, ?, ?, ?, ?)',
-        [title, author, price, stock],
+    const { title, author, genre, quantity } = book;
+    connection.query('INSERT INTO sach (TEN_SACH, THE_LOAI, TAC_GIA, SO_LUONG) VALUES (?, ?, ?, ?)',
+        [title, genre, author, quantity],
         (error, results) => {
             if (error) {
                 return callback(error, null);

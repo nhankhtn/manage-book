@@ -40,28 +40,24 @@ const createBook = (req, res) => {
 };
 
 const importBooks = (req, res) => {
-    const title = req.body.title;
-    const genre = req.body.genre;
-    const author = req.body.author;
-    const quantity = req.body.quantity;
-    if (quantity < 150) {
-        return res.status(400).json({ error: 'Số lượng nhập phải ít nhất là 150' });
-    }
+    const { title, genre, author, quantity } = req.body;
     Book.checkStock(title, (err, book) => {
         if (err) {
             return res.status(500).json({ error: 'Lỗi khi kiểm tra số lượng tồn' });
         }
-
         if (!book) {
-            return res.status(200).json({ message: 'Sách không tồn tại' });
+            Book.addBook(req.body, (err, result) => {
+                if (err) {
+                    return res.status(500).json({ error: 'Failed to add book' });
+                }
+                return res.status(201).json({ message: 'Book added successfully', id: result.insertId });
+            });
         }
         const currentStock = book.so_luong;
-        console.log(currentStock);
         Book.updateStock(title, quantity, (err, result) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
-
             res.status(200).json({ message: 'Nhập sách thành công', newStock: currentStock + quantity });
         });
     });

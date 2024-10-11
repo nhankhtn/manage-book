@@ -99,7 +99,7 @@ DROP TABLE IF EXISTS ctbct;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE ctbct (
   ID_BCT varchar(6) NOT NULL,
-  ID_SACH varchar(6) NOT NULL,
+  ID_SACH int NOT NULL,
   TON_DAU decimal(10,2) DEFAULT NULL,
   PHAT_SINH decimal(10,2) DEFAULT NULL,
   TON_CUOI decimal(10,2) DEFAULT NULL,
@@ -128,7 +128,7 @@ DROP TABLE IF EXISTS cthd;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE cthd (
   ID_HOA_DON varchar(6) NOT NULL,
-  ID_SACH varchar(6) NOT NULL,
+  ID_SACH int NOT NULL,
   SO_LUONG int DEFAULT NULL,
   DON_GIA decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (ID_HOA_DON,ID_SACH),
@@ -156,7 +156,7 @@ DROP TABLE IF EXISTS ctpn;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE ctpn (
   ID_PHIEU_NHAP varchar(6) NOT NULL,
-  ID_SACH varchar(6) NOT NULL,
+  ID_SACH int NOT NULL,
   SO_LUONG int DEFAULT NULL,
   PRIMARY KEY (ID_PHIEU_NHAP,ID_SACH),
   KEY FK_CTPN_SACH (ID_SACH),
@@ -285,7 +285,7 @@ DROP TABLE IF EXISTS sach;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE sach (
-  ID_SACH varchar(6) AUTO_INCREMENT NOT NULL,
+  ID_SACH int AUTO_INCREMENT NOT NULL,
   TEN_SACH varchar(70) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   THE_LOAI varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   TAC_GIA varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
@@ -337,15 +337,19 @@ BEFORE UPDATE ON sach
 FOR EACH ROW
 BEGIN
     DECLARE max_quantity INT;
-
-
+	DECLARE quantity int;
+    
     SELECT CAST(rule_value AS UNSIGNED) INTO max_quantity 
     FROM rules 
     WHERE rule_name = 'Max inventory quantity';
-
-    IF OLD.SO_LUONG >= max_quantity THEN
+	
+    SELECT so_luong into quantity 
+    from sach
+    where ten_sach = old.ten_sach;
+    
+    IF quantity >= max_quantity THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Lượng tồn kho hiện tại đã lớn hơn hoặc bằng giới hạn cho phép'; ;
+        SET MESSAGE_TEXT = "Lượng tồn kho hiện tại đã lớn hơn hoặc bằng giá trị tối đa" ;
     END IF;
 END $$
 

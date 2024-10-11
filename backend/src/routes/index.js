@@ -1,9 +1,9 @@
-const siteRouter = require("./site");
 const bookRouter = require("./bookRoutes");
+const customerRouter = require("./customerRoutes");
 
 function route(app) {
-    app.use("/", siteRouter);
     app.use("/books", bookRouter);
+    app.use("/customers", customerRouter);
 }
 
 module.exports = route;

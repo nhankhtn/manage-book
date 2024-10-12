@@ -10,7 +10,7 @@ const getBooks = (params = {}, callback) => {
     const keys = Object.keys(params);
     const values = Object.values(params);
 
-    query += keys.map(key => ` AND ?? = ?`);
+    query += keys.map(key => ` AND ?? = ? `).join("");
     connection.query(query, [...keys, ...values], (error, results) => {
         if (error) {
             return callback(error, null);

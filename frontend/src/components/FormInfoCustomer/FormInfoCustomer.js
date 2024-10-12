@@ -3,7 +3,7 @@ import { forwardRef, useImperativeHandle, useState } from "react";
 import { object, string } from "yup";
 import styles from "./FormInfoCustomer.module.scss";
 
-const PHONE_PATTERN = /^(\+?\d{1,3}[- ]?)?\d{10}$/
+const phone_PATTERN = /^(\+?\d{1,3}[- ]?)?\d{10}$/
 
 function FormInfoCustomer({ formData, onChange, className }, ref) {
     const [errors, setErrors] = useState({});
@@ -11,7 +11,7 @@ function FormInfoCustomer({ formData, onChange, className }, ref) {
     let userSchema = object({
         name: string().required("Bạn chưa điền tên"),
         phone: string()
-            .matches(PHONE_PATTERN, 'Số điện thoại không hợp lệ')
+            .matches(phone_PATTERN, 'Số điện thoại không hợp lệ')
             .required("Vui lòng điền số điện thoại"),
         email: string().email('Địa chỉ email không hợp lệ'),
         address: string()

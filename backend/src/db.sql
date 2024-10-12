@@ -1,356 +1,280 @@
--- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
---
--- Host: localhost    Database: qlns_cnpm
--- ------------------------------------------------------
--- Server version	9.0.1
+CREATE DATABASE book_management;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `bc_cong_no`
---
-
-DROP TABLE IF EXISTS bc_cong_no;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE bc_cong_no (
-  ID_BCCN varchar(6) NOT NULL,
-  NGAY date DEFAULT NULL,
-  PRIMARY KEY (ID_BCCN)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `bc_cong_no`
---
-
-LOCK TABLES bc_cong_no WRITE;
-/*!40000 ALTER TABLE bc_cong_no DISABLE KEYS */;
-/*!40000 ALTER TABLE bc_cong_no ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `bc_ton`
---
-
-DROP TABLE IF EXISTS bc_ton;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE bc_ton (
-  ID_BCT varchar(6) NOT NULL,
-  NGAY date DEFAULT NULL,
-  PRIMARY KEY (ID_BCT)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `bc_ton`
---
-
-LOCK TABLES bc_ton WRITE;
-/*!40000 ALTER TABLE bc_ton DISABLE KEYS */;
-/*!40000 ALTER TABLE bc_ton ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `ctbccn`
---
-
-DROP TABLE IF EXISTS ctbccn;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE ctbccn (
-  ID_BCCN varchar(6) NOT NULL,
-  ID_KH int NOT NULL,
-  NO_DAU decimal(10,2) DEFAULT NULL,
-  PHAT_SINH decimal(10,2) DEFAULT NULL,
-  NO_CUOI decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (ID_BCCN,ID_KH),
-  KEY FK_CTBCCN_KHACH_HANG (ID_KH),
-  CONSTRAINT FK_CTBCCN_BC_CONG_NO FOREIGN KEY (ID_BCCN) REFERENCES bc_cong_no (ID_BCCN),
-  CONSTRAINT FK_CTBCCN_KHACH_HANG FOREIGN KEY (ID_KH) REFERENCES khach_hang (ID_KH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ctbccn`
---
-
-LOCK TABLES ctbccn WRITE;
-/*!40000 ALTER TABLE ctbccn DISABLE KEYS */;
-/*!40000 ALTER TABLE ctbccn ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `ctbct`
---
-
-DROP TABLE IF EXISTS ctbct;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE ctbct (
-  ID_BCT varchar(6) NOT NULL,
-  ID_SACH int NOT NULL,
-  TON_DAU decimal(10,2) DEFAULT NULL,
-  PHAT_SINH decimal(10,2) DEFAULT NULL,
-  TON_CUOI decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (ID_BCT,ID_SACH),
-  KEY FK_CTBCT_SACH (ID_SACH),
-  CONSTRAINT FK_CTBCT_BC_TON FOREIGN KEY (ID_BCT) REFERENCES bc_ton (ID_BCT),
-  CONSTRAINT FK_CTBCT_SACH FOREIGN KEY (ID_SACH) REFERENCES sach (ID_SACH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ctbct`
---
-
-LOCK TABLES ctbct WRITE;
-/*!40000 ALTER TABLE ctbct DISABLE KEYS */;
-/*!40000 ALTER TABLE ctbct ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `cthd`
---
-
-DROP TABLE IF EXISTS cthd;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE cthd (
-  ID_HOA_DON varchar(6) NOT NULL,
-  ID_SACH int NOT NULL,
-  SO_LUONG int DEFAULT NULL,
-  DON_GIA decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (ID_HOA_DON,ID_SACH),
-  KEY FK_CTHD_SACH (ID_SACH),
-  CONSTRAINT FK_CTHD_HOA_DON FOREIGN KEY (ID_HOA_DON) REFERENCES hoa_don (ID_HOA_DON),
-  CONSTRAINT FK_CTHD_SACH FOREIGN KEY (ID_SACH) REFERENCES sach (ID_SACH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cthd`
---
-
-LOCK TABLES cthd WRITE;
-/*!40000 ALTER TABLE cthd DISABLE KEYS */;
-/*!40000 ALTER TABLE cthd ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `ctpn`
---
-
-DROP TABLE IF EXISTS ctpn;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE ctpn (
-  ID_PHIEU_NHAP varchar(6) NOT NULL,
-  ID_SACH int NOT NULL,
-  SO_LUONG int DEFAULT NULL,
-  PRIMARY KEY (ID_PHIEU_NHAP,ID_SACH),
-  KEY FK_CTPN_SACH (ID_SACH),
-  CONSTRAINT FK_CTPN_PHIEU_NHAP FOREIGN KEY (ID_PHIEU_NHAP) REFERENCES phieu_nhap (ID_PHIEU_NHAP),
-  CONSTRAINT FK_CTPN_SACH FOREIGN KEY (ID_SACH) REFERENCES sach (ID_SACH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `ctpn`
---
-
-LOCK TABLES ctpn WRITE;
-/*!40000 ALTER TABLE ctpn DISABLE KEYS */;
-/*!40000 ALTER TABLE ctpn ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `hoa_don`
---
-
-DROP TABLE IF EXISTS hoa_don;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE hoa_don (
-  ID_HOA_DON varchar(6) NOT NULL,
-  ID_KH int DEFAULT NULL,
-  NGAY_LAP date DEFAULT NULL,
-  PRIMARY KEY (ID_HOA_DON),
-  KEY FK_HD_KHACH_HANG (ID_KH),
-  CONSTRAINT FK_HD_KHACH_HANG FOREIGN KEY (ID_KH) REFERENCES khach_hang (ID_KH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `hoa_don`
---
-
-LOCK TABLES hoa_don WRITE;
-/*!40000 ALTER TABLE hoa_don DISABLE KEYS */;
-/*!40000 ALTER TABLE hoa_don ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `khach_hang`
---
-
-DROP TABLE IF EXISTS khach_hang;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE khach_hang (
-  ID_KH int NOT NULL,
-  HO_TEN varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  DIA_CHI varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  DIEN_THOAI varchar(10) DEFAULT NULL,
-  EMAIL varchar(50) DEFAULT NULL,
-  DU_NO decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (ID_KH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `khach_hang`
---
-
-LOCK TABLES khach_hang WRITE;
-/*!40000 ALTER TABLE khach_hang DISABLE KEYS */;
-/*!40000 ALTER TABLE khach_hang ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `phieu_nhap`
---
-
-DROP TABLE IF EXISTS phieu_nhap;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE phieu_nhap (
-  ID_PHIEU_NHAP varchar(6) NOT NULL,
-  NGAY_NHAP date DEFAULT NULL,
-  PRIMARY KEY (ID_PHIEU_NHAP)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `phieu_nhap`
---
-
-LOCK TABLES phieu_nhap WRITE;
-/*!40000 ALTER TABLE phieu_nhap DISABLE KEYS */;
-/*!40000 ALTER TABLE phieu_nhap ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `phieu_thu_tien`
---
-
-DROP TABLE IF EXISTS phieu_thu_tien;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE phieu_thu_tien (
-  ID_PHIEUTT varchar(6) NOT NULL,
-  ID_KH int DEFAULT NULL,
-  NGAY_THU date DEFAULT NULL,
-  TIEN_THU decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (ID_PHIEUTT),
-  KEY FK_PTT_KHACH_HANG (ID_KH),
-  CONSTRAINT FK_PTT_KHACH_HANG FOREIGN KEY (ID_KH) REFERENCES khach_hang (ID_KH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `phieu_thu_tien`
---
-
-LOCK TABLES phieu_thu_tien WRITE;
-/*!40000 ALTER TABLE phieu_thu_tien DISABLE KEYS */;
-/*!40000 ALTER TABLE phieu_thu_tien ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `sach`
---
-
-DROP TABLE IF EXISTS sach;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE sach (
-  ID_SACH int AUTO_INCREMENT NOT NULL,
-  TEN_SACH varchar(70) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  THE_LOAI varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  TAC_GIA varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  SO_LUONG int DEFAULT NULL,
-  PRIMARY KEY (ID_SACH)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `sach`
---
+USE Book_Management;
 
 
-DROP TABLE IF EXISTS `rules`;
-CREATE TABLE rules (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    rule_name VARCHAR(255),
-    rule_value int,
-    is_active BOOLEAN DEFAULT TRUE
+CREATE TABLE books (
+    id_book INT AUTO_INCREMENT,
+    title NVARCHAR(70),
+    category NVARCHAR(50),
+    author NVARCHAR(30),
+    quantity INT,
+    price DECIMAl(10,2),
+    
+    CONSTRAINT PK_BOOK PRIMARY KEY (id_book)
 );
 
+CREATE TABLE customers (
+    id_customer INT AUTO_INCREMENT,
+    full_name NVARCHAR(30),
+    address NVARCHAR(50),
+    phone VARCHAR(10),
+    email VARCHAR(50),
+    debt DECIMAL(10,2),
+    CONSTRAINT PK_customers PRIMARY KEY (id_customer)
+);
+
+CREATE TABLE stock_receipts (
+    id_stock_receipt VARCHAR(6),
+    receipt_date DATE,
+    CONSTRAINT PK_stock_receipts PRIMARY KEY (id_stock_receipt)
+);
+
+CREATE TABLE stock_receipts_details (
+    id_stock_receipt VARCHAR(6),
+    id_book INT,
+    quantity INT,
+    CONSTRAINT PK_stock_receipts_details PRIMARY KEY (id_stock_receipt, id_book),
+    CONSTRAINT FK_stock_receipts_details_stock_receipts FOREIGN KEY (id_stock_receipt) REFERENCES stock_receipts(id_stock_receipt),
+    CONSTRAINT FK_stock_receipts_details_BOOK FOREIGN KEY (id_book) REFERENCES books(id_book)
+);
+
+CREATE TABLE invoices (
+    id_invoice VARCHAR(6),
+    id_customer INT,
+    invoices_DATE DATE, 
+    CONSTRAINT PK_invoices PRIMARY KEY (id_invoice)
+);
+
+CREATE TABLE invoices_details (
+    id_invoice VARCHAR(6),
+    id_book INT,
+    quantity INT,
+    unit_price DECIMAL(10,2),
+    CONSTRAINT PK_invoices_details PRIMARY KEY (id_invoice, id_book),
+    CONSTRAINT FK_invoices_details_invoices FOREIGN KEY (id_invoice) REFERENCES invoices(id_invoice),
+    CONSTRAINT FK_invoices_details_BOOK FOREIGN KEY (id_book) REFERENCES books(id_book)
+);
+
+DROP TABLE IF EXISTS payment_receipts; 
+
+CREATE TABLE payment_receipts (
+    id_payment_receipt VARCHAR(6),
+    id_customer INT,
+    payment_date DATE,
+    amount_received DECIMAL(10,2),
+    CONSTRAINT PK_payment_receipts PRIMARY KEY (id_payment_receipt),
+    CONSTRAINT FK_customers FOREIGN KEY (id_customer) REFERENCES customers(id_customer)
+);
+
+CREATE TABLE stock_reports (
+    id_stock_report VARCHAR(6),
+    report_date DATE,
+    CONSTRAINT PK_stock_reports PRIMARY KEY (id_stock_report)
+);
+
+CREATE TABLE stock_reports_details (
+    id_stock_report VARCHAR(6),
+    id_book INT,
+    initial_stock DECIMAL(10,2),
+    changes DECIMAL(10,2),
+    final_stock DECIMAL(10,2),
+    CONSTRAINT PK_stock_reports_details PRIMARY KEY (id_stock_report, id_book),
+    CONSTRAINT FK_stock_reports_details_stock_reports FOREIGN KEY (id_stock_report) REFERENCES stock_reports(id_stock_report),
+    CONSTRAINT FK_stock_reports_details_BOOK FOREIGN KEY (id_book) REFERENCES books(id_book)
+);
+
+CREATE TABLE debt_reports (
+    id_debt_report VARCHAR(6),
+    report_date DATE,
+    CONSTRAINT PK_debt_reports PRIMARY KEY (id_debt_report)
+);
+
+CREATE TABLE debt_reports_details (
+    id_debt_report VARCHAR(6),
+    id_customer INT,
+    initial_debt DECIMAL(10,2),
+    changes DECIMAL(10,2),
+    FINAL_debt DECIMAL(10,2),
+    CONSTRAINT PK_debt_reports_DETAILS PRIMARY KEY (id_debt_report, id_customer),
+    CONSTRAINT FK_debt_reports_DETAILS_debt_reports FOREIGN KEY (id_debt_report) REFERENCES debt_reports(id_debt_report),
+    CONSTRAINT FK_debt_reports_DETAILS_customers FOREIGN KEY (id_customer) REFERENCES customers(id_customer)
+);
+
+CREATE TABLE rules (
+    id_rule INT PRIMARY KEY AUTO_INCREMENT,
+    rule_name VARCHAR(255),
+    rule_value int
+);
+
+
+
+-- Insert data into BOOK table
+INSERT INTO books (title, category, author, quantity) VALUES
+('The Alchemist', 'Novel', 'Paulo Coelho', 10),
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 8);
+
+-- Insert data into customers table
+INSERT INTO customers (full_name, address, phone, email, debt) VALUES
+('Nguyen Van A', 'Hanoi', '0123456789', 'a@gmail.com', 10000.00),
+('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com', 15000.00),
+('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com', 5000.00);
+
+-- Insert data into stock_receipts table
+INSERT INTO stock_receipts (id_stock_receipt, receipt_date) VALUES
+('SR001', '2023-01-15'),
+('SR002', '2023-02-20');
+
+-- Insert data into stock_receipts_details table
+INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity) VALUES
+('SR001', 1, 5),
+('SR001', 2, 3),
+('SR002', 3, 2);
+
+-- Insert data into invoices table
+INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
+('INV001', 1, '2023-01-20'),
+('INV002', 2, '2023-02-25');
+
+-- Insert data into invoices_details table
+INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+('INV001', 1, 2, 200.00),
+('INV001', 2, 1, 150.00),
+('INV002', 3, 1, 300.00);
+
+-- Insert data into payment_receipts table
+INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
+('PR001', 1, '2023-01-21', 300.00),
+('PR002', 2, '2023-02-26', 1500.00);
+
+-- Insert data into stock_reports table
+INSERT INTO stock_reports (id_stock_report, report_date) VALUES
+('SR001', '2023-03-01');
+
+-- Insert data into stock_reports_details table
+INSERT INTO stock_reports_details (id_stock_report, id_book, initial_stock, changes, final_stock) VALUES
+('SR001', 1, 10, -5, 5),
+('SR001', 2, 5, -3, 2),
+('SR001', 3, 8, 0, 8);
+
+-- Insert data into debt_reports table
+INSERT INTO debt_reports (id_debt_report, report_date) VALUES
+('DR001', '2023-03-05');
+
+-- Insert data into debt_reports_DETAILS table
+INSERT INTO debt_reports_details (id_debt_report, id_customer, initial_debt, changes, FINAL_debt) VALUES
+('DR001', 1, 10000.00, -300.00, 9700.00),
+('DR001', 2, 15000.00, 500.00, 15500.00);
+
+
+
 INSERT INTO rules (rule_name, rule_value) VALUES ('Max inventory quantity', 300);
+INSERT INTO rules (rule_name, rule_value) VALUES ('Max debt', 20000);
+INSERT INTO rules (rule_name, rule_value) VALUES ('Min book quantity after selling', 20);
 
 
+use book_management;
 
-LOCK TABLES sach WRITE;
-/*!40000 ALTER TABLE sach DISABLE KEYS */;
-/*!40000 ALTER TABLE sach ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+DROP TRIGGER IF EXISTS check_max_debt;
 
--- Dump completed on 2024-09-29 16:48:33
+DELIMITER $$
+CREATE TRIGGER check_max_debt
+BEFORE UPDATE ON customers
+FOR EACH ROW
+BEGIN
+	DECLARE max_debt decimal(10,2);
+    DECLARE debt_curr decimal(10,2);
+    
+    SELECT CAST(rule_value as UNSIGNED) into max_debt
+    from rules
+    where rule_name = "Max debt";
+    
+    SELECT CAST(debt as UNSIGNED) into debt_curr
+    from customers
+    where id_customer = OLD.id_customer;
+    
+    if debt_curr > max_debt  then
+    SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Lượng tồn kho hiện tại đã lớn hơn hoặc bằng giới hạn cho phép'; 
+    END IF;
+END $$
+    
+DELIMITER ;
+
+
 
 
 DROP TRIGGER IF EXISTS check_inventory;
-
 DELIMITER $$
 
 CREATE TRIGGER check_inventory
-BEFORE UPDATE ON sach
+BEFORE UPDATE ON books
 FOR EACH ROW
 BEGIN
-    DECLARE max_quantity INT;
-	DECLARE quantity int;
-    
+    DECLARE max_quantity decimal(10,2);
+
+
     SELECT CAST(rule_value AS UNSIGNED) INTO max_quantity 
     FROM rules 
     WHERE rule_name = 'Max inventory quantity';
-	
-    SELECT so_luong into quantity 
-    from sach
-    where ten_sach = old.ten_sach;
-    
-    IF quantity >= max_quantity THEN
+
+    IF OLD.quantity >= max_quantity THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = "Lượng tồn kho hiện tại đã lớn hơn hoặc bằng giá trị tối đa" ;
+        SET MESSAGE_TEXT = 'Lượng tồn kho hiện tại đã lớn hơn hoặc bằng giới hạn cho phép'; 
     END IF;
 END $$
 
 DELIMITER ;
+
+
+
+drop trigger if exists check_min_inventory_after;
+
+DELIMITER $$
+
+CREATE TRIGGER  check_min_inventory_after
+BEFORE UPDATE ON books
+FOR EACH ROW
+BEGIN
+    DECLARE min_inventory_after INT;
+    SELECT CAST(rule_value AS UNSIGNED) INTO min_inventory_after
+    FROM rules 
+    WHERE rule_name = 'Min book quantity after selling';
+
+
+    IF new.quantity < min_inventory_after THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Vui lòng chọn số lượng ít hơn. Số lượng tồn sau khi bán ít nhất là 20.'; 
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+drop trigger if exists check_amount_received;
+
+DELIMITER $$
+
+CREATE TRIGGER  check_amount_received
+BEFORE UPDATE ON payment_receipts
+FOR EACH ROW
+BEGIN
+	
+    DECLARE curr_debt decimal(10,2);
+    
+    SELECT CAST(debt as UNSIGNED) into curr_debt
+	from customers
+    where old.id_customer = id_customer;
+	
+    IF old.amount_received > curr_debt THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Số tiền thu đã vượt quá số tiền khách hàng đang nợ.'; 
+    END IF;
+END $$
+
+DELIMITER ;
+
+use book_management;
+

@@ -43,7 +43,8 @@ CREATE TABLE invoices (
     id_invoice VARCHAR(6),
     id_customer INT,
     invoices_DATE DATE, 
-    CONSTRAINT PK_invoices PRIMARY KEY (id_invoice)
+    CONSTRAINT PK_invoices PRIMARY KEY (id_invoice),
+    CONSTRAINT FK_invoices_customers FOREIGN KEY (id_customer) REFERENCES customers(id_customer)
 );
 
 CREATE TABLE invoices_details (

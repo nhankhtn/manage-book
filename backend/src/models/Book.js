@@ -7,11 +7,15 @@ title: "abc"
 */
 const getBooks = (params = {}, callback) => {
     let query = `SELECT title, author, category, quantity, price FROM books WHERE 1=1 `;
-    const keys = Object.keys(params);
-    const values = Object.values(params);
+    const entries = Object.entries(params).flat();
 
-    query += keys.map(key => ` AND ?? = ? `).join("");
-    connection.query(query, [...keys, ...values], (error, results) => {
+    if (Object.keys(params).length > 0) {
+        Object.entries(params).forEach(([key, value]) => {
+            query += ` AND ?? = ?`;
+        });
+    }
+
+    connection.query(query, entries, (error, results) => {
         if (error) {
             return callback(error, null);
         }
@@ -65,9 +69,20 @@ const getStock = (month, year, callback) => {
         });
 };
 
+const deleteBook = (title, callback) => {
+    connection.query(
+        `DELETE FROM books WHERE title = ?`, [title], (error, results) => {
+            if (error) {
+                return callback(error, null);
+            }
+            callback(null, results);
+        });
+}
+
 module.exports = {
     getBooks,
     addBook,
     updateBook,
     getStock,
+    deleteBook,
 }

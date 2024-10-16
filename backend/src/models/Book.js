@@ -69,9 +69,20 @@ const getStock = (month, year, callback) => {
         });
 };
 
+const deleteBook = (title, callback) => {
+    connection.query(
+        `DELETE FROM books WHERE title = ?`, [title], (error, results) => {
+            if (error) {
+                return callback(error, null);
+            }
+            callback(null, results);
+        });
+}
+
 module.exports = {
     getBooks,
     addBook,
     updateBook,
     getStock,
+    deleteBook,
 }

@@ -6,7 +6,7 @@ USE Book_Management;
 CREATE TABLE books (
     id_book INT AUTO_INCREMENT,
     title NVARCHAR(70),
-    category NVARCHAR(50),
+    category: NVARCHAR(50),
     author NVARCHAR(30),
     quantity INT,
     price DECIMAl(10,2),
@@ -110,7 +110,7 @@ CREATE TABLE rules (
 
 
 -- Insert data into BOOK table
-INSERT INTO books (title, category, author, quantity) VALUES
+INSERT INTO books (title, category:, author, quantity) VALUES
 ('The Alchemist', 'Novel', 'Paulo Coelho', 10),
 ('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5),
 ('In Search of Lost Time', 'Novel', 'Marcel Proust', 8);

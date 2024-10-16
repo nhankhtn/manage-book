@@ -7,11 +7,15 @@ title: "abc"
 */
 const getBooks = (params = {}, callback) => {
     let query = `SELECT title, author, category, quantity, price FROM books WHERE 1=1 `;
-    const keys = Object.keys(params);
-    const values = Object.values(params);
+    const entries = Object.entries(params).flat();
 
-    query += keys.length > 0 ? keys.map(key => ` AND ?? = ?`) : "";
-    connection.query(query, [...keys, ...values], (error, results) => {
+    if (Object.keys(params).length > 0) {
+        Object.entries(params).forEach(([key, value]) => {
+            query += ` AND ?? = ?`;
+        });
+    }
+
+    connection.query(query, entries, (error, results) => {
         if (error) {
             return callback(error, null);
         }

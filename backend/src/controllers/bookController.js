@@ -6,7 +6,7 @@ const getBooks = (req, res) => {
         if (err) {
             return res.status(500).json({ error: 'Failed to retrieve books' });
         }
-        res.json(books);
+        res.json({ data: books });
     });
 };
 
@@ -75,7 +75,7 @@ const updateBook = (req, res) => {
         if (err) {
             return res.status(err.statusCode || 500).json({ error: err.message });
         }
-        res.status(200).json(result);
+        res.status(200).json({ data: result });
     });
 };
 
@@ -100,7 +100,7 @@ const searchBooks = (req, res) => {
         if (!books.length) {
             return res.status(404).json({ message: 'Không tìm thấy sách' });
         }
-        res.json(books);
+        res.status(200).json({ data: books });
     });
 };
 

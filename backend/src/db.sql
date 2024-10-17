@@ -104,8 +104,9 @@ CREATE TABLE debt_reports_details (
 
 CREATE TABLE rules (
     id_rule INT PRIMARY KEY AUTO_INCREMENT,
-    rule_name VARCHAR(255),
-    rule_value int
+    rule_name VARCHAR(255) NOT NULL,
+    rule_value NVARCHAR(255) NOT NULL, 
+    description text 
 );
 
 
@@ -170,10 +171,12 @@ INSERT INTO debt_reports_details (id_debt_report, id_customer, initial_debt, cha
 
 
 
-INSERT INTO rules (rule_name, rule_value) VALUES ('Max inventory quantity', 300);
-INSERT INTO rules (rule_name, rule_value) VALUES ('Max debt', 20000);
-INSERT INTO rules (rule_name, rule_value) VALUES ('Min book quantity after selling', 20);
-
+INSERT INTO rules (rule_name, rule_value, description) VALUES 
+('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
+('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
+('maxDebt', '20000', 'Tiền nợ tối đa'),
+('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán');
+('maxDebtCollection', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
 use book_management;
 

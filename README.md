@@ -17,3 +17,13 @@
 
 - GET: /report/debt ->
   - query: {month, year}
+
+3. API Rule
+   PUT: /api/rules
+   body {
+   minImportQuantity: 200,
+   minStockQuantityBeforeImport: 200,
+   maxDebt: 30000,
+   minStockAfterSale: 30,
+   maxDebtCollection: false
+   }

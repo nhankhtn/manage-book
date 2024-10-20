@@ -10,14 +10,15 @@ const getBooks = (params = {}, callback) => {
     const keys = Object.keys(params);
     const values = Object.values(params);
 
-    query += keys.map(key => ` AND ?? = ? `).join("");
-    connection.query(query, [...keys, ...values], (error, results) => {
+    query += keys.map(key => ` AND ${key} = ?`).join("");
+    connection.query(query,values, (error, results) => {
         if (error) {
             return callback(error, null);
         }
         callback(null, results);
     });
 }
+
 const addBook = ({ title, category, author, quantity, price }, callback) => {
     connection.query('INSERT INTO books (title, category, author, quantity,price) VALUES (?, ?, ?, ?, ?)',
         [title, category, author, quantity, price],
@@ -41,8 +42,8 @@ const updateBook = ({ title }, { quantity }, callback) => {
     connection.query(
         `UPDATE books
          SET quantity = COALESCE(quantity, 0) + ?
-         WHERE title = ?
-`, [quantity, title], (error, results) => {
+         WHERE title = ?`, 
+        [quantity, title], (error, results) => {
         if (error) {
             return callback(error, null);
         }

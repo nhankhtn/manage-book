@@ -106,11 +106,13 @@ const searchBooks = (req, res) => {
 
 const deleteBooks = (req, res) => {
     const { title } = req.query;
-    bookService.deleteBook(title, (err, result) => {
+    Book.deleteBook(title, (err, result) => {
         if (err) return res.status(500).json({ message: "Lỗi khi xóa sách" });
         res.json(result);
     });
 } 
+
+
 
 
 

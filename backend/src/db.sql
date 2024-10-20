@@ -1,3 +1,5 @@
+drop database if exists book_management;
+
 CREATE DATABASE book_management;
 
 USE Book_Management;
@@ -111,10 +113,10 @@ CREATE TABLE rules (
 
 
 -- Insert data into BOOK table
-INSERT INTO books (title, category, author, quantity) VALUES
-('The Alchemist', 'Novel', 'Paulo Coelho', 10),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 8);
+INSERT INTO books (title, category, author, quantity, price) VALUES
+('The Alchemist', 'Novel', 'Paulo Coelho', 10, 10000.00),
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00);
 
 -- Insert data into customers table
 INSERT INTO customers (full_name, address, phone, email, debt) VALUES
@@ -170,9 +172,13 @@ INSERT INTO debt_reports_details (id_debt_report, id_customer, initial_debt, cha
 
 
 
-INSERT INTO rules (rule_name, rule_value) VALUES ('Max inventory quantity', 300);
-INSERT INTO rules (rule_name, rule_value) VALUES ('Max debt', 20000);
-INSERT INTO rules (rule_name, rule_value) VALUES ('Min book quantity after selling', 20);
+INSERT INTO rules (rule_name, rule_value)
+VALUES 
+('min-import-quantity', 30),
+('min-stock-before-import', 30),
+('max-debt', 300.000),
+('min-stock-after-sale', 30),
+('allow-overpayment', 1);
 
 
 use book_management;

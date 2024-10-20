@@ -1,25 +1,35 @@
 const connection = require('../config/database');
 
 const updateRules = (rules, callback) => {
-    const queries = rules.map((rule) => {
-        return new Promise((resolve, reject) => {
-            const query = `UPDATE rules SET rule_value = ? WHERE rule_name = ?`;
-            const values = [rule.rule_value, rule.rule_name];
+    let query = '';
+    const values = [];
+    const errors = [];
+    let successCount = 0;
 
-            connection.query(query, values, (error, result) => {
-                if (error) {
-                    return reject(error);
+    // Loop through the rules and create queries for each
+    rules.forEach((rule, index) => {
+        const query = `UPDATE rules SET rule_value = ? WHERE rule_name = ?`;
+        const values = [rule.rule_value, rule.rule_name];
+
+        connection.query(query, values, (error, result) => {
+            if (error) {
+                errors.push(error);
+            } else {
+                successCount++;
+            }
+
+            // After the last query, call the callback
+            if (index === rules.length - 1) {
+                if (errors.length > 0) {
+                    callback(errors, null);
+                } else {
+                    callback(null, { message: `${successCount} rules updated successfully` });
                 }
-                resolve(result);
-            });
+            }
         });
     });
-
-    // Execute all update queries
-    Promise.all(queries)
-        .then(results => callback(null, results))
-        .catch(error => callback(error, null));
 };
+
 
 
 const getRules = (callback) => {

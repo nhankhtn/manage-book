@@ -33,7 +33,7 @@ function Table({ fieldCols, data, deleteRow = () => { } }) {
                         type="button"
                         title="Xoá"
                         className={styles["btn-trash"]}
-                        onClick={() => { handleClick(index) }}>
+                        onClick={() => { handleClick(indexRow) }}>
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       : col.type === "input" ?

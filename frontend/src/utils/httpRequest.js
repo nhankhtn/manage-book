@@ -16,3 +16,12 @@ export const get = async (url, options = {}) => {
         throw error;
     }
 }
+
+export const put  = async (url, data, options = {}) => {
+    try {
+        const response = await httpRequest.put(url, data, options);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

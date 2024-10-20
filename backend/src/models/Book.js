@@ -7,11 +7,13 @@ title: "abc"
 */
 const getBooks = (params = {}, callback) => {
     let query = `SELECT title, author, category, quantity, price FROM books WHERE 1=1 `;
-    const entries = Object.entries(params).flat();
-
+    // const entries = Object.entries(params).flat();
+    const entries = [];
     if (Object.keys(params).length > 0) {
         Object.entries(params).forEach(([key, value]) => {
-            query += ` AND ?? = ?`;
+            // query += ` AND ?? = ?`;
+            query += ` AND ?? LIKE ?`;
+            entries.push(key, `%${value}%`);
         });
     }
 

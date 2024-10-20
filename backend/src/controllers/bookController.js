@@ -69,14 +69,24 @@ const totalPrice = (req, res) => {
 // 2. Nếu sách chưa tồn tại thì mình cần nhập đầy đủ thông tin sách
 // Hoặc lúc đầu mình chỉ nhập tên sách và số lượng để tìm kiếm nếu sách đã tồn tại thì mình chỉ cần nhập số lượng còn không thì mình cần nhập đầy đủ thông tin
 const updateBook = (req, res) => {
-    const { title, author, category, quantity, price } = req.body;
-
-    bookService.importBooks({ title, author, category, quantity, price }, (err, result) => {
-        if (err) {
-            return res.status(err.statusCode || 500).json({ error: err.message });
-        }
-        res.status(200).json({ data: result });
+    const books = req.body;
+    var hasError = false;
+    var resultAdd = [];
+    books.forEach((book) => {
+        bookService.importBooks(book, (err, result) => {
+            if (err) {
+                //return res.status(err.statusCode || 500).json({ error: err.message });
+                hasError = true;
+            }
+            resultAdd.push(result);
+            
+        });
     });
+    if (hasError) {
+        return res.status(500).json({ error: 'Failed to import books' });
+    }
+    res.json({ message: 'Imported books successfully', data: resultAdd });
+ 
 };
 
 
@@ -95,6 +105,8 @@ const reportStock = (req, res) => {
 // LOOKUP BOOK
 const searchBooks = (req, res) => {
     const { title, author, category, price } = req.query;
+    console.log('request received at searchBooks endpoint');
+    console.log(req.query);
     bookService.search(title, author, category, price, (err, books) => {
         if (err) return res.status(500).json({ message: "Lỗi khi tìm sách" });
         if (!books.length) {

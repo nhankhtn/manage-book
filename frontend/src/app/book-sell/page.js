@@ -53,38 +53,7 @@ export default function BookSell() {
             quantity: 5,
             available: 20
         },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            category: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            category: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            category: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            category: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
+
     ]);
     const [formInfo, setFormInfo] = useState({
         name: '',

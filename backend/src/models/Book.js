@@ -24,6 +24,26 @@ const getBooks = (params = {}, callback) => {
         callback(null, results);
     });
 }
+
+const getBooksEqual = (params = {}, callback) => {
+    let query = `SELECT title, author, category, quantity, price FROM books WHERE 1=1 `;
+    // const entries = Object.entries(params).flat();
+    const entries = [];
+    if (Object.keys(params).length > 0) {
+        Object.entries(params).forEach(([key, value]) => {
+            // query += ` AND ?? = ?`;
+            query += ` AND ?? = ?`;
+            entries.push(key,value);
+        });
+    }
+
+    connection.query(query, entries, (error, results) => {
+        if (error) {
+            return callback(error, null);
+        }
+        callback(null, results);
+    });
+}
 const addBook = ({ title, category, author, quantity, price }, callback) => {
     connection.query('INSERT INTO books (title, category, author, quantity,price) VALUES (?, ?, ?, ?, ?)',
         [title, category, author, quantity, price],
@@ -111,4 +131,5 @@ module.exports = {
     updateBook,
     getStock,
     deleteBook,
+    getBooksEqual,
 }

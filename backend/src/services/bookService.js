@@ -3,9 +3,9 @@ const Book = require("../models/Book");
 
 // DESKTOP 5 và 6
 
-const importBooks = (bookData, callback) => {
+const importBook = (bookData, callback) => {
     const { title, author, category, price, quantity } = bookData;
-    Book.getBooks({ title }, (err, books) => {
+    Book.getBooksEqual({ title }, (err, books) => {
         if (err) {
             return callback({ statusCode: 500, message: "Lỗi khi tìm sách" }, null);
         }
@@ -92,7 +92,7 @@ const search = (title, author, category, price, callback) => {
 
 
 module.exports = {
-    importBooks,
+    importBook,
     search,
     total
 };

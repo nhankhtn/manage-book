@@ -32,8 +32,20 @@ const addBook = ({ title, category, author, quantity, price }, callback) => {
             if (error) {
                 return callback(error, null);
             }
-            callback(null, result);
-        }
+          //  callback(null, result);
+                  // Retrieve the newly inserted book using its ID
+            const selectQuery = `SELECT * FROM books WHERE id_book = ?`;
+            const selectValues = [result.insertId];
+
+            connection.query(selectQuery, selectValues, (selectError, selectResult) => {
+                if (selectError) {
+                    return callback(selectError, null);
+                }
+
+                // Return the newly inserted book
+                callback(null, selectResult[0]);
+            });
+            }
     );
 }
 /*
@@ -52,7 +64,19 @@ const updateBook = ({ title }, { quantity }, callback) => {
         if (error) {
             return callback(error, null);
         }
-        callback(null, results);
+      //  callback(null, results);
+        // Retrieve the updated book using its title
+        const selectQuery = `SELECT * FROM books WHERE title = ?`;
+        const selectValues = [title];
+
+        connection.query(selectQuery, selectValues, (selectError, selectResult) => {
+            if (selectError) {
+                return callback(selectError, null);
+            }
+
+            // Return the updated book
+            callback(null, selectResult[0]);
+        });
     });
 }
 

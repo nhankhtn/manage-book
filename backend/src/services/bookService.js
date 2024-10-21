@@ -18,7 +18,7 @@ const importBooks = (bookData, callback) => {
                 if (err) {
                     return callback(err, null);
                 }
-                callback(null, { message: 'Nhập sách thành công', newStock: quantity });
+                callback(null, { message: 'Nhập sách thành công', book: result });
             });
         } else {
             const currentStock = books[0].quantity || 0;
@@ -26,7 +26,7 @@ const importBooks = (bookData, callback) => {
                 if (err) {
                     return callback(err, null);
                 }
-                callback(null, { message: 'Nhập sách thành công', newStock: currentStock + quantity });
+                callback(null, { message: 'Cập nhật thành công', book: result });
             });
         }
     });

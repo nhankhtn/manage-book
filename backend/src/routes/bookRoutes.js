@@ -3,7 +3,7 @@ const router = express.Router();
 const bookController = require("../controllers/bookController");
 
 // importBooks
-router.put("/update", bookController.updateBook);
+router.put("/update", bookController.updateBooks);
 
 // reportStock
 router.get("/stocks/report", bookController.reportStock);

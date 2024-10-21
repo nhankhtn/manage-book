@@ -26,7 +26,7 @@ const getBooks = (req, res) => {
 //     },
 //     {
 //         "title": "Thần dâm",
-//         "author": "Nguyễn Đình Minh nhật",
+//         "author": "Nguyễn Đình Minh nhật?",
 //         "category": "Tiểu thuyết",
 //         "quantity": 101,
 //         "price": 19.99,
@@ -68,64 +68,33 @@ const totalPrice = (req, res) => {
 // 1. Nếu sách đã tồn tại và mình muốn update sách thì mình chỉ cần nhập tên sách và số lượng cần nhập thôi không cần full
 // 2. Nếu sách chưa tồn tại thì mình cần nhập đầy đủ thông tin sách
 // Hoặc lúc đầu mình chỉ nhập tên sách và số lượng để tìm kiếm nếu sách đã tồn tại thì mình chỉ cần nhập số lượng còn không thì mình cần nhập đầy đủ thông tin
-// const updateBook =  async (req, res) => {
-//     const books = req.body;
-//     var hasError = false;
-//     var resultAdd = [];
-//     await books.forEach( async (book) => {
-//         await bookService.importBooks(book, (err, result) => {
-//             if (err) {
-//                 //return res.status(err.statusCode || 500).json({ error: err.message });
-//                 hasError = true;
-//                 console.log('Failed to import book:', err.message);
-//             }
 
-//             console.log('Imported book:', result.message);
-//             console.log('Book:', result.book);
-//             resultAdd.push(result.book);   
 
-//         });
-//     });
-//     if (hasError) {
-//         return res.status(500).json({ error: 'Failed to import books' });
-//     }
-//     console.log(resultAdd)
-//     res.status(200).json({data: resultAdd });
- 
-// };
-
-const updateBook = async (req, res) => {
+const updateBooks = async (req, res) => {
     const books = req.body;
-    let hasError = false;
     let resultAdd = [];
-
+    let failedBooks = [];
     try {
         resultAdd = await Promise.all(
             books.map((book) => {
                 return new Promise((resolve, reject) => {
-                    bookService.importBooks(book, (err, result) => {
+                    bookService.importBook(book, (err, result) => {
                         if (err) {
-                            hasError = true;
-                            console.log('Failed to import book:', err.message);
+                            failedBooks.push(book);
                             return reject(err);
                         }
-
-                        // console.log('Imported book:', result.message);
-                        // console.log('Book:', result.book);
                         resolve(result.book);
                     });
                 });
             })
         );
-
-        if (hasError) {
-            return res.status(500).json({ error: 'Failed to import some or all books' });
-        }
-
         res.status(200).json({ data: resultAdd });
     } catch (error) {
-        console.error('Error importing books:', error);
-        res.status(500).json({ error: 'Failed to import some or all books' });
+      //  console.error('Error importing books:', error);
+        res.status(500).json({ 
+            error: 'Failed to import some or all books', 
+            failedBooks,
+        });
     }
 };
 
@@ -168,7 +137,7 @@ const deleteBooks = (req, res) => {
 
 module.exports = {
     getBooks,
-    updateBook,
+    updateBooks,
     reportStock,
     searchBooks,
     totalPrice

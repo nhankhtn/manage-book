@@ -17,7 +17,7 @@ export default function FormInfoBook({ formData, onChange, className }) {
         <div className={styles["row-item"]}>
             <div className={styles["form-item"]}>
                 <label htmlFor="name">Thể loại</label>
-                <input type="text" name="genre" id="genre" title="Thể loại" value={formData.genre} onChange={onChange} />
+                <input type="text" name="category" id="category" title="Thể loại" value={formData.category} onChange={onChange} />
             </div>
             <div className={styles["form-item"]}>
                 <label htmlFor="phone">Đơn giá</label>

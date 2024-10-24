@@ -1,17 +1,27 @@
 const connection = require('../config/database');
-
+const { generateSlug } = require('../utils/generate');
 /*
 getBook({
 title: "abc"
 }, callback)
 */
-const getBooks = (params = {}, callback) => {
+// comparison: exact or like
+const getBooks = (params = {}, callback, options = { comparison: "exact" }) => {
     let query = `SELECT title, author, category, quantity, price FROM books WHERE 1=1 `;
-    const keys = Object.keys(params);
-    const values = Object.values(params);
+    const entries = [];
+    if (Object.keys(params).length > 0) {
+        Object.entries(params).forEach(([key, value]) => {
+            if (options.comparison === 'exact') {
+                query += ` AND ?? = ?`;
+                entries.push(key, value);
+            } else {
+                query += ` AND ?? LIKE ?`;
+                entries.push(key, `%${value}%`);
+            }
+        });
+    }
 
-    query += keys.map(key => ` AND ${key} = ?`).join("");
-    connection.query(query,values, (error, results) => {
+    connection.query(query, entries, (error, results) => {
         if (error) {
             return callback(error, null);
         }
@@ -20,34 +30,49 @@ const getBooks = (params = {}, callback) => {
 }
 
 const addBook = ({ title, category, author, quantity, price }, callback) => {
-    connection.query('INSERT INTO books (title, category, author, quantity,price) VALUES (?, ?, ?, ?, ?)',
-        [title, category, author, quantity, price],
+    const slug = generateSlug(title);
+    connection.query('INSERT INTO books (title, category, author, quantity, slug, price) VALUES (?, ?, ?, ?,?, ?)',
+        [title, category, author, quantity, slug, price],
 
         (error, result) => {
             if (error) {
                 return callback(error, null);
             }
-            callback(null, result);
+            // Retrieve the newly inserted book using its ID
+            connection.query(`SELECT * FROM books WHERE id_book = ?`, [result.insertId], (selectError, selectResult) => {
+                if (selectError) {
+                    return callback(selectError, null);
+                }
+
+                // Return the newly inserted book
+                callback(null, selectResult[0]);
+            });
         }
     );
 }
 /*
 updateBook({
-    title: "abc"
+    slug: "abc"
 }, {
 quantity: 100
 }, callback)
 */
-const updateBook = ({ title }, { quantity }, callback) => {
+const updateBook = ({ slug }, { quantity }, callback) => {
     connection.query(
         `UPDATE books
          SET quantity = COALESCE(quantity, 0) + ?
-         WHERE title = ?`, 
-        [quantity, title], (error, results) => {
+         WHERE slug = ?
+`, [quantity, slug], (error, results) => {
         if (error) {
             return callback(error, null);
         }
-        callback(null, results);
+        connection.query(`SELECT * FROM books WHERE slug = ?`, [slug], (selectError, selectResult) => {
+            if (selectError) {
+                return callback(selectError, null);
+            }
+
+            callback(null, selectResult[0]);
+        });
     });
 }
 
@@ -66,9 +91,9 @@ const getStock = (month, year, callback) => {
         });
 };
 
-const deleteBook = (title, callback) => {
+const deleteBook = ({ slug }, callback) => {
     connection.query(
-        `DELETE FROM books WHERE title = ?`, [title], (error, results) => {
+        `DELETE FROM books WHERE slug = ?`, [slug], (error, results) => {
             if (error) {
                 return callback(error, null);
             }

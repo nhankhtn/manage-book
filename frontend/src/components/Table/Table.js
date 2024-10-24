@@ -1,10 +1,14 @@
 import styles from "./Table.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp, faTrash } from "@fortawesome/free-solid-svg-icons";
-export default function Table({ fieldCols, data, deleteRow = () => { } }) {
+import { memo } from "react";
+
+
+function Table({ fieldCols, data, deleteRow = () => { } }) {
   function handleClick(index) {
     deleteRow(index);
   }
+
   return (
     <table className={styles.container}>
       <thead className={styles.header}>
@@ -29,7 +33,7 @@ export default function Table({ fieldCols, data, deleteRow = () => { } }) {
                         type="button"
                         title="Xoá"
                         className={styles["btn-trash"]}
-                        onClick={() => { handleClick(index) }}>
+                        onClick={() => { handleClick(indexRow) }}>
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       : col.type === "input" ?
@@ -58,3 +62,5 @@ export default function Table({ fieldCols, data, deleteRow = () => { } }) {
     </table>
   );
 }
+
+export default memo(Table);

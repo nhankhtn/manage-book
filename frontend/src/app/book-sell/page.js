@@ -16,7 +16,7 @@ export default function BookSell() {
         {
             title: "Harry Potter",
             author: "J.K. Rowling",
-            genre: "Fantasy",
+            category: "Fantasy",
             price: 20.00,
             quantity: 5,
             available: 20
@@ -24,7 +24,7 @@ export default function BookSell() {
         {
             title: "Harry Potter",
             author: "J.K. Rowling",
-            genre: "Fantasy",
+            category: "Fantasy",
             price: 20.00,
             quantity: 5,
             available: 20
@@ -32,7 +32,7 @@ export default function BookSell() {
         {
             title: "Harry Potter",
             author: "J.K. Rowling",
-            genre: "Fantasy",
+            category: "Fantasy",
             price: 20.00,
             quantity: 5,
             available: 20
@@ -40,7 +40,7 @@ export default function BookSell() {
         {
             title: "Harry Potter",
             author: "J.K. Rowling",
-            genre: "Fantasy",
+            category: "Fantasy",
             price: 20.00,
             quantity: 5,
             available: 20
@@ -48,43 +48,12 @@ export default function BookSell() {
         {
             title: "Harry Potter",
             author: "J.K. Rowling",
-            genre: "Fantasy",
+            category: "Fantasy",
             price: 20.00,
             quantity: 5,
             available: 20
         },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
+
     ]);
     const [formInfo, setFormInfo] = useState({
         name: '',

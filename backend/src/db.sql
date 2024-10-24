@@ -12,6 +12,7 @@ CREATE TABLE books (
     author NVARCHAR(30),
     quantity INT,
     price DECIMAl(10,2),
+    slug NVARCHAR(70) UNIQUE NOT NULL,
     
     CONSTRAINT PK_BOOK PRIMARY KEY (id_book)
 );
@@ -106,8 +107,9 @@ CREATE TABLE debt_reports_details (
 
 CREATE TABLE rules (
     id_rule INT PRIMARY KEY AUTO_INCREMENT,
-    rule_name VARCHAR(255),
-    rule_value int
+    rule_name VARCHAR(255) NOT NULL,
+    rule_value NVARCHAR(255) NOT NULL, 
+    description text 
 );
 
 
@@ -170,16 +172,12 @@ INSERT INTO debt_reports_details (id_debt_report, id_customer, initial_debt, cha
 ('DR001', 1, 10000.00, -300.00, 9700.00),
 ('DR001', 2, 15000.00, 500.00, 15500.00);
 
-
-
-INSERT INTO rules (rule_name, rule_value)
-VALUES 
-('min-import-quantity', 30),
-('min-stock-before-import', 30),
-('max-debt', 300.000),
-('min-stock-after-sale', 30),
-('allow-overpayment', 1);
-
+INSERT INTO rules (rule_name, rule_value, description) VALUES 
+('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
+('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
+('maxDebt', '20000', 'Tiền nợ tối đa'),
+('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
+('maxDebtCollection', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
 use book_management;
 

@@ -1,39 +1,41 @@
 const connection = require('../config/database');
 const Book = require("../models/Book");
+const { generateSlug } = require('../utils/generate');
+const log = require('../utils/log');
 
 // DESKTOP 5 và 6
 
-const importBook = (bookData, callback) => {
+const updateBook = (bookData, callback) => {
     const { title, author, category, price, quantity } = bookData;
-    Book.getBooksEqual({ title }, (err, books) => {
+    const slug = generateSlug(title);
+    Book.getBooks({ slug }, (err, books) => {
         if (err) {
-            return callback({ statusCode: 500, message: "Lỗi khi tìm sách" }, null);
+            return callback({ message: "Lỗi khi tìm sách" }, null);
         }
         if (books.length == 0) {
             if (!author || !category || !price || !quantity) {
-                return callback({ message: 'Sách không tồn tại. Vui lòng nhập đầy đủ thông tin.', statusCode: 400 }, null);
+                return callback({ message: 'Sách không tồn tại. Vui lòng nhập đầy đủ thông tin.' }, null);
             }
 
-            Book.addBook(bookData, (err, result) => {
+            Book.addBook(bookData, (err, book) => {
                 if (err) {
                     return callback(err, null);
                 }
-                callback(null, { message: 'Nhập sách thành công', book: result });
+                callback(null, { message: 'Nhập sách thành công', book });
             });
         } else {
-            const currentStock = books[0].quantity || 0;
-            Book.updateBook({ title }, { quantity }, (err, result) => {
+            Book.updateBook({ slug }, { quantity }, (err, book) => {
                 if (err) {
                     return callback(err, null);
                 }
-                callback(null, { message: 'Cập nhật thành công', book: result });
+                callback(null, { message: 'Cập nhật thành công', book });
             });
         }
     });
 };
 
 // total price
-const total = (title, author, category, quantity, price, needbuying, callback) => {
+const totalPrice = ({ title, author, category, quantity, price, needbuying }, callback) => {
     connection.query(
         `SELECT title, author, category, quantity, price
          FROM book
@@ -68,10 +70,12 @@ const total = (title, author, category, quantity, price, needbuying, callback) =
 };
 
 // search book
-const search = (title, author, category, price, callback) => {
+const search = ({ title, author, category, price }, callback) => {
+    const slug = generateSlug(title);
+
     const params = {};
-    if (title !== undefined) {
-        params.title = title;
+    if (slug !== undefined) {
+        params.slug = slug;
     }
     if (author !== undefined) {
         params.author = author;
@@ -86,13 +90,13 @@ const search = (title, author, category, price, callback) => {
     Book.getBooks(params, (err, results) => {
         if (err) return callback(err, null);
         callback(null, results);
-    })
+    }, { comparison: "like" })
 }
 
 
 
 module.exports = {
-    importBook,
+    updateBook,
     search,
-    total
+    totalPrice
 };

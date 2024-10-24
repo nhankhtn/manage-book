@@ -6,10 +6,11 @@ USE Book_Management;
 CREATE TABLE books (
     id_book INT AUTO_INCREMENT,
     title NVARCHAR(70),
-    category: NVARCHAR(50),
+    category NVARCHAR(50),
     author NVARCHAR(30),
     quantity INT,
     price DECIMAl(10,2),
+    slug NVARCHAR(70) UNIQUE NOT NULL,
     
     CONSTRAINT PK_BOOK PRIMARY KEY (id_book)
 );
@@ -112,10 +113,10 @@ CREATE TABLE rules (
 
 
 -- Insert data into BOOK table
-INSERT INTO books (title, category:, author, quantity) VALUES
-('The Alchemist', 'Novel', 'Paulo Coelho', 10),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 8);
+INSERT INTO books (title, category, author,slug, quantity) VALUES
+('The Alchemist', 'Novel', 'Paulo Coelho', "the-alchemist",10),
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi',"when-breath-becomes-air" , 5),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 'in-search-of-lost-time',8);
 
 -- Insert data into customers table
 INSERT INTO customers (full_name, address, phone, email, debt) VALUES
@@ -175,7 +176,7 @@ INSERT INTO rules (rule_name, rule_value, description) VALUES
 ('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
 ('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
 ('maxDebt', '20000', 'Tiền nợ tối đa'),
-('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán');
+('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
 ('maxDebtCollection', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
 use book_management;

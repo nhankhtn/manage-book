@@ -1,6 +1,6 @@
 const connection = require('../config/database');
 
-const take_reportDebt = (month, year, callback) => {
+const getReportDebt = (month, year, callback) => {
     connection.query(`SELECT c.full_name, drd.initial_debt, drd.changes, drd.final_debt
                       FROM debt_reports_details drd inner join debt_reports dr on drd.id_debt_report = dr.id_debt_report
                                                    inner join customers c on c.id_customer = drd.id_customer
@@ -13,5 +13,5 @@ const take_reportDebt = (month, year, callback) => {
 };
 
 module.exports = {
-    take_reportDebt
+    getReportDebt
 };

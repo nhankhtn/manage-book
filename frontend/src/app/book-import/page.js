@@ -9,8 +9,6 @@ import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import FormAddBook from "@/components/FormAddBook/FormAddBook";
 export default function BookImport() {
-
-
     const [showModalAdd, setShowModalAdd] = useState(false);
     const [books, setBooks] = useState([
     ]);
@@ -24,7 +22,6 @@ export default function BookImport() {
 
     async function handleImportBook() {
         const result = await updateBooks(books);
-        console.log(result);
     }
     function handleAdd(book) {
         setBooks(preValues => {
@@ -48,7 +45,7 @@ export default function BookImport() {
                 }} >Hoàn tất</Button>
             </div>
             <Modal show={showModalAdd} onHide={() => setShowModalAdd(false)}>
-                <FormAddBook handleAdd={handleAdd}/>
+                <FormAddBook handleAdd={handleAdd} />
             </Modal>
         </>
     )

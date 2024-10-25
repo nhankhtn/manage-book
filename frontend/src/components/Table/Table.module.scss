@@ -41,9 +41,9 @@
   border: none;
   cursor: pointer;
   font-size: 17px;
-  padding: 0 8px;
-}
-.icon {
+} 
+.icon{
+  justify-content: center;
   flex: 0.3;
 }
 .input-field {
@@ -58,9 +58,7 @@
 .wrap-input {
   display: flex;
 }
-.input-field::-webkit-inner-spin-button {
-  visibility: hidden;
-}
+
 .btn-up-down {
   display: flex;
   flex-direction: column;

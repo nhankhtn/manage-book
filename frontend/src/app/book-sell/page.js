@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import FormInfoCustomer from "@/components/FormInfoCustomer";
 import styles from "./BookSell.module.scss";
@@ -14,80 +14,7 @@ import Modal from "@/components/Modal";
 import useModalAlert from "@/hooks/useModal";
 
 export default function BookSell() {
-    const [books, setBooks] = useState([
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-        {
-            title: "Harry Potter",
-            author: "J.K. Rowling",
-            genre: "Fantasy",
-            price: 20.00,
-            quantity: 5,
-            available: 20
-        },
-    ]);
+    const [books, setBooks] = useState([]);
     const [formInfo, setFormInfo] = useState({
         name: '',
         phone: '',
@@ -98,11 +25,20 @@ export default function BookSell() {
     const [error, setError] = useState();
     const [openModalAddBook, setOpenModalAddBook] = useState(false);
 
+    useEffect(() => {
+        try {
+
+        } catch (error) {
+            setError(error.message);
+        }
+    }, [])
+
     const handlePayment = async (e) => {
         try {
             if (formRef.current) {
                 await formRef.current.validate();
             }
+
         } catch (err) {
             setError(err.message);
         }

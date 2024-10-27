@@ -1,7 +1,7 @@
 
 import { SET_CONFIG } from "~/constants";
 
-export const setTheme = payload => {
+export const setConfig = payload => {
     return {
         type: SET_CONFIG,
         payload

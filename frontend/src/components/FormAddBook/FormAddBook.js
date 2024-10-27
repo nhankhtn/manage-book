@@ -1,7 +1,9 @@
 import { useState } from "react";
 import Button from "../Button";
 import styles from "./FormAddBook.module.scss";
+import { useAddBook } from "../../hooks/useAddBook";
 export default function FormAddBook( {handleAdd} ) {
+  const { errors, validate } = useAddBook();
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -9,13 +11,12 @@ export default function FormAddBook( {handleAdd} ) {
     quantity: null,
     price: null,
   });
-  const [errors, setErrors] = useState({
-    title: '',
-    author: '',
-    category: '',
-    quantity: '',
-    price: ''
-});
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (validate(formData)) {
+      handleAdd(formData);
+    }
+  }
   function handleChange(e) {
     const { id, value } = e.target;
     setFormData((preValues) => {
@@ -25,52 +26,7 @@ export default function FormAddBook( {handleAdd} ) {
       };
     });
   }
-  function handleSubmit(e) {
-    e.preventDefault();
-    // if (!formData.title || !formData.author || !formData.category) {
-    //   alert("Please fill all fields");
-    //   return;
-    // }
-    // if(formData.quantity <= 0 || formData.price <= 0) {
-    //   alert("Quantity and price must be greater than 0");
-    //   return;
-    // }
-    // Validate input and set error messages
-    let validationErrors = {
-      title: '',
-      author: '',
-      category: '',
-      quantity: '',
-      price: ''
-    };
-    let hasErr= false;
-    if (formData.title.trim() === '') {
-        validationErrors.title = 'Title is required';
-        hasErr= true;
-    }
-    else if (formData.author.trim() === '') {
-        validationErrors.author = 'Author is required';
-        hasErr= true;
-    }
-    else if (formData.category.trim() === '') {
-        validationErrors.category = 'Category is required';
-        hasErr= true;
-    }
-    else if (formData.quantity <= 0) {
-        validationErrors.quantity = 'Quantity must be greater than 0';
-        hasErr= true;
-    }
-    else if (formData.price <= 0) {
-        validationErrors.price = 'Price must be greater than 0';
-        hasErr= true;
-    }
-    if(hasErr) {
-      setErrors(validationErrors);
-      return;
-    }
-    const book = formData;
-    handleAdd(book);
-  }
+  
   return (
     <div className={styles.container}>
       <div className={styles.title} >Add Book</div>

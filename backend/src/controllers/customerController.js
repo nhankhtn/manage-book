@@ -31,7 +31,7 @@ const getPaymentReceipt = (req, res) => {
         if (receipt.length === 0) {
             res.status(404).json({ message: 'No payment receipts found' });
         }
-        res.json(receipt);
+        res.status(200).json(receipt);
     });
 };
 

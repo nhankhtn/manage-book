@@ -3,8 +3,8 @@ const router = express.Router();
 const ruleController = require("../controllers/ruleController");
 
 // changeRules
-router.put("/update", ruleController.updateRules);
+router.put("/", ruleController.updateRules);
 
-router.get("/all-rules", ruleController.getRules);
+router.get("/", ruleController.getRules);
 
 module.exports = router;

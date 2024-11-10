@@ -1,6 +1,5 @@
 import localFont from "next/font/local";
-import LayoutClient from "./layout.client";
-
+import "./globals.css";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,10 +24,8 @@ export default function RootLayout({ children }) {
         <link rel='icon' type='image/jpg' sizes='32x32' href='/images/logo.jpg' />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <LayoutClient>
-          {children}
-        </LayoutClient>
+        {children}
       </body>
-    </html>
+    </html >
   );
 }

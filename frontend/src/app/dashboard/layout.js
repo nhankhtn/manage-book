@@ -3,7 +3,6 @@
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { ModalAlertProvider } from "@/context/ModalAlert"
-import "./globals.css";
 import { useState } from "react";
 
 export default function LayoutClient({ children }) {

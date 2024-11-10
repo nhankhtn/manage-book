@@ -1,4 +1,4 @@
-import styles from "@/styles/Auth.module.scss"
+import styles from "./auth.module.scss"
 
 export default function AuthLayout({
     children,

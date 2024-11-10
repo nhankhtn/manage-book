@@ -1,27 +1,29 @@
+import paths from "@/paths"
+
 export const MENU_ITEMS = [
     {
         title: "Lập phiếu nhập sách",
-        to: "/book-import"
+        to: paths.dashboard.bookImport
     },
     {
         title: "Lập hoá đơn bán sách",
-        to: "/book-sell"
+        to: paths.dashboard.bookSell
     },
     {
         title: "Tra cứu sách",
-        to: "/book-search"
+        to: paths.dashboard.bookSearch
     },
     {
         title: "Lập báo cáo tháng",
-        to: "/month-report"
+        to: paths.dashboard.monthReport
     },
     {
         title: "Lập phiếu thu tiền",
-        to: "/collect-money"
+        to: paths.dashboard.collectMoney
     },
     {
         title: "Thay đổi quy định",
-        to: "/change-rules"
+        to: paths.dashboard.changeRules
     }
 ]
 

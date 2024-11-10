@@ -1,0 +1,38 @@
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+}
+.heading {
+  text-align: center;
+}
+.wrap-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.3rem;
+  height: 42px;
+  align-items: center;
+  & p {
+  }
+  & input {
+    // height: 100%;
+    // width: 120px;
+    // padding: 8px 12px;
+    // border-radius: 4px;
+    // background-color: #bfbfbf;
+    // font-size: 1.3rem;
+    // border: none;
+  }
+}
+.btn-save {
+  float: right;
+}
+.wrap-input {
+  width: 120px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+}

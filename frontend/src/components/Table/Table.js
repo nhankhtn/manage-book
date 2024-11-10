@@ -1,10 +1,24 @@
 import styles from "./Table.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp, faTrash } from "@fortawesome/free-solid-svg-icons";
-export default function Table({ fieldCols, data, deleteRow = () => { } }) {
+import { memo } from "react";
+
+
+function Table({ fieldCols, data, updateRow = () => { }, deleteRow = () => { } }) {
   function handleClick(index) {
     deleteRow(index);
   }
+
+  function handleInputChange(indexRow, name, target) {
+    if (target.type === "number") {
+      if (target.value < 0) {
+        target.value = 0;
+      }
+
+      updateRow(indexRow, name, Number(target.value));
+    }
+  }
+
   return (
     <table className={styles.container}>
       <thead className={styles.header}>
@@ -29,12 +43,14 @@ export default function Table({ fieldCols, data, deleteRow = () => { } }) {
                         type="button"
                         title="Xoá"
                         className={styles["btn-trash"]}
-                        onClick={() => { handleClick(index) }}>
+                        onClick={() => { handleClick(indexRow) }}>
                         <FontAwesomeIcon icon={faTrash} />
                       </button>
                       : col.type === "input" ?
                         <div className={styles['wrap-input']}>
-                          <input type="number" defaultValue={0} className={styles["input-field"]} />
+                          <input type="number" value={row[col.name] || ''}
+                            onChange={e => handleInputChange(indexRow, col.name, e.target)}
+                            className={styles["input-field"]} />
                           <div className={styles['btn-up-down']}>
                             <button>
                               <FontAwesomeIcon icon={faChevronUp} />
@@ -58,3 +74,5 @@ export default function Table({ fieldCols, data, deleteRow = () => { } }) {
     </table>
   );
 }
+
+export default memo(Table);

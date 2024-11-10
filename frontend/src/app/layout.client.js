@@ -15,9 +15,9 @@ export default function LayoutClient({ children }) {
 
     return <ModalAlertProvider>
         <div className='root'>
-            <Header toggleSidebar={toggleSidebar} />
+            <Sidebar show={isShowSidebar} />
             <div className='container'>
-                <Sidebar show={isShowSidebar} />
+                <Header show={isShowSidebar} toggleSidebar={toggleSidebar} />
                 <main className='content'>
                     {children}
                 </main>

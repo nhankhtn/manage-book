@@ -36,12 +36,12 @@ export const BOOK_FIELDS = [{
 },
 {
     title: "Thể loại",
-    name: "genre",
+    name: "category",
     type: "text"
 },
 {
     title: "Số lượng",
-    name: "quantity",
+    name: "amount",
     type: "text"
 },
 {
@@ -63,11 +63,11 @@ export const SELL_BOOK_FIELDS = [{
 },
 {
     title: "Thể loại",
-    name: "genre",
+    name: "category",
     type: "text"
 }, {
     title: "Có sẵn",
-    name: "available",
+    name: "quantity",
     type: "text"
 },
 {
@@ -76,7 +76,7 @@ export const SELL_BOOK_FIELDS = [{
     type: "text"
 }, {
     title: "Số lượng",
-    name: "quantity",
+    name: "amount",
     type: "input"
 }]
 
@@ -91,7 +91,7 @@ export const SEARCH_BOOK_FIELDS = [{
 },
 {
     title: "Thể loại",
-    name: "genre",
+    name: "category",
     type: "text"
 }, {
     title: "Số lượng",

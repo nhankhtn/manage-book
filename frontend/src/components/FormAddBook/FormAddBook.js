@@ -11,18 +11,21 @@ export default function FormAddBook( {handleAdd} ) {
     quantity: null,
     price: null,
   });
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (validate(formData)) {
-      handleAdd(formData);
+    try {
+      console.log(formData);
+        await validate(formData);
+        handleAdd(formData);
+    } catch (err) {
     }
   }
   function handleChange(e) {
-    const { id, value } = e.target;
+    var { id, value } = e.target;
     setFormData((preValues) => {
       return {
         ...preValues,
-        [id]: value,
+        [id]:  (id === "quantity" || id ==="price") ? Number(value) : value
       };
     });
   }

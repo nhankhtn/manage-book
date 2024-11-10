@@ -27,7 +27,10 @@ export default function BookImport() {
                     <input id="date" type="date" />
                     <Button onClick={() => setShowModalAdd(true)} >Thêm sách</Button>
                 </div>
-                <Table fieldCols={BOOK_FIELDS} data={books} deleteRow={deleteAt} placeholder="Ngày nhập sách" />
+                <div className={styles.table_container}>
+                    <Table fieldCols={BOOK_FIELDS} data={books} deleteRow={deleteAt} placeholder="Ngày nhập sách" />
+                </div>
+                
                 <Button onClick={importBook} className={styles.import_btn} disabled={loading} >{loading ? "Loading..." : "Hoàn tất"}</Button>    
                 {err && <div className={styles.error}>Vui lòng thêm sách</div>}
             </div>

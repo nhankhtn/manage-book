@@ -1,4 +1,5 @@
 const Rule = require('../models/Rule');
+const ruleService = require('../services/ruleService');
 const { all } = require('../routes/ruleRoutes');
 
 const updateRules = (req, res) => {
@@ -18,7 +19,7 @@ const updateRules = (req, res) => {
         { rule_name: 'allowOverpayment', rule_value: allowOverpayment }
     ];
 
-    Rule.updateRules(rulesToUpdate, (err, result) => {
+    ruleService.updateRules(rulesToUpdate, (err, result) => {
         if (err) {
             return res.status(500).json({ error: 'Failed to update rules', details: err });
         }
@@ -26,7 +27,7 @@ const updateRules = (req, res) => {
     });
 };
 
-const getRules = (req,res) => {
+const getRules = (req, res) => {
     Rule.getRules((err, result) => {
         if (err) {
             return res.status(500).json({ error: 'Failed to get rules' });

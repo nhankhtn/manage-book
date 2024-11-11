@@ -1,4 +1,4 @@
-import { SET_CONFIG } from "~/constants";
+import { SET_CONFIG, SET_USER } from "@/constants";
 
 const initState = {
     config: {
@@ -7,7 +7,8 @@ const initState = {
         maxDebt: 0,
         minStockAfterSale: 0,
         maxDebtCollection: true,
-    }
+    },
+    user: null
 }
 
 function reducer(state, action) {
@@ -16,6 +17,11 @@ function reducer(state, action) {
             return {
                 ...state,
                 config: action.payload
+            }
+        case SET_USER:
+            return {
+                ...state,
+                user: action.payload
             }
         default:
             return state;

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'next/navigation'
 import paths from '@/paths'
+import { useStore } from '@/hooks/useStore'
 
 export default function Component() {
     const [formData, setFormData] = useState({
@@ -14,10 +15,17 @@ export default function Component() {
     })
     const [error, setError] = useState('');
     const router = useRouter();
+    const { setUser } = useStore();
 
     const handleSubmit = (e) => {
         e.preventDefault()
         if (formData.username === 'admin' && formData.password === 'admin') {
+
+            setUser({
+                username: formData.username,
+                role: 'admin'
+            })
+
             router.push(paths.dashboard.bookImport);
         } else {
             setError('Tên đăng nhập hoặc mật khẩu không chính xác')

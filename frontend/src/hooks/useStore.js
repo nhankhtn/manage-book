@@ -1,8 +1,8 @@
-import Context from "@/context/Settings/Context";
+import { SettingsContext } from "@/context/Settings";
 import { useContext } from "react";
 
 export const useStore = () => {
-    const { state, dispatch } = useContext(Context);
+    const { state, setConfig, setUser } = useContext(SettingsContext);
 
-    return { state, dispatch };
+    return { state, setConfig, setUser };
 }

@@ -1,5 +1,5 @@
 
-import { SET_CONFIG } from "~/constants";
+import { SET_CONFIG } from "@/constants";
 
 export const setConfig = payload => {
     return {
@@ -7,4 +7,5 @@ export const setConfig = payload => {
         payload
     };
 }
+// export
 

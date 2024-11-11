@@ -54,7 +54,7 @@ const updateBooks = async (req, res) => {
                 });
             })
         );
-        res.status(200).json({ data: resultAdd, message: 'Cập nhật sách thành công' });
+        res.status(200).json({ message: 'Cập nhật sách thành công' });
     } catch (error) {
         res.status(500).json({
             message: 'Lỗi khi cập nhật sách',
@@ -96,6 +96,8 @@ const deleteBooks = (req, res) => {
         res.json(result);
     });
 }
+
+
 
 
 

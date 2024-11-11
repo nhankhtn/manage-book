@@ -105,3 +105,5 @@ export const SEARCH_BOOK_FIELDS = [{
     name: "price",
     type: "text"
 }]
+
+export const SET_CONFIG = "SET_CONFIG";

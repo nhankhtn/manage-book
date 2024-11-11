@@ -23,6 +23,15 @@ export default function Button({
     ...passProps,
   };
 
+  if (disabled) {
+    // delete props.onClick;
+    Object.keys(props).forEach((key) => {
+        if (key.startsWith('on') && typeof props[key] === 'function') {
+            delete props[key];
+        }
+    });
+  }
+
   const classes = `${styles.wrapper} ${className} ${disabled ? styles.disabled : ""
     } ${active ? styles.active : ""} ${outline ? styles.outline : ""} 
     }`;

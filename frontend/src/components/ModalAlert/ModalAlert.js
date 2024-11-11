@@ -20,13 +20,13 @@ export default function ModalAlert({ show, success = true, onHide }) {
         <div className={`${styles["wrapper-icon"]} ${styles["icon-success"]}`}>
             <FontAwesomeIcon className={styles.icon} icon={faCheck} />
         </div>
-        <div className={styles.message}>Successfully</div>
+        <div className={styles.message}>Thành công</div>
     </Modal>
 
     return <Modal show={show} onHide={onHide}>
         <div className={`${styles["wrapper-icon"]} ${styles["icon-fail"]}`}>
             <FontAwesomeIcon className={styles.icon} icon={faXmark} />
         </div>
-        <div className={styles.message}>Fail</div>
+        <div className={styles.message}>Thất bại</div>
     </Modal>
 }

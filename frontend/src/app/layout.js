@@ -1,6 +1,6 @@
 import localFont from "next/font/local";
-import LayoutClient from "./layout.client";
-
+import "./globals.css";
+import { SettingsProvider } from "@/context/Settings";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,10 +25,10 @@ export default function RootLayout({ children }) {
         <link rel='icon' type='image/jpg' sizes='32x32' href='/images/logo.jpg' />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <LayoutClient>
+        <SettingsProvider>
           {children}
-        </LayoutClient>
+        </SettingsProvider>
       </body>
-    </html>
+    </html >
   );
 }

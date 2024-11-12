@@ -1,5 +1,6 @@
 .container {
-  min-height: 100vh;
+  min-height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,7 +32,6 @@
 .inputGroup {
   position: relative;
   width: 100%;
-
   .icon {
     position: absolute;
     left: 12px;
@@ -48,7 +48,6 @@
     font-size: 16px;
     background: white;
     outline: none;
-
     &:focus {
       border-color: #4a90e2;
     }
@@ -58,7 +57,11 @@
     }
   }
 }
-
+.error {
+  color: #f00;
+  font-size: 14px;
+  font-weight: 500;
+}
 .submitButton {
   background-color: #4a90e2;
   color: white;
@@ -77,4 +80,8 @@
   &:active {
     background-color: darken(#4a90e2, 15%);
   }
+}
+.icon {
+  width: 16px;
+  height: 16px;
 }

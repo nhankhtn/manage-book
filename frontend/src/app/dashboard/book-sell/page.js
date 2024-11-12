@@ -12,6 +12,10 @@ import Modal from "@/components/Modal";
 import { searchBooks } from "@/services/searchService";
 import { formatCurrency } from "@/utils/formatNumber";
 import { useStore } from "@/hooks/useStore";
+import { createDebt, createInvoice } from "@/services/paymentService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import useModalAlert from "@/hooks/useModal";
 
 export default function BookSell() {
     const [booksAvailable, setBooksAvailable] = useState([]);
@@ -25,9 +29,10 @@ export default function BookSell() {
         address: ''
     })
     const formRef = useRef();
-    const [error, setError] = useState();
     const [errorAddBooks, setErrorAddBooks] = useState();
     const [openModalAddBook, setOpenModalAddBook] = useState(false);
+    const { openModalAlert, hideModalAlert } = useModalAlert();
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchBooks = async () => {
@@ -46,17 +51,46 @@ export default function BookSell() {
         fetchBooks();
     }, [])
 
-    const handlePayment = async (e) => {
+    const handlePayment = async (e, isDebt = false) => {
         try {
             if (formRef.current) {
                 await formRef.current.validate();
             }
+            if (books.length === 0) {
+                setError('Chưa chọn sách');
+                return;
+            }
+            setError('');
+            const data = {
+                fullName: formInfo.name,
+                phone: formInfo.phone,
+                email: formInfo.email,
+                address: formInfo.address,
+                books
+            }
 
-
+            if (isDebt) {
+                await createDebt(data);
+            } else {
+                await createInvoice(data);
+            }
+            setBooks([]);
+            setFormInfo({
+                name: '',
+                phone: '',
+                email: '',
+                address: ''
+            })
+            openModalAlert(true);
         } catch (err) {
-            setError(err.message);
+            console.log(err)
+            if (err.message === 'Info error') {
+                return;
+            }
+            openModalAlert(false);
         }
     }
+
     const handleChangeForm = (e) => {
         const { name, value } = e.target;
         setFormInfo(prev => ({
@@ -84,8 +118,7 @@ export default function BookSell() {
             setErrorAddBooks('Số lượng sách không đủ');
             return;
         }
-        console.log(booksAvailable);
-        if (booksAvailable.some(book => book.quantity < minStockAfterSale && book.amount > 0)) {
+        if (booksAvailable.some(book => book.quantity - book.amount < minStockAfterSale && book.amount > 0)) {
             setErrorAddBooks(`Số lượng sách còn lại không được vượt quá ${minStockAfterSale}`);
             return;
         }
@@ -156,9 +189,10 @@ export default function BookSell() {
             <div className={styles.content}>
                 <Table data={books} fieldCols={BOOK_FIELDS} deleteRow={deleteAt} />
             </div>
+            {error && <p className={styles.error}>{error}</p>}
             <div className={styles["wrap-btn"]}>
-                <Button>Ghi nợ</Button>
-                <Button onClick={handlePayment}>Thanh toán</Button>
+                <Button onClick={(e) => handlePayment(e, true)}>Ghi nợ</Button>
+                <Button onClick={(e) => handlePayment(e, false)}>Thanh toán</Button>
             </div>
             <Modal show={openModalAddBook} onHide={e => setOpenModalAddBook(false)}>
                 <div className={styles['wrapper-content-modal']}>
@@ -175,4 +209,5 @@ export default function BookSell() {
             </Modal>
         </div>
     )
+
 }

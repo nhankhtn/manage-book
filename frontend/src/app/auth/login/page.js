@@ -4,16 +4,32 @@ import { useState } from 'react'
 import styles from './Login.module.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons'
+import { useRouter } from 'next/navigation'
+import paths from '@/paths'
+import { useStore } from '@/hooks/useStore'
 
 export default function Component() {
     const [formData, setFormData] = useState({
         username: '',
         password: ''
     })
+    const [error, setError] = useState('');
+    const router = useRouter();
+    const { setUser } = useStore();
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        // Handle login logic here
+        if (formData.username === 'admin' && formData.password === 'admin') {
+
+            setUser({
+                username: formData.username,
+                role: 'admin'
+            })
+
+            router.push(paths.dashboard.bookImport);
+        } else {
+            setError('Tên đăng nhập hoặc mật khẩu không chính xác')
+        }
     }
 
     const handleChange = (e) => {
@@ -55,6 +71,8 @@ export default function Component() {
                         required
                     />
                 </div>
+
+                {error && <p className={styles.error}>{error}</p>}
 
                 <button type="submit" className={styles.submitButton}>
                     Đăng nhập

@@ -17,7 +17,16 @@ export const get = async (url, options = {}) => {
     }
 }
 
-export const put  = async (url, data, options = {}) => {
+export const post = async (url, data, options = {}) => {
+    try {
+        const response = await httpRequest.post(url, data, options);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const put = async (url, data, options = {}) => {
     try {
         const response = await httpRequest.put(url, data, options);
         return response.data;

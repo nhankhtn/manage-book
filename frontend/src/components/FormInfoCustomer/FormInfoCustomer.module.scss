@@ -1,0 +1,35 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #000;
+}
+.heading {
+  text-align: center;
+  font-size: 1.3rem;
+}
+.info-main {
+  display: flex;
+  gap: 12px;
+}
+.form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+
+  & > label {
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+  & > input {
+    border-radius: 4px;
+    padding: 4px;
+  }
+}
+.message {
+  color: red;
+  font-size: 0.8rem;
+}

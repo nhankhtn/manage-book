@@ -1,0 +1,49 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    height: auto;
+    width: 650px;
+    .title {
+      font-style: italic;
+      margin-bottom: 5px;
+      font-size: 1.7rem; 
+      font-weight: bold;
+    }
+    form{
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      > div {
+        margin-bottom: 5px;
+        display: flex;
+        flex-direction: column;
+        &.errorGap{
+          margin-bottom: 25px;
+        }
+        label {
+          font-weight: bolder;
+          margin-left: 10px;
+          color: #777777;
+          font-size: 0.8rem;
+        }
+        input {
+          width: 380px;
+          padding: 10px;
+          border-radius: 5px;
+          border: 1px solid #ccc;
+        }
+        .error {
+          color: red;
+          font-size: 12px;
+          margin-top: 5px;
+        }
+      }
+      .submitBtn{
+        align-self: center ;
+        margin-top: 10px;
+        width: 200px;
+      }
+    }
+}

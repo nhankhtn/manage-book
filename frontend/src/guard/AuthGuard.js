@@ -6,10 +6,10 @@ const AuthGuard = ({ children }) => {
     const router = useRouter();
     const { state: { user } } = useStore();
 
-    // if (!user) {
-    //     router.push("/auth/login");
-    //     return null
-    // }
+    if (!user) {
+        router.push("/auth/login");
+        return null
+    }
 
     return <>{children}</>;
 }

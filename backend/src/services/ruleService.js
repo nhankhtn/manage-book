@@ -1,27 +1,41 @@
 const Rule = require('../models/Rule');
 
-const updateRules = (rules, finalCallback) => {
-    let errors = [];
-    let successCount = 0;
+const updateRules = (rules, callback) => {
+    connection.beginTransaction(error => {
+        if (error) return callback(error, null);
 
-    rules.forEach((rule, index) => {
-        Rule.updateRule(rule, (error, result) => {
-            if (error) {
-                errors.push(error);
-            } else {
-                successCount++;
+        let successCount = 0;
+        let errors = [];
+
+        const processRule = (index) => {
+            if (index >= rules.length) {
+                return connection.commit(commitError => {
+                    if (commitError) {
+                        return connection.rollback(() => {
+                            callback(commitError, null);
+                        });
+                    }
+                    callback(null, { message: `${successCount} rules updated successfully` });
+                });
             }
 
-            if (index === rules.length - 1) {
-                if (errors.length > 0) {
-                    finalCallback(errors, null);
+            updateRule(rules[index], (error, result) => {
+                if (error) {
+                    errors.push(error);
+                    return connection.rollback(() => {
+                        callback(errors, null);
+                    });
                 } else {
-                    finalCallback(null, { message: `${successCount} rules updated successfully` });
+                    successCount++;
+                    processRule(index + 1);
                 }
-            }
-        });
+            });
+        };
+
+        processRule(0);
     });
 };
+
 
 module.exports = { 
     updateRules 

@@ -3,11 +3,11 @@ const Customer = require("../models/Customer");
 const Books = require("../models/Book");
 
 const createPaymentReceipt = (data, callback) => {
-  const { full_name, phone, address, email, payment_date, amount_received } =
+  const { fullName, phone, address, email, payment_date, amount_received } =
     data;
 
   // Retrieve the ID of the customer from the data
-  Customer.getIDCustomer(full_name, phone, address, email, (err, results) => {
+  Customer.getIDCustomer(fullName, phone, address, email, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -34,9 +34,9 @@ const createPaymentReceipt = (data, callback) => {
     }
   });
 };
-const CreatePaymentInvoice = (data, callback) => {
-  const { full_name, address, phone, email, books } = data;
-  Customer.getIDCustomer1(full_name, phone, (err, results) => {
+const createPaymentInvoice = (data, callback) => {
+  const { fullName, address, phone, email, books } = data;
+  Customer.getIDCustomer1(fullName, phone, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -47,7 +47,7 @@ const CreatePaymentInvoice = (data, callback) => {
 
     if (results.length === 0) {
       Customer.addCustomer(
-        full_name,
+        fullName,
         address,
         phone,
         email,
@@ -69,9 +69,9 @@ const CreatePaymentInvoice = (data, callback) => {
   });
 };
 
-const CreatePaymentDebt = (data, callback) => {
-  const { full_name, address, phone, email, books } = data;
-  Customer.getIDCustomer1(full_name, phone, (err, results) => {
+const createPaymentDebt = (data, callback) => {
+  const { fullName, address, phone, email, books } = data;
+  Customer.getIDCustomer1(fullName, phone, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -82,7 +82,7 @@ const CreatePaymentDebt = (data, callback) => {
 
     if (results.length === 0) {
       Customer.addCustomer(
-        full_name,
+        fullName,
         address,
         phone,
         email,
@@ -177,6 +177,6 @@ async function updateBooksData(books) {
 }
 module.exports = {
   createPaymentReceipt,
-  CreatePaymentInvoice,
-  CreatePaymentDebt,
+  createPaymentInvoice,
+  createPaymentDebt,
 };

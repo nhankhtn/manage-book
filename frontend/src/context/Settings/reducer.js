@@ -5,7 +5,7 @@ const initState = {
         minImportQuantity: 0,
         minStockQuantityBeforeImport: 0,
         maxDebt: 0,
-        minStockAfterSale: 0,
+        minStockAfterSale: 20,
         maxDebtCollection: true,
     },
     user: null

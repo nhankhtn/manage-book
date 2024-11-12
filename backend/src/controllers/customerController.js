@@ -13,10 +13,10 @@ const reportDebt = (req, res) => {
 };
 
 const createPaymentReceipt = (req, res) => {
-  const { full_name, phone, address, email, payment_date, amount_received } =
+  const { fullName, phone, address, email, payment_date, amount_received } =
     req.body;
   customerService.createPaymentReceipt(
-    { full_name, phone, address, email, payment_date, amount_received },
+    { fullName, phone, address, email, payment_date, amount_received },
     (err, result) => {
       if (err) {
         return res.status(err.statusCode || 500).json({ error: err.message });
@@ -39,13 +39,13 @@ const getPaymentReceipt = (req, res) => {
   });
 };
 
-const CreatePaymentInvoice = (req, res) => {
-  const { full_name, phone, email, address, books } = req.body;
+const createPaymentInvoice = (req, res) => {
+  const { fullName, phone, email, address, books } = req.body;
   books.forEach((book) => {
     book.id = null;
   });
-  customerService.CreatePaymentInvoice(
-    { full_name, phone, email, address, books },
+  customerService.createPaymentInvoice(
+    { fullName, phone, email, address, books },
     (err, result) => {
       if (err) {
         return res.status(err.statusCode || 500).json({ error: err.message });
@@ -55,10 +55,10 @@ const CreatePaymentInvoice = (req, res) => {
   );
 };
 
-const CreatePaymentDebt = (req, res) => {
-  const { full_name, phone, email, address, books } = req.body;
-  customerService.CreatePaymentDebt(
-    { full_name, phone, email, address, books },
+const createPaymentDebt = (req, res) => {
+  const { fullName, phone, email, address, books } = req.body;
+  customerService.createPaymentDebt(
+    { fullName, phone, email, address, books },
     (err, result) => {
       if (err) {
         return res.status(err.statusCode || 500).json({ error: err.message });
@@ -71,6 +71,6 @@ module.exports = {
   reportDebt,
   createPaymentReceipt,
   getPaymentReceipt,
-  CreatePaymentInvoice,
-  CreatePaymentDebt,
+  createPaymentInvoice,
+  createPaymentDebt,
 };

@@ -1,10 +1,10 @@
 const Rule = require('../models/Rule');
+const connection = require('../config/database');
 
 const updateRules = (rules, callback) => {
     connection.beginTransaction(error => {
         if (error) return callback(error, null);
 
-        let successCount = 0;
         let errors = [];
 
         const processRule = (index) => {
@@ -15,20 +15,18 @@ const updateRules = (rules, callback) => {
                             callback(commitError, null);
                         });
                     }
-                    callback(null, { message: `${successCount} rules updated successfully` });
+                    callback(null, { message: `Rules updated successfully` });
                 });
             }
 
-            updateRule(rules[index], (error, result) => {
+            Rule.updateRule(rules[index], (error, result) => {
                 if (error) {
                     errors.push(error);
                     return connection.rollback(() => {
                         callback(errors, null);
                     });
-                } else {
-                    successCount++;
-                    processRule(index + 1);
                 }
+                processRule(index + 1);
             });
         };
 
@@ -37,6 +35,6 @@ const updateRules = (rules, callback) => {
 };
 
 
-module.exports = { 
-    updateRules 
+module.exports = {
+    updateRules
 };

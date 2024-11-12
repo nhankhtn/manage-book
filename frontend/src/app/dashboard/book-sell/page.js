@@ -49,6 +49,10 @@ export default function BookSell() {
             }
         }
         fetchBooks();
+
+        return () => {
+            setBooksAvailable([]);
+        }
     }, [])
 
     const handlePayment = async (e, isDebt = false) => {

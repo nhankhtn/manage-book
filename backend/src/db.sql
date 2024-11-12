@@ -177,7 +177,7 @@ INSERT INTO rules (rule_name, rule_value, description) VALUES
 ('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
 ('maxDebt', '20000', 'Tiền nợ tối đa'),
 ('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
-('maxDebtCollection', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
+('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
 use book_management;
 

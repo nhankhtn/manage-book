@@ -7,9 +7,11 @@ import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear, faRightFromBracket, faUser } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+import { useStore } from "@/hooks/useStore";
 
 export default function Sidebar({ show }) {
     const pathname = usePathname();
+    const { setUser } = useStore()
 
     return <aside className={`${styles.wrapper} ${!show ? styles.hidden : ""}`}>
         <div className={styles.heading}>
@@ -24,7 +26,7 @@ export default function Sidebar({ show }) {
         </div>
         <div className={styles.footing}>
             <div className={styles['wrap-btn']}>
-                <button type="button" title="Đăng xuất" className={styles['btn-logout']}>
+                <button type="button" title="Đăng xuất" onClick={() => setUser(null)} className={styles['btn-logout']}>
                     <FontAwesomeIcon className={styles['btn-icon']} icon={faRightFromBracket} />
                 </button>
                 <button type="button" title="Cài đặt">

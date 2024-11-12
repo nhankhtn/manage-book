@@ -4,9 +4,19 @@ import { faChevronDown, faChevronUp, faTrash } from "@fortawesome/free-solid-svg
 import { memo } from "react";
 
 
-function Table({ fieldCols, data, deleteRow = () => { } }) {
+function Table({ fieldCols, data, updateRow = () => { }, deleteRow = () => { } }) {
   function handleClick(index) {
     deleteRow(index);
+  }
+
+  function handleInputChange(indexRow, name, target) {
+    if (target.type === "number") {
+      if (target.value < 0) {
+        target.value = 0;
+      }
+
+      updateRow(indexRow, name, Number(target.value));
+    }
   }
 
   return (
@@ -38,7 +48,9 @@ function Table({ fieldCols, data, deleteRow = () => { } }) {
                       </button>
                       : col.type === "input" ?
                         <div className={styles['wrap-input']}>
-                          <input type="number" defaultValue={0} className={styles["input-field"]} />
+                          <input type="number" value={row[col.name] || ''}
+                            onChange={e => handleInputChange(indexRow, col.name, e.target)}
+                            className={styles["input-field"]} />
                           <div className={styles['btn-up-down']}>
                             <button>
                               <FontAwesomeIcon icon={faChevronUp} />

@@ -106,5 +106,51 @@ export const SEARCH_BOOK_FIELDS = [{
     type: "text"
 }]
 
+export const INVENTORY_BOOK_FIELDS = [{
+    title: "Tên sách",
+    name: "title",
+    type: "text"
+}, {
+    title: "Tác giả",
+    name: "author",
+    type: "text"
+},
+{
+    title: "Tồn đầu",
+    name: "firstInventory",
+    type: "text"
+},
+{
+    title: "Phát sinh",
+    name: "interest",
+    type: "text"
+},
+{
+    title: "Tồn cuối",
+    name: "lastInventory",
+    type: "text"
+}]
+
+export const DEBT_CONSUMER_FIELDS = [{
+    title: "Tên khách hàng",
+    name: "name",
+    type: "text"
+}, 
+{
+    title: "Nợ đầu",
+    name: "price",
+    type: "text"
+},
+{
+    title: "Phát sinh",
+    name: "price",
+    type: "text"
+},
+{
+    title: "Nợ cuối",
+    name: "price",
+    type: "text"
+}]
+
 export const SET_CONFIG = "SET_CONFIG";
 export const SET_USER = "SET_USER";

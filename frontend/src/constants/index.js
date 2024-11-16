@@ -135,20 +135,20 @@ export const DEBT_CONSUMER_FIELDS = [{
     title: "Tên khách hàng",
     name: "name",
     type: "text"
-}, 
+},
 {
     title: "Nợ đầu",
-    name: "price",
+    name: "firstDebt",
     type: "text"
 },
 {
     title: "Phát sinh",
-    name: "price",
+    name: "interest",
     type: "text"
 },
 {
     title: "Nợ cuối",
-    name: "price",
+    name: "lastDebt",
     type: "text"
 }]
 

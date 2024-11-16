@@ -11,7 +11,7 @@ import Table from "@/components/Table";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const mockBooks = [
+const mockBooksInventory = [
     {
         title: "Book Title 1",
         author: "Author 1",
@@ -48,12 +48,38 @@ const mockBooks = [
         lastInventory: 240
     }
 ];
-
+const mockBooksDebt = [
+    {
+        name: "Nguyễn Văn A",
+        firstDebt: 1000000,
+        interest: 500000,
+        lastDebt: 1500000
+    },
+    {
+        name: "Trần Thị B",
+        firstDebt: 2000000,
+        interest: 300000,
+        lastDebt: 2300000
+    },
+    {
+        name: "Phạm Văn C",
+        firstDebt: 500000,
+        interest: 100000,
+        lastDebt: 600000
+    },
+    {
+        name: "Lê Thị D",
+        firstDebt: 700000,
+        interest: 200000,
+        lastDebt: 900000
+    }
+];
 
 export default function MonthReport() {
     const [openModalInventoryReport, setOpenModalInventoryReport] = useState(false);
     const [openModalDebtReport, setOpenModalDebtReport] = useState(false);
-    const [books, setBooks] = useState(mockBooks);
+    const [booksInventory, setBooksInventory] = useState(mockBooksInventory);
+    const [booksDebt, setBooksDebt] = useState(mockBooksDebt);
 
     const getLastThreeMonths = () => {
         const months = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
@@ -106,8 +132,8 @@ export default function MonthReport() {
         </div>
 
         <div className={styles["wrapper-chart"]}>
-          <div> <Bar data={bookStockData} /></div> 
-          <div>  <Bar data={debtData} /></div> 
+            <div> <Bar data={bookStockData} /></div>
+            <div>  <Bar data={debtData} /></div>
         </div>
 
         <Modal show={openModalInventoryReport} onHide={e => setOpenModalInventoryReport(false)}>
@@ -117,12 +143,12 @@ export default function MonthReport() {
                     <div className={styles['date']}>
                         <input id="month" type="month" />
                     </div>
-                </div>                
+                </div>
                 <div className={styles["list"]}>
-                    <Table data={books} fieldCols={INVENTORY_BOOK_FIELDS}/>
+                    <Table data={booksInventory} fieldCols={INVENTORY_BOOK_FIELDS} />
                 </div>
                 <div className={styles["btn-modal"]} >
-                    <Button onClick={e => setOpenModalInventoryReport(false)} title="Đóng" outline>Đóng</Button>
+                    <Button onClick={e => setOpenModalInventoryReport(false)} title="Đóng">Đóng</Button>
                 </div>
             </div>
         </Modal>
@@ -134,12 +160,12 @@ export default function MonthReport() {
                     <div className={styles['date']}>
                         <input id="month" type="month" />
                     </div>
-                </div>                
+                </div>
                 <div className={styles["list"]}>
-                    <Table data={books} fieldCols={DEBT_CONSUMER_FIELDS}/>
+                    <Table data={booksDebt} fieldCols={DEBT_CONSUMER_FIELDS} />
                 </div>
                 <div className={styles["btn-modal"]} >
-                    <Button onClick={e => setOpenModalDebtReport(false)} title="Đóng" outline>Đóng</Button>
+                    <Button onClick={e => setOpenModalDebtReport(false)} title="Đóng">Đóng</Button>
                 </div>
             </div>
         </Modal>

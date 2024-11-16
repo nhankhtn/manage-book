@@ -19,17 +19,21 @@ export default function Component() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (formData.username === 'admin' && formData.password === 'admin') {
-
-            setUser({
-                username: formData.username,
-                role: 'admin'
-            })
-
-            router.push(paths.dashboard.bookImport);
-        } else {
-            setError('Tên đăng nhập hoặc mật khẩu không chính xác')
+        setError('')
+        if (!formData.username || !formData.password) {
+            setError('Vui lòng nhập đầy đủ thông tin')
+            return
         }
+        if (formData.username !== 'admin' || formData.password !== 'admin') {
+            setError('Tên đăng nhập hoặc mật khẩu không chính xác')
+            return
+        }
+        setUser({
+            username: formData.username,
+            role: 'admin'
+        })
+
+        router.push(paths.dashboard.bookImport);
     }
 
     const handleChange = (e) => {
@@ -56,7 +60,7 @@ export default function Component() {
                         placeholder="Tên đăng nhập"
                         value={formData.username}
                         onChange={handleChange}
-                        required
+
                     />
                 </div>
 
@@ -68,7 +72,7 @@ export default function Component() {
                         placeholder="Mật khẩu"
                         value={formData.password}
                         onChange={handleChange}
-                        required
+
                     />
                 </div>
 

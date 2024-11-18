@@ -9,9 +9,6 @@ export const useAddBook = () => {
     price: "",
   });
 
-
-
-
   let addSchema = object({
     title: string().required("Bạn chưa điền tên sách"),
     author: string().required("Bạn chưa điền tác giả"),

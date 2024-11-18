@@ -117,38 +117,38 @@ export const INVENTORY_BOOK_FIELDS = [{
 },
 {
     title: "Tồn đầu",
-    name: "firstInventory",
+    name: "initial_stock",
     type: "text"
 },
 {
     title: "Phát sinh",
-    name: "interest",
+    name: "changes",
     type: "text"
 },
 {
     title: "Tồn cuối",
-    name: "lastInventory",
+    name: "final_stock",
     type: "text"
 }]
 
 export const DEBT_CONSUMER_FIELDS = [{
     title: "Tên khách hàng",
-    name: "name",
+    name: "full_name",
     type: "text"
 },
 {
     title: "Nợ đầu",
-    name: "firstDebt",
+    name: "initial_debt",
     type: "text"
 },
 {
     title: "Phát sinh",
-    name: "interest",
+    name: "changes",
     type: "text"
 },
 {
     title: "Nợ cuối",
-    name: "lastDebt",
+    name: "final_debt",
     type: "text"
 }]
 

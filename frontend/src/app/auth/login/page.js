@@ -46,42 +46,51 @@ export default function Component() {
 
     return (
         <div className={styles.container}>
-            <form className={styles.loginForm} onSubmit={handleSubmit}>
-                <h1 className={styles.title}>
-                    HỆ THỐNG QUẢN LÝ<br />
-                    NHÀ SÁCH ABC
-                </h1>
+            <div className={styles.login_container}>
+                <form className={styles.loginForm} onSubmit={handleSubmit}>
+                    <h1 className={`${styles.title} ${styles.login_title}`}>
+                        ĐĂNG NHẬP
+                    </h1>
 
-                <div className={styles.inputGroup}>
-                    <FontAwesomeIcon icon={faUser} className={styles.icon} />
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Tên đăng nhập"
-                        value={formData.username}
-                        onChange={handleChange}
+                    <div className={styles.inputGroup}>
+                        <FontAwesomeIcon icon={faUser} className={styles.icon} />
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Tên đăng nhập"
+                            value={formData.username}
+                            onChange={handleChange}
 
-                    />
-                </div>
+                        />
+                    </div>
 
-                <div className={styles.inputGroup}>
-                    <FontAwesomeIcon icon={faLock} className={styles.icon} />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Mật khẩu"
-                        value={formData.password}
-                        onChange={handleChange}
+                    <div className={styles.inputGroup}>
+                        <FontAwesomeIcon icon={faLock} className={styles.icon} />
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Mật khẩu"
+                            value={formData.password}
+                            onChange={handleChange}
 
-                    />
-                </div>
+                        />
+                    </div>
 
-                {error && <p className={styles.error}>{error}</p>}
+                    {error && <p className={styles.error}>{error}</p>}
 
-                <button type="submit" className={styles.submitButton}>
-                    Đăng nhập
-                </button>
-            </form>
+                    <button type="submit" className={styles.submitButton}>
+                        Đăng nhập
+                    </button>
+                </form>
+            </div>
+            
+            <div className={styles.desc_container}>
+                <p className={styles.title}>HỆ THỐNG QUẢN LÝ<br />
+                NHÀ SÁCH ABC</p>
+                <p className={styles.desc}>
+                    Giúp bạn quản lý nhà sách một cách dễ dàng và hiệu quả
+                </p>
+            </div>
         </div>
     )
 }

@@ -14,12 +14,14 @@ const reportDebt = (req, res) => {
 
 const createPaymentReceipt = (req, res) => {
     const { full_name, phone, address, email, payment_date, amount_received } = req.body;
-    customerService.createPaymentReceipt({ full_name, phone, address, email, payment_date, amount_received }, (err, result) => {
+    customerService.createPaymentReceipt(
+      { full_name, phone, address, email, payment_date, amount_received },
+      (err, result) => {
         if (err) {
             return res.status(err.statusCode || 500).json({ error: err.message });
         }
         res.status(200).json(result);
-    });
+      });
 }
 
 const getPaymentReceipt = (req, res) => {
@@ -35,8 +37,24 @@ const getPaymentReceipt = (req, res) => {
     });
 };
 
+const getCustomerDebtAndLatestInvoice = (req, res) => {
+  const { full_name, phone, address, email } = req.body;
+
+  customerService.getCustomerDebtAndLatestInvoice(
+    { full_name, phone, address, email },
+    (err, data) => {
+      if (err) {
+        return res.status(err.statusCode || 500).json({ error: err.message });
+      }
+      res.status(200).json(data);
+    }
+  );
+  
+};  
+
 module.exports = {
     reportDebt,
     createPaymentReceipt,
-    getPaymentReceipt
+    getPaymentReceipt,
+    getCustomerDebtAndLatestInvoice
 };

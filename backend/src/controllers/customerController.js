@@ -38,7 +38,19 @@ const getPaymentReceipt = (req, res) => {
     res.status(200).json(receipt);
   });
 };
-
+const getCustomer = (req, res) => {
+  //get by name and phone
+  const { fullName, phone } = req.query;
+  Customer.getIDCustomer1(fullName, phone, (err, customer) => {
+    if (err) {
+      return res.status(500).json({ error: "Lấy dữ liệu thất bại" });
+    }
+    if (customer.length === 0) {
+      return res.status(404).json({ message: "No customer found" });
+    }
+    res.status(200).json(customer[0]);
+  });
+}
 const createPaymentInvoice = (req, res) => {
   const { fullName, phone, email, address, books } = req.body;
   books.forEach((book) => {
@@ -73,4 +85,5 @@ module.exports = {
   getPaymentReceipt,
   createPaymentInvoice,
   createPaymentDebt,
+  getCustomer
 };

@@ -16,3 +16,11 @@ export const createDebt = async (data) => {
         throw error;
     }
 }
+export const createPaymentReceipt = async (data) => {
+    try {
+        const response = await httpRequest.post('/customers/payment', data);
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}

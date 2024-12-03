@@ -5,7 +5,7 @@ export const useAddBook = () => {
     title: "",
     author: "",
     category: "",
-    quantity: "",
+    amount: "",
     price: "",
   });
 

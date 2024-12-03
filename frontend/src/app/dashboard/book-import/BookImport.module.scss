@@ -13,6 +13,7 @@
 .table_container {
   height: 50vh;
   width: 100%;
+  overflow: auto;
 }
 .date_add {
   display: flex;

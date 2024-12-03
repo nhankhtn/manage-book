@@ -45,8 +45,9 @@
 }
 .list-books {
   flex: 1;
-  padding: var(--spacer-lr) 0;
   max-height: 85%;
+  overflow: auto;
+  margin: var(--spacer-tb) 0;
 }
 
 .btn-modal {

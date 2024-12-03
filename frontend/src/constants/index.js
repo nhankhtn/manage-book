@@ -43,7 +43,7 @@ export const BOOK_FIELDS = [{
 },
 {
     title: "Số lượng",
-    name: "amount",
+    name: "quantity",
     type: "text"
 },
 {

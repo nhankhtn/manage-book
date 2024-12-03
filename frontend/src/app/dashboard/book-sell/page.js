@@ -110,7 +110,7 @@ export default function BookSell() {
         setBooksAvailable(prevBooks => {
             return prevBooks.map(book => {
                 if (book.title === bookToDelete.title) {
-                    book.quantity += bookToDelete.amount;
+                    book.quantity += bookToDelete.quantity;
                 }
                 return book;
             });
@@ -131,12 +131,17 @@ export default function BookSell() {
         setBooks(prevBooks => {
             const newBooks = booksAvailable
                 .filter(book => book.amount > 0)
-                .map(book => ({ ...book }));
+                .map(book =>{
+                    return {
+                        ...book,
+                        quantity: book.amount
+                }}
+                );
 
             return prevBooks.map(book => {
                 const newBook = newBooks.find(nb => nb.title === book.title);
                 if (newBook) {
-                    return { ...book, amount: book.amount + newBook.amount };
+                    return { ...book,  quantity: book.quantity + newBook.amount };
                 }
                 return book;
             }).concat(
@@ -175,7 +180,7 @@ export default function BookSell() {
     }
 
     const totalPrice = useMemo(() => {
-        return books.reduce((total, book) => total + book.amount * book.price, 0);
+        return books.reduce((total, book) => total + book.quantity * book.price, 0);
     }, [books])
 
     return (

@@ -8,7 +8,6 @@
     font-size: 1rem;
     padding: 14px 20px;
     min-height: 48px;
-    width: fit-content;
   }
   th{
     border: 1px solid rgb(150, 150, 150);
@@ -22,7 +21,6 @@
     background: linear-gradient(90deg, rgba(84, 175, 255, 1) 0%, rgba(0, 123, 255, 1) 100%);
     position: sticky;
     top: 0;
-    z-index: 1;
     th {
       color: white;
       font-size: 1.1rem;
@@ -47,8 +45,13 @@
   justify-content: center;
   flex: 0.3;
 }
+
+.wrap-input {
+  display: flex;
+}
 .input-field {
-  width: 100%;
+  flex:1;
+  max-width: 100px;
   border: none;
   font-size: 1rem;
 
@@ -56,10 +59,6 @@
     outline: none;
   }
 }
-.wrap-input {
-  display: flex;
-}
-
 .btn-up-down {
   display: flex;
   flex-direction: column;

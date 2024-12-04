@@ -5,7 +5,7 @@ export const useUpdateBooks = () => {
   const [err, setErr] = useState(false);
   const [loading, setLoading] = useState(false);
   const { openModalAlert } = useModalAlert();
-
+  const [showModalBooksErr, setShowModalBooksErr] = useState(false);
   const [books, setBooks] = useState([
     {
       title:
@@ -15,70 +15,8 @@ export const useUpdateBooks = () => {
       quantity: 10,
       price: 10000,
     },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React ",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
-    {
-      title: "Lập trình React",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 100000,
-    },
   ]);
+  const [booksErr, setBooksErr] = useState([]);
   function deleteAt(index) {
     setBooks((preValues) => {
       return preValues.filter((value, i) => i !== index);
@@ -98,18 +36,28 @@ export const useUpdateBooks = () => {
     try {
       setLoading(true);
       const result = await updateBooks(books);
-      if (result.message === "Lỗi khi cập nhật sách") {
-        openModalAlert(false);
+      console.log("aa:",result);
+      if (result.length > 0) {
+        const bookErr= result.map((res) => {
+          return {
+            title: res.split(" ")[0],
+            quantity: res.split(" ")[1],
+          }
+        });
+        console.log(bookErr);
+        setBooksErr(bookErr);
+        setShowModalBooksErr(true);
       } else {
         openModalAlert(true);
-        setBooks([]);
       }
+      setBooks([]);
     } catch (error) {
+      console.log(error);
       openModalAlert(false);
     } finally {
       setLoading(false);
     }
   };
 
-  return { err, loading, importBook, deleteAt, add, books };
+  return { err, loading, importBook, deleteAt, add, books, showModalBooksErr, setShowModalBooksErr, booksErr };
 };

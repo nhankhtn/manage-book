@@ -9,10 +9,14 @@ import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import FormAddBook from "@/components/FormAddBook/FormAddBook";
 import { useStore } from "@/hooks/useStore";
+import TableBooksError from "@/components/TableBooksError";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarDay, faWarning} from "@fortawesome/free-solid-svg-icons";
 
 export default function BookImport() {
-    const { state : {config} } = useStore();
-    console.log(config);
+  const {
+    state: { config },
+  } = useStore();
   const BOOK_ERR = [
     {
       title: "Tên sách",
@@ -46,7 +50,17 @@ export default function BookImport() {
       <div className={styles.container}>
         <div className={styles.title}>Phiếu nhập sách</div>
         <div className={styles.date_add}>
-          <input id="date" type="date" />
+          <div>
+            <input
+              id="date"
+              type="date"
+              value={new Date().toISOString().split("T")[0]}
+              disabled
+            />
+            <span>
+              <FontAwesomeIcon icon={faCalendarDay} />
+            </span>
+          </div>
           <Button onClick={() => setShowModalAdd(true)}>Thêm sách</Button>
         </div>
         <div className={styles.table_container}>
@@ -77,16 +91,23 @@ export default function BookImport() {
         onHide={() => setShowModalBooksErr(false)}
       >
         <div className={styles.book_err_container}>
-            <div className={styles.err_title}>
-                <div className={styles.title}>Các sách lỗi</div>
-                <div className={styles.sub_title}>Số lượng tồn lớn hơn {config?.minStockQuantityBeforeImport}</div>
-            </div>
-            <div className={styles.table_err_container}>
-                <Table fieldCols={BOOK_ERR} data={booksErr} placeholder="Sách lỗi" />
-            </div>
-            
+          <div className={styles.err_title}>
+            <h2 className={styles.title}>
+            <FontAwesomeIcon className={styles["alert-icon"]} icon={faWarning} />
+              Các sách lỗi
+            </h2>
+            <p className={styles.sub_title}>
+              Số lượng tồn lớn hơn {config?.minStockQuantityBeforeImport}
+            </p>
+          </div>
+          <div className={styles.table_err_container}>
+            <TableBooksError
+              fieldCols={BOOK_ERR}
+              data={booksErr}
+              placeholder="Sách lỗi"
+            />
+          </div>
         </div>
-        
       </Modal>
       {/* <ModalAlert show={showModalAlert.show} success={showModalAlert.success} onHide={() => setShowModalAlert(false)} /> */}
     </>

@@ -11,7 +11,9 @@
   font-style: italic;
 }
 .table_container {
-  height: 50vh;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  max-height: 50vh;
   width: 100%;
   overflow: auto;
 }
@@ -19,12 +21,22 @@
   display: flex;
   column-gap: 50px;
   margin: 20px 20px 30px;
-  & input {
+ 
+  input {
     width: 200px;
     height: 30px;
     margin-right: 10px;
     padding: 20px 10px;
     border-radius: 5px;
+  }
+  > div {
+    position: relative;
+    span {
+      color: rgb(147, 147, 147);
+      position: absolute;
+      transform: translateY(60%);
+      right: 25px;
+    }
   }
 }
 .content {
@@ -42,30 +54,33 @@
 }
 
 .book_err_container{
-  width: 45vw;
-  max-height: 80vh;
+  width: 42vw;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   padding: var(--spacer-lr);
   .err_title {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin: 10px 0;
+    margin: 0 0 20px 0 ;
+    gap: 25px;
     .title {
-      font-size: 1.7rem;
+      color: #e11d48;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-style: unset;
       font-weight: bold;
-      margin-bottom: 10px;
+      font-size: 1.5rem;
     }
     .sub_title {
-      font-size: 1rem;
+      color: #6b7280;
       font-style: italic;
-      color: rgb(232, 31, 31);
     }
   }
   .table_err_container {
+    box-shadow: 0 0 5px 0 rgba(79, 79, 79, 0.1);
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
     max-height: 40vh;
     width: 100%;
     overflow: auto;

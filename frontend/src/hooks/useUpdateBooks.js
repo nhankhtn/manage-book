@@ -36,15 +36,15 @@ export const useUpdateBooks = () => {
     try {
       setLoading(true);
       const result = await updateBooks(books);
-      console.log("aa:",result);
       if (result.length > 0) {
         const bookErr= result.map((res) => {
+          const [quantity, ...rest] = res.split(" ");
+          const title = rest.join(" ");
           return {
-            title: res.split(" ")[0],
-            quantity: res.split(" ")[1],
+            title,
+            quantity,
           }
         });
-        console.log(bookErr);
         setBooksErr(bookErr);
         setShowModalBooksErr(true);
       } else {

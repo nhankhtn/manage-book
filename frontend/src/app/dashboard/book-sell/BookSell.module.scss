@@ -28,6 +28,7 @@
   flex: 1;
   max-height: 323px;
   margin: var(--spacer-tb) 0;
+  overflow: auto;
 }
 .wrap-btn {
   display: flex;
@@ -43,11 +44,18 @@
 .heading-modal {
   text-align: center;
 }
+.filter-input {
+  width: 250px;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
 .list-books {
   flex: 1;
   max-height: 85%;
   overflow: auto;
-  margin: var(--spacer-tb) 0;
+  margin: 10px 0 var(--spacer-tb) 0;
 }
 
 .btn-modal {

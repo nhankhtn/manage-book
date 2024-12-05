@@ -2,7 +2,6 @@
   border-collapse: collapse;
   width: 100%;
   max-height: 100%;
-  border-bottom: 2px solid rgb(150, 150, 150);
   th,td {
     min-width: 125px;
     font-size: 1rem;
@@ -27,10 +26,10 @@
       
     }
   }
-
-
 }
-
+.center {
+  text-align: center;
+}
 .column:nth-child(n+2) {
   text-align: center;
 }
@@ -48,6 +47,7 @@
 
 .wrap-input {
   display: flex;
+  justify-content: space-between;
 }
 .input-field {
   flex:1;

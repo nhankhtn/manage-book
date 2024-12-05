@@ -9,13 +9,13 @@ function Table({ fieldCols, data, updateRow = () => { }, deleteRow = () => { } }
     deleteRow(index);
   }
 
-  function handleInputChange(indexRow, name, target) {
+  function handleInputChange(row, name, target) {
     if (target.type === "number") {
       if (target.value < 0) {
         target.value = 0;
       }
 
-      updateRow(indexRow, name, Number(target.value));
+      updateRow(row, name, Number(target.value));
     }
   }
 
@@ -49,7 +49,7 @@ function Table({ fieldCols, data, updateRow = () => { }, deleteRow = () => { } }
                       : col.type === "input" ?
                         <div className={styles['wrap-input']}>
                           <input type="number" value={row[col.name] || ''}
-                            onChange={e => handleInputChange(indexRow, col.name, e.target)}
+                            onChange={e => handleInputChange(row, col.name, e.target)}
                             className={styles["input-field"]} />
                           <div className={styles['btn-up-down']}>
                             <button>
@@ -66,7 +66,7 @@ function Table({ fieldCols, data, updateRow = () => { }, deleteRow = () => { } }
               ))
             }
           </tr>
-        )) : <tr className={styles.row}>
+        )) : <tr className= {`${styles.column} ${styles.center}`} >
           <td colSpan={fieldCols.length + 1} className={styles.column}>Chưa có dữ liệu.</td>
         </tr>
         }

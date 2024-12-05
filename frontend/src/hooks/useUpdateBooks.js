@@ -6,10 +6,11 @@ export const useUpdateBooks = () => {
   const [loading, setLoading] = useState(false);
   const { openModalAlert } = useModalAlert();
   const [showModalBooksErr, setShowModalBooksErr] = useState(false);
+  const [showModalDuplicate, setShowModalDuplicate] = useState(false);
+  const [duplicateBook, setDuplicateBook] = useState({});
   const [books, setBooks] = useState([
     {
-      title:
-        "Lập trình RLập trình ReacLập trìnhtrình ReacLập trìnhcLập trình",
+      title: "Lập trình RLập trình ReacLập trìnhtrình ReacLập trìnhcLập trình",
       author: "React",
       category: "Programming",
       quantity: 10,
@@ -22,10 +23,44 @@ export const useUpdateBooks = () => {
       return preValues.filter((value, i) => i !== index);
     });
   }
-  function add(book) {
+
+  function addQuantityToExistingBook(book) {
+    const existingBookIndex = books.findIndex(
+      (b) =>
+        b.title.toLowerCase() === book.title.toLowerCase() &&
+        b.author.toLowerCase() === book.author.toLowerCase() &&
+        b.category.toLowerCase() === book.category.toLowerCase()
+    );
     setBooks((preValues) => {
-      return [...preValues, book];
+      const updatedBooks = [...preValues];
+      updatedBooks[existingBookIndex] = {
+        ...updatedBooks[existingBookIndex],
+        quantity: updatedBooks[existingBookIndex].quantity + book.quantity,
+      };
+      return updatedBooks;
     });
+    setShowModalDuplicate(false);
+  }
+  function add(book) {
+    const existingBookIndex = books.findIndex(
+      (b) =>
+        b.title.toLowerCase() === book.title.toLowerCase() &&
+        b.author.toLowerCase() === book.author.toLowerCase() &&
+        b.category.toLowerCase() === book.category.toLowerCase()
+    );
+    if (existingBookIndex !== -1) {
+      setShowModalDuplicate(true);
+
+      setDuplicateBook({
+        ...book,
+        currentQuantity: books[existingBookIndex].quantity,
+      });
+    }
+    else{
+      setBooks((preValues) => {
+        return [...preValues, book];
+      });
+    }
     setErr(false);
   }
   const importBook = async () => {
@@ -37,13 +72,13 @@ export const useUpdateBooks = () => {
       setLoading(true);
       const result = await updateBooks(books);
       if (result.length > 0) {
-        const bookErr= result.map((res) => {
+        const bookErr = result.map((res) => {
           const [quantity, ...rest] = res.split(" ");
           const title = rest.join(" ");
           return {
             title,
             quantity,
-          }
+          };
         });
         setBooksErr(bookErr);
         setShowModalBooksErr(true);
@@ -59,5 +94,19 @@ export const useUpdateBooks = () => {
     }
   };
 
-  return { err, loading, importBook, deleteAt, add, books, showModalBooksErr, setShowModalBooksErr, booksErr };
+  return {
+    err,
+    loading,
+    importBook,
+    deleteAt,
+    add,
+    books,
+    showModalBooksErr,
+    setShowModalBooksErr,
+    booksErr,
+    showModalDuplicate, 
+    setShowModalDuplicate, 
+    duplicateBook,
+    addQuantityToExistingBook
+  };
 };

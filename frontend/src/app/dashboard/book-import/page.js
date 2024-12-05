@@ -39,11 +39,15 @@ export default function BookImport() {
     showModalBooksErr,
     setShowModalBooksErr,
     booksErr,
+    showModalDuplicate,
+    setShowModalDuplicate,
+    duplicateBook,
+    addQuantityToExistingBook
   } = useUpdateBooks();
   const [showModalAdd, setShowModalAdd] = useState(false);
   function handleAdd(book) {
-    add(book);
     setShowModalAdd(false);
+    add(book);
   }
   return (
     <>
@@ -109,7 +113,28 @@ export default function BookImport() {
           </div>
         </div>
       </Modal>
-      {/* <ModalAlert show={showModalAlert.show} success={showModalAlert.success} onHide={() => setShowModalAlert(false)} /> */}
+
+      
+      <Modal show={showModalDuplicate} onHide={() => setShowModalDuplicate(false)}>
+        <div className={styles.duplicate_container}>
+          <h2>Phát hiện sách trùng lặp</h2>
+          <div className={styles["modal-content"]}>
+            <FontAwesomeIcon className={styles["warn-icon"]} icon={faWarning} />
+            <div>
+              <h3>Sách đã tồn tại</h3>
+              <p> 
+                "{duplicateBook.title}" đã tồn tại trong kho với {duplicateBook.currentQuantity} bản sao.
+                Bạn có muốn thêm {duplicateBook.quantity} vào số lượng tồn kho hiện tại không?
+              </p>
+            </div>
+          </div>
+          <div className={styles["modal-actions"]}>
+              <button className={styles["cancel"]} onClick={() => setShowModalDuplicate(false)}>Hủy</button>
+              <button className={styles["confirm"]} onClick={() => addQuantityToExistingBook(duplicateBook)}>Cập nhật</button>
+            </div>
+        </div>
+      
+      </Modal>
     </>
   );
 }

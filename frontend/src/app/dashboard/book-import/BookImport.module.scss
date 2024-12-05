@@ -86,3 +86,70 @@
     overflow: auto;
   }
 }
+
+
+.duplicate_container {
+  padding: 25px 35px;
+  width: 38vw;
+  h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+  
+  .modal-content {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    color: #333;
+    border: 1px solid #afafaf92;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    .warn-icon{
+      font-size: 1.4rem;
+    }
+    h3 {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    p{
+      color: #666;
+    }
+    
+  }
+
+  .modal-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    font-size: 1.1rem;
+  }
+  
+  button.cancel {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+  
+  button.cancel:hover {
+    background-color: #e0e0e0;
+  }
+  
+  button.confirm {
+    background-color: #333;
+    color: white;
+  }
+  
+  button.confirm:hover {
+    background-color: #181818;
+  }
+  
+}

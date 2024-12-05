@@ -33,7 +33,7 @@ export default function BookSell() {
     const [openModalAddBook, setOpenModalAddBook] = useState(false);
     const { openModalAlert, hideModalAlert } = useModalAlert();
     const [error, setError] = useState('');
-
+    const [filterText, setFilterText] = useState("");
     useEffect(() => {
         const fetchBooks = async () => {
             try {
@@ -110,7 +110,7 @@ export default function BookSell() {
         setBooksAvailable(prevBooks => {
             return prevBooks.map(book => {
                 if (book.title === bookToDelete.title) {
-                    book.quantity += bookToDelete.amount;
+                    book.quantity += bookToDelete.quantity;
                 }
                 return book;
             });
@@ -131,12 +131,17 @@ export default function BookSell() {
         setBooks(prevBooks => {
             const newBooks = booksAvailable
                 .filter(book => book.amount > 0)
-                .map(book => ({ ...book }));
+                .map(book =>{
+                    return {
+                        ...book,
+                        quantity: book.amount
+                }}
+                );
 
             return prevBooks.map(book => {
                 const newBook = newBooks.find(nb => nb.title === book.title);
                 if (newBook) {
-                    return { ...book, amount: book.amount + newBook.amount };
+                    return { ...book,  quantity: book.quantity + newBook.amount };
                 }
                 return book;
             }).concat(
@@ -160,13 +165,14 @@ export default function BookSell() {
                 return book;
             })
         })
+        setFilterText('');
         setOpenModalAddBook(true);
     }
 
-    const handleUpdateRow = (indexRow, key, value) => {
+    const handleUpdateRow = (row, key, value) => {
         setBooksAvailable(preValues => {
-            return preValues.map((book, index) => {
-                if (index === indexRow) {
+            return preValues.map((book, _) => {
+                if (book.title === row.title) {
                     book[key] = value;
                 }
                 return book;
@@ -175,9 +181,11 @@ export default function BookSell() {
     }
 
     const totalPrice = useMemo(() => {
-        return books.reduce((total, book) => total + book.amount * book.price, 0);
+        return books.reduce((total, book) => total + book.quantity * book.price, 0);
     }, [books])
-
+    const filteredBooks = booksAvailable.filter(book =>
+        book.title.toLowerCase().includes(filterText.toLowerCase())
+    );
     return (
         <div className={styles.wrapper}>
             <div className={styles.info}>
@@ -201,8 +209,15 @@ export default function BookSell() {
             <Modal show={openModalAddBook} onHide={e => setOpenModalAddBook(false)}>
                 <div className={styles['wrapper-content-modal']}>
                     <h2 className={styles['heading-modal']}>Thêm sách</h2>
+                    <input
+                    className={styles['filter-input']}
+                    type="text"
+                    placeholder="Filter by title"
+                    value={filterText}
+                    onChange={(e) => {setFilterText(e.target.value)}}
+                    />
                     <div className={styles['list-books']}>
-                        <Table data={booksAvailable} fieldCols={SELL_BOOK_FIELDS} updateRow={handleUpdateRow} />
+                        <Table data={filteredBooks} fieldCols={SELL_BOOK_FIELDS} updateRow={handleUpdateRow} />
                     </div>
                     {errorAddBooks && <p className={styles['error-add-books']}>{errorAddBooks}</p>}
                     <div className={styles["btn-modal"]} >

@@ -41,7 +41,7 @@ const updateBooks = async (req, res) => {
     let resultAdd = [];
     let failedBooks = [];
     try {
-        resultAdd = await Promise.all(
+        resultAdd = await Promise.allSettled(
             books.map((book) => {
                 return new Promise((resolve, reject) => {
                     bookService.updateBook(book, (err, result) => {
@@ -54,7 +54,7 @@ const updateBooks = async (req, res) => {
                 });
             })
         );
-        res.status(200).json({ message: 'Cập nhật sách thành công' });
+        res.status(200).json({ message: resultAdd });
     } catch (error) {
         res.status(500).json({
             message: 'Lỗi khi cập nhật sách',

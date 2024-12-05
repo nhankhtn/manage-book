@@ -78,6 +78,7 @@ const updateBook = ({ slug }, { quantity }, callback) => {
         [slug],
         (selectError, selectResult) => {
           if (selectError) {
+            console.log(selectError);
             return callback(selectError, null);
           }
 

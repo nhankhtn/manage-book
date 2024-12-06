@@ -12,7 +12,6 @@ CREATE TABLE books (
     author NVARCHAR(30),
     quantity INT,
     price DECIMAl(10,2),
-    slug NVARCHAR(70) UNIQUE NOT NULL,
     
     CONSTRAINT PK_BOOK PRIMARY KEY (id_book)
 );
@@ -23,7 +22,7 @@ CREATE TABLE customers (
     address NVARCHAR(50),
     phone VARCHAR(10),
     email VARCHAR(50),
-    debt DECIMAL(10,2),
+    debt DECIMAL(10,2) default 0,
     CONSTRAINT PK_customers PRIMARY KEY (id_customer)
 );
 
@@ -90,7 +89,8 @@ CREATE TABLE stock_reports_details (
 
 CREATE TABLE debt_reports (
     id_debt_report VARCHAR(6),
-    report_date DATE,
+    report_month INT, 
+    report_year INT,
     CONSTRAINT PK_debt_reports PRIMARY KEY (id_debt_report)
 );
 
@@ -99,7 +99,7 @@ CREATE TABLE debt_reports_details (
     id_customer INT,
     initial_debt DECIMAL(10,2),
     changes DECIMAL(10,2),
-    FINAL_debt DECIMAL(10,2),
+    final_debt DECIMAL(10,2),
     CONSTRAINT PK_debt_reports_DETAILS PRIMARY KEY (id_debt_report, id_customer),
     CONSTRAINT FK_debt_reports_DETAILS_debt_reports FOREIGN KEY (id_debt_report) REFERENCES debt_reports(id_debt_report),
     CONSTRAINT FK_debt_reports_DETAILS_customers FOREIGN KEY (id_customer) REFERENCES customers(id_customer)
@@ -112,8 +112,6 @@ CREATE TABLE rules (
     description text 
 );
 
-
-
 -- Insert data into BOOK table
 INSERT INTO books (title, category, author, quantity, price) VALUES
 ('The Alchemist', 'Novel', 'Paulo Coelho', 10, 10000.00),
@@ -121,10 +119,10 @@ INSERT INTO books (title, category, author, quantity, price) VALUES
 ('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00);
 
 -- Insert data into customers table
-INSERT INTO customers (full_name, address, phone, email, debt) VALUES
-('Nguyen Van A', 'Hanoi', '0123456789', 'a@gmail.com', 10000.00),
-('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com', 15000.00),
-('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com', 5000.00);
+INSERT INTO customers (full_name, address, phone, email) VALUES
+('Nguyen Van A', 'Hanoi', '0123456789', 'a@gmail.com'),
+('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com'),
+('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com');
 
 -- Insert data into stock_receipts table
 INSERT INTO stock_receipts (id_stock_receipt, receipt_date) VALUES
@@ -137,22 +135,6 @@ INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity) VALUES
 ('SR001', 2, 3),
 ('SR002', 3, 2);
 
--- Insert data into invoices table
-INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
-('INV001', 1, '2023-01-20'),
-('INV002', 2, '2023-02-25');
-
--- Insert data into invoices_details table
-INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
-('INV001', 1, 2, 200.00),
-('INV001', 2, 1, 150.00),
-('INV002', 3, 1, 300.00);
-
--- Insert data into payment_receipts table
-INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
-('PR001', 1, '2023-01-21', 300.00),
-('PR002', 2, '2023-02-26', 1500.00);
-
 -- Insert data into stock_reports table
 INSERT INTO stock_reports (id_stock_report, report_date) VALUES
 ('SR001', '2023-03-01');
@@ -163,14 +145,6 @@ INSERT INTO stock_reports_details (id_stock_report, id_book, initial_stock, chan
 ('SR001', 2, 5, -3, 2),
 ('SR001', 3, 8, 0, 8);
 
--- Insert data into debt_reports table
-INSERT INTO debt_reports (id_debt_report, report_date) VALUES
-('DR001', '2023-03-05');
-
--- Insert data into debt_reports_DETAILS table
-INSERT INTO debt_reports_details (id_debt_report, id_customer, initial_debt, changes, FINAL_debt) VALUES
-('DR001', 1, 10000.00, -300.00, 9700.00),
-('DR001', 2, 15000.00, 500.00, 15500.00);
 
 INSERT INTO rules (rule_name, rule_value, description) VALUES 
 ('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
@@ -281,5 +255,296 @@ END $$
 
 DELIMITER ;
 
-use book_management;
+DELIMITER $$
 
+CREATE PROCEDURE CreateOrUpdateDebtReportDetail(
+    IN reportMonth INT,
+    IN reportYear INT,
+    IN customerID INT,
+    IN changeAmount DECIMAL(10,2)
+)
+BEGIN
+    DECLARE reportID VARCHAR(6);
+    DECLARE initialDebt DECIMAL(10,2);
+    DECLARE existingRecord INT;
+    DECLARE nextMonth INT;
+    DECLARE nextYear INT;
+    DECLARE nextReportID VARCHAR(6);
+    DECLARE currentFinalDebt DECIMAL(10,2);
+
+    -- Check if a debt report exists for the given month and year
+    SELECT id_debt_report INTO reportID
+    FROM debt_reports
+    WHERE report_month = reportMonth AND report_year = reportYear;
+
+    -- If no report exists, create one
+    IF reportID IS NULL THEN
+        SET reportID = CONCAT('DR', LPAD((SELECT COUNT(*) + 1 FROM debt_reports), 4, '0'));
+        INSERT INTO debt_reports (id_debt_report, report_month, report_year)
+        VALUES (reportID, reportMonth, reportYear);
+    END IF;
+
+    -- Get initial debt from previous month using a temporary variable
+    SET initialDebt = (
+        SELECT final_debt
+        FROM (
+            SELECT final_debt
+            FROM debt_reports_details drd
+            JOIN debt_reports dr ON drd.id_debt_report = dr.id_debt_report
+            WHERE id_customer = customerID
+            AND (report_year < reportYear 
+                 OR (report_year = reportYear AND report_month < reportMonth))
+            ORDER BY report_year DESC, report_month DESC
+            LIMIT 1
+        ) AS previousDebt
+    );
+
+    -- If no previous report exists, use 0 as initial debt
+    IF initialDebt IS NULL THEN
+        SET initialDebt = 0;
+    END IF;
+
+    -- Check if record exists for this month
+    SELECT COUNT(*) INTO existingRecord
+    FROM debt_reports_details 
+    WHERE id_debt_report = reportID AND id_customer = customerID;
+
+    IF existingRecord > 0 THEN
+        -- Record exists: Update it
+        UPDATE debt_reports_details
+        SET changes = changes + changeAmount,
+            final_debt = initialDebt + changes
+        WHERE id_debt_report = reportID AND id_customer = customerID;
+    ELSE
+        -- Record does not exist: Insert a new one
+        INSERT INTO debt_reports_details 
+            (id_debt_report, id_customer, initial_debt, changes, final_debt)
+        VALUES 
+            (reportID, customerID, initialDebt, changeAmount, initialDebt + changeAmount);
+    END IF;
+
+    -- Propagate changes to subsequent months
+    SET nextMonth = reportMonth + 1;
+    SET nextYear = reportYear;
+
+    IF nextMonth > 12 THEN
+        SET nextMonth = 1;
+        SET nextYear = reportYear + 1;
+    END IF;
+
+    -- Get the current final debt for propagation
+    SELECT final_debt INTO currentFinalDebt
+    FROM debt_reports_details
+    WHERE id_debt_report = reportID AND id_customer = customerID;
+
+    WHILE EXISTS (
+        SELECT 1 FROM debt_reports
+        WHERE report_month = nextMonth AND report_year = nextYear
+    ) DO
+        -- Get the next report ID
+        SELECT id_debt_report INTO nextReportID
+        FROM debt_reports
+        WHERE report_month = nextMonth AND report_year = nextYear;
+
+        -- Update initial debt for next report
+        UPDATE debt_reports_details
+        SET initial_debt = currentFinalDebt
+        WHERE id_debt_report = nextReportID AND id_customer = customerID;
+
+        -- Update final debt for next report
+        UPDATE debt_reports_details
+        SET final_debt = initial_debt + changes
+        WHERE id_debt_report = nextReportID AND id_customer = customerID;
+
+        -- Move to the next month
+        SET reportID = nextReportID;
+        SET nextMonth = nextMonth + 1;
+
+        IF nextMonth > 12 THEN
+            SET nextMonth = 1;
+            SET nextYear = nextYear + 1;
+        END IF;
+
+        -- Get the updated final debt for propagation
+        SELECT final_debt INTO currentFinalDebt
+        FROM debt_reports_details
+        WHERE id_debt_report = reportID AND id_customer = customerID;
+    END WHILE;
+
+END $$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER AfterInsertInvoiceDetails
+AFTER INSERT ON invoices_details
+FOR EACH ROW
+BEGIN
+    DECLARE totalAmount DECIMAL(10,2);
+
+    -- Calculate the updated total amount for the invoice
+    SELECT SUM(quantity * unit_price) INTO totalAmount
+    FROM invoices_details
+    WHERE id_invoice = NEW.id_invoice;
+
+    -- Update customer's debt
+    UPDATE customers
+    SET debt = debt + (NEW.quantity * NEW.unit_price)
+    WHERE id_customer = (SELECT id_customer FROM invoices WHERE id_invoice = NEW.id_invoice);
+
+    -- Update debt report detail
+    CALL CreateOrUpdateDebtReportDetail(
+        MONTH((SELECT invoices_DATE FROM invoices WHERE id_invoice = NEW.id_invoice)),
+        YEAR((SELECT invoices_DATE FROM invoices WHERE id_invoice = NEW.id_invoice)),
+        (SELECT id_customer FROM invoices WHERE id_invoice = NEW.id_invoice),
+        NEW.quantity * NEW.unit_price
+    );
+END $$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER AfterUpdateInvoice
+AFTER UPDATE ON invoices_details
+FOR EACH ROW
+BEGIN
+    DECLARE oldAmount DECIMAL(10,2);
+    DECLARE newAmount DECIMAL(10,2);
+    DECLARE changeInAmount DECIMAL(10,2);
+    DECLARE invoiceDate DATE;
+    DECLARE customerID INT;
+
+    -- Calculate old and new invoice totals
+    SET oldAmount = OLD.quantity * OLD.unit_price;
+    SET newAmount = NEW.quantity * NEW.unit_price;
+    SET changeInAmount = newAmount - oldAmount;
+
+    -- Get invoice date and customer ID
+    SELECT invoices_DATE, id_customer INTO invoiceDate, customerID
+    FROM invoices
+    WHERE id_invoice = NEW.id_invoice;
+
+    -- Update customer's debt
+    UPDATE customers
+    SET debt = debt + changeInAmount
+    WHERE id_customer = customerID;
+
+    -- Update debt report detail
+    CALL CreateOrUpdateDebtReportDetail(MONTH(invoiceDate), YEAR(invoiceDate), customerID, changeInAmount);
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER AfterInsertPayment
+AFTER INSERT ON payment_receipts
+FOR EACH ROW
+BEGIN
+    -- Update customer's debt
+    UPDATE customers
+    SET debt = debt - NEW.amount_received
+    WHERE id_customer = NEW.id_customer;
+
+    -- Update debt report detail
+    CALL CreateOrUpdateDebtReportDetail(MONTH(NEW.payment_date), YEAR(NEW.payment_date), NEW.id_customer, -NEW.amount_received);
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER AfterUpdatePayment
+AFTER UPDATE ON payment_receipts
+FOR EACH ROW
+BEGIN
+    DECLARE changeInAmount DECIMAL(10, 2);
+    
+    -- Calculate the change in the payment amount
+    SET changeInAmount = NEW.amount_received - OLD.amount_received;
+    
+    -- Update customer's debt
+    UPDATE customers
+    SET debt = debt - changeInAmount
+    WHERE id_customer = NEW.id_customer;
+
+    -- Update debt report detail
+    CALL CreateOrUpdateDebtReportDetail(MONTH(NEW.payment_date), YEAR(NEW.payment_date), NEW.id_customer, -changeInAmount);
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER AfterDeleteInvoice
+AFTER DELETE ON invoices
+FOR EACH ROW
+BEGIN
+    DECLARE totalAmount DECIMAL(10,2);
+
+    -- Calculate the total amount of the deleted invoice
+    SELECT SUM(quantity * unit_price) INTO totalAmount
+    FROM invoices_details
+    WHERE id_invoice = OLD.id_invoice;
+
+    -- Update customer's debt
+    UPDATE customers
+    SET debt = debt - totalAmount
+    WHERE id_customer = OLD.id_customer;
+
+    -- Update debt report detail
+    CALL CreateOrUpdateDebtReportDetail(MONTH(OLD.invoices_DATE), YEAR(OLD.invoices_DATE), OLD.id_customer, -totalAmount);
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER AfterDeletePayment
+AFTER DELETE ON payment_receipts
+FOR EACH ROW
+BEGIN
+    -- Update customer's debt
+    UPDATE customers
+    SET debt = debt + OLD.amount_received
+    WHERE id_customer = OLD.id_customer;
+
+    -- Update debt report detail
+    CALL CreateOrUpdateDebtReportDetail(MONTH(OLD.payment_date), YEAR(OLD.payment_date), OLD.id_customer, OLD.amount_received);
+END $$
+
+DELIMITER ;
+
+
+
+-- Insert data into invoices table
+INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
+('INV001', 1, '2023-01-20'),
+('INV002', 2, '2023-02-25'),
+('INV003', 2, '2023-03-25'),
+('INV004', 1, '2023-03-25');
+
+-- Insert data into invoices_details table
+INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+('INV001', 2, 2, 150.00),
+('INV002', 3, 5, 300.00),
+('INV003', 1, 1, 150.00);
+
+-- Insert data into payment_receipts table
+INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
+('PR001', 1, '2023-01-21', 150.00),
+('PR002', 2, '2023-02-26', 1500.00),
+('PR003', 1, '2023-03-21', 150.00);
+
+INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+('INV003', 3, 3, 150.00),
+('INV004', 3, 3, 150.00);
+
+-- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+-- ('INV003', 1, 1, 150.00);
+
+use book_management;

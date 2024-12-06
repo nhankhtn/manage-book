@@ -1,17 +1,6 @@
 const Customer = require('../models/Customer');
 const customerService = require('../services/customerService');
 
-// reportDebt
-const reportDebt = (req, res) => {
-    const { month, year } = req.query;
-    Customer.getReportDebt(month, year, (err, report) => {
-        if (err) {
-            return res.status(500).json({ error: 'Lấy dữ liệu thất bại' });
-        }
-        res.json(report);
-    });
-};
-
 const createPaymentReceipt = (req, res) => {
     const { full_name, phone, address, email, payment_date, amount_received } = req.body;
     customerService.createPaymentReceipt(
@@ -49,11 +38,9 @@ const getCustomerDebtAndLatestInvoice = (req, res) => {
       res.status(200).json(data);
     }
   );
-  
 };  
 
 module.exports = {
-    reportDebt,
     createPaymentReceipt,
     getPaymentReceipt,
     getCustomerDebtAndLatestInvoice

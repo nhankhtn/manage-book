@@ -2,18 +2,6 @@ const connection = require('../config/database');
 const { get } = require('../routes/bookRoutes');
 const generate = require('../utils/generate');
 
-const getReportDebt = (month, year, callback) => {
-    connection.query(`SELECT c.full_name, drd.initial_debt, drd.changes, drd.final_debt
-                      FROM debt_reports_details drd inner join debt_reports dr on drd.id_debt_report = dr.id_debt_report
-                                                   inner join customers c on c.id_customer = drd.id_customer
-                      where MONTH(dr.report_date) = ? AND YEAR(dr.report_date) = ?`, [month, year], (error, results) => {
-        if (error) {
-            return callback(error, null);
-        }
-        callback(null, results);
-    });
-};
-
 const getIDCustomer = async (full_name, phone, address, email, callback) => {
     connection.query(`SELECT id_customer FROM customers WHERE full_name = ? AND phone = ? AND address = ? AND email = ?`, [full_name, phone, address, email], (error, results) => {
         if (error) {
@@ -24,7 +12,7 @@ const getIDCustomer = async (full_name, phone, address, email, callback) => {
 };
 
 const createPaymentReceipt = (id_customer, payment_date, amount_received, callback) => {
-    const id_payment_receipt = generate.generateIDPaymentReceipt(); // Create id for payment receipt
+    const id_payment_receipt = generate.generateID(); // Create id for payment receipt
 
     connection.query(
         `INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES (?, ?, ?, ?)`,
@@ -59,6 +47,16 @@ const getCustomerDebtAndLatestInvoice = (id_customer, callback) => {
   );
 };
 
+// const getCustomerDebt = (id_customer, callback) => {
+//     connection.query(`SELECT debt FROM customers WHERE id_customer = ?`, [id_customer], (error, results) => {
+//         if (error) {
+//             return callback(error, null);
+//         }
+//         console.log("Customer debt: ", results);
+//         callback(null, results);
+//     });
+// };
+
 const getPaymentReceipt = (callback) => {
     const query = `SELECT * FROM payment_receipts`;
 
@@ -70,10 +68,28 @@ const getPaymentReceipt = (callback) => {
     });
 }
 
+// const updateCustomerDebt = (id_customer, amount_paid, callback) => {
+//     const updateDebtQuery = `
+//     UPDATE customers
+//     SET debt = debt + ?
+//     WHERE id_customer = ?
+//     `;
+//     connection.query(updateDebtQuery, [amount_paid, id_customer], (err, updateDebtResult) => {
+//         if (err) {
+//             return callback({ statusCode: 500, message: "Lỗi khi cập nhật nợ khách hàng" }, null);
+//         }
+//         console.log("Updated debt:", updateDebtResult);
+//         callback(null, { updateDebtResult });
+//     });
+// };
+
+
 module.exports = {
     getReportDebt,
     getIDCustomer,
     createPaymentReceipt,
     getPaymentReceipt,
-    getCustomerDebtAndLatestInvoice
+    getCustomerDebtAndLatestInvoice,
+    // getCustomerDebt,
+    // updateCustomerDebt,
 };

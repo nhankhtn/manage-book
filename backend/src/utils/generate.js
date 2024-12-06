@@ -8,7 +8,7 @@ function generateSlug(string) {
     });
 }
 
-const generateIDPaymentReceipt = () => {
+const generateID = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
     for (let i = 0; i < 6; i++) {
@@ -19,5 +19,5 @@ const generateIDPaymentReceipt = () => {
 
 module.exports = {
     generateSlug,
-    generateIDPaymentReceipt,
+    generateID,
 }

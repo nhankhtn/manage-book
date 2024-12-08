@@ -50,5 +50,5 @@
    minStockQuantityBeforeImport: 200,
    maxDebt: 30000,
    minStockAfterSale: 30,
-   maxDebtCollection: false
+   allowOverpayment: false
    }

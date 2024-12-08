@@ -17,10 +17,10 @@ const getReportDebt = (month, year, callback) => {
   );
 };
 
-const getIDCustomer = async (full_name, phone, address, email, callback) => {
+const getIDCustomer = async (fullName, phone, address, email, callback) => {
   connection.query(
     `SELECT id_customer FROM customers WHERE full_name = ? AND phone = ? AND address = ? AND email = ?`,
-    [full_name, phone, address, email],
+    [fullName, phone, address, email],
     (error, results) => {
       if (error) {
         return callback(error, null);
@@ -29,13 +29,13 @@ const getIDCustomer = async (full_name, phone, address, email, callback) => {
     }
   );
 };
-const getIDCustomer1 = (name, phone, callback) => {
+const getIDCustomer1 = (fullName, phone, callback) => {
   // Đảm bảo rằng name và phone đều là chuỗi
-  const fullNameStr = String(name);
+  const fullNameStr = String(fullName);
   const phoneStr = String(phone);
 
   connection.query(
-    `SELECT * FROM CUSTOMERS WHERE full_name = ? AND phone = ?`,
+    `SELECT * FROM customers WHERE full_name = ? AND phone = ?`,
     [fullNameStr, phoneStr],
     (error, results) => {
       if (error) {
@@ -77,16 +77,16 @@ const getPaymentReceipt = (callback) => {
   });
 };
 
-const addCustomer = (full_name, address, phone, email, callback) => {
+const addCustomer = (fullName, address, phone, email, callback) => {
   connection.query(
-    `INSERT INTO CUSTOMERS (full_name, address, phone, email, debt) VALUES (?, ?, ?, ?, 0)`,
-    [full_name, address, phone, email],
+    `INSERT INTO customers (full_name, address, phone, email, debt) VALUES (?, ?, ?, ?, 0)`,
+    [fullName, address, phone, email],
     (error, results) => {
       if (error) {
         return callback(error, null);
       }
       connection.query(
-        `SELECT * FROM CUSTOMERS WHERE id_customer = ?`,
+        `SELECT * FROM customers WHERE id_customer = ?`,
         [results.insertId],
         (selectError, selectResult) => {
           if (selectError) {
@@ -102,7 +102,7 @@ const addCustomer = (full_name, address, phone, email, callback) => {
 const paymentInvoice = (id_customer, books, callback) => {
   // Kiểm tra ID hóa đơn trước đó
   connection.query(
-    `SELECT id_invoice FROM INVOICES ORDER BY id_invoice DESC LIMIT 1`,
+    `SELECT id_invoice FROM invoices ORDER BY id_invoice DESC LIMIT 1`,
     (error, results) => {
       if (error) {
         return callback(
@@ -122,7 +122,7 @@ const paymentInvoice = (id_customer, books, callback) => {
 
       // Tạo hóa đơn mới
       connection.query(
-        `INSERT INTO INVOICES (id_invoice, id_customer, invoices_date) VALUES (?, ?, NOW())`,
+        `INSERT INTO invoices (id_invoice, id_customer, invoices_date) VALUES (?, ?, NOW())`,
         [newInvoiceId, id_customer],
         (error, results) => {
           if (error) {
@@ -168,7 +168,7 @@ const paymentInvoice = (id_customer, books, callback) => {
                 item[5], // unit_price
               ]);
 
-              const insertQuery = `INSERT INTO INVOICES_DETAILS (id_invoice, id_book, quantity, unit_price) VALUES ?`;
+              const insertQuery = `INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES ?`;
 
               connection.query(
                 insertQuery,

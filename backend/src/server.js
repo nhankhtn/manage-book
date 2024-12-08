@@ -10,12 +10,14 @@ const PORT = process.env.PORT || 8000;
 
 // Apply middleware
 app.use(express.json());
-app.use(morgan("dev"));
 app.use(
   cors({
     origin: process.env.URL_FE,
   })
 );
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 
 route(app);
 

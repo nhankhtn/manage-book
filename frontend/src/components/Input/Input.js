@@ -3,10 +3,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './Input.module.scss';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Input({ type, className, value, onChange, step = 1, ...passProps }) {
     const [inputValue, setInputValue] = useState(value);
+
+    useEffect(() => {
+        setInputValue(value);
+    }, [value]);
+
     const handleUp = () => {
         const newValue = parseInt(inputValue) + parseInt(step);
         setInputValue(newValue);
@@ -20,13 +25,24 @@ export default function Input({ type, className, value, onChange, step = 1, ...p
     }
 
     const handleChange = (e) => {
-        setInputValue(e.target.value)
-        if (onChange) onChange(e.target.value);
+        let newValue = type === 'checkbox' ? e.target.checked : e.target.value;
+
+        if (type === 'number') {
+            newValue = isNaN(newValue) ? 0 : parseFloat(newValue);
+        }
+
+        setInputValue(newValue);
+        if (onChange) onChange(newValue);
     }
 
     if (type === 'checkbox') return (
         <div className={`${styles['wrapper-checkbox']} ${className}`}>
-            <input type="checkbox" id="toggle" {...passProps} />
+            <input
+                type="checkbox"
+                id="toggle"
+                checked={inputValue}
+                onChange={handleChange}
+                {...passProps} />
             <label htmlFor="toggle" className={styles.switch} />
         </div>
     )

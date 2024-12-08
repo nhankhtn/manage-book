@@ -177,7 +177,7 @@ INSERT INTO rules (rule_name, rule_value, description) VALUES
 ('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
 ('maxDebt', '20000', 'Tiền nợ tối đa'),
 ('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
-('maxDebtCollection', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
+('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
 use book_management;
 
@@ -257,6 +257,23 @@ END $$
 
 DELIMITER ;
 
+DROP TRIGGER IF EXISTS books_before_update;
+DELIMITER $$
+CREATE TRIGGER books_before_update
+BEFORE UPDATE ON books
+FOR EACH ROW
+BEGIN
+    DECLARE max_import decimal(10,2);
+    
+    SELECT CAST(rule_value as UNSIGNED) into max_import
+    from rules
+    where rule_name = "minStockQuantityBeforeImport";
+    IF OLD.quantity > max_import AND OLD.quantity < NEW.Quantity THEN
+        SET @msg = CONCAT(OLD.quantity," ",OLD.title);
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @msg;
+    END IF;
+END  $$
+DELIMITER ;
 
 drop trigger if exists check_amount_received;
 
@@ -281,5 +298,60 @@ END $$
 
 DELIMITER ;
 
-use book_management;
+DELIMITER //
 
+CREATE TRIGGER insert_customer_debt
+AFTER INSERT ON payment_receipts
+FOR EACH ROW
+BEGIN
+    DECLARE current_debt DECIMAL(10, 2);
+    DECLARE new_debt DECIMAL(10, 2);
+    DECLARE new_id_debt_report VARCHAR(6);
+
+    -- Get the current debt of the customer
+    SELECT final_debt INTO current_debt
+    FROM debt_reports_details
+    WHERE id_customer = NEW.id_customer
+    ORDER BY id_debt_report DESC
+    LIMIT 1;
+
+    -- Calculate the new debt
+    SET new_debt = current_debt - NEW.amount_received;
+
+    -- Generate a new id_debt_report (you may need to adjust this logic based on your requirements)
+    SET new_id_debt_report = CONCAT('DR', LPAD((SELECT COUNT(*) + 1 FROM debt_reports), 3, '0'));
+
+    -- Insert a new record into debt_reports
+    INSERT INTO debt_reports (id_debt_report, report_date) VALUES (new_id_debt_report, NOW());
+
+    -- Insert a new record into debt_reports_details
+    INSERT INTO debt_reports_details (id_debt_report, id_customer, initial_debt, changes, final_debt)
+    VALUES (new_id_debt_report, NEW.id_customer, current_debt, -NEW.amount_received, new_debt);
+END //
+
+CREATE TRIGGER update_customer_debt
+AFTER UPDATE ON payment_receipts
+FOR EACH ROW
+BEGIN
+    DECLARE current_debt DECIMAL(10, 2);
+
+    -- Get the current debt of the customer
+    SELECT final_debt INTO current_debt
+    FROM debt_reports_details
+    WHERE id_customer = NEW.id_customer
+    ORDER BY id_debt_report DESC
+    LIMIT 1;
+
+    -- If the customer has a debt, subtract the payment amount
+    IF current_debt IS NOT NULL THEN
+        UPDATE debt_reports_details
+        SET final_debt = final_debt - NEW.amount_received
+        WHERE id_customer = NEW.id_customer
+        ORDER BY id_debt_report DESC
+        LIMIT 1;
+    END IF;
+END //
+
+DELIMITER ;
+
+use book_management;

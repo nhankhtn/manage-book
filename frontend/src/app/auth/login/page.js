@@ -19,17 +19,21 @@ export default function Component() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (formData.username === 'admin' && formData.password === 'admin') {
-
-            setUser({
-                username: formData.username,
-                role: 'admin'
-            })
-
-            router.push(paths.dashboard.bookImport);
-        } else {
-            setError('Tên đăng nhập hoặc mật khẩu không chính xác')
+        setError('')
+        if (!formData.username || !formData.password) {
+            setError('Vui lòng nhập đầy đủ thông tin')
+            return
         }
+        if (formData.username !== 'admin' || formData.password !== 'admin') {
+            setError('Tên đăng nhập hoặc mật khẩu không chính xác')
+            return
+        }
+        setUser({
+            username: formData.username,
+            role: 'admin'
+        })
+
+        router.push(paths.dashboard.bookImport);
     }
 
     const handleChange = (e) => {
@@ -42,42 +46,51 @@ export default function Component() {
 
     return (
         <div className={styles.container}>
-            <form className={styles.loginForm} onSubmit={handleSubmit}>
-                <h1 className={styles.title}>
-                    HỆ THỐNG QUẢN LÝ<br />
-                    NHÀ SÁCH ABC
-                </h1>
+            <div className={styles.login_container}>
+                <form className={styles.loginForm} onSubmit={handleSubmit}>
+                    <h1 className={`${styles.title} ${styles.login_title}`}>
+                        ĐĂNG NHẬP
+                    </h1>
 
-                <div className={styles.inputGroup}>
-                    <FontAwesomeIcon icon={faUser} className={styles.icon} />
-                    <input
-                        type="text"
-                        name="username"
-                        placeholder="Tên đăng nhập"
-                        value={formData.username}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                    <div className={styles.inputGroup}>
+                        <FontAwesomeIcon icon={faUser} className={styles.icon} />
+                        <input
+                            type="text"
+                            name="username"
+                            placeholder="Tên đăng nhập"
+                            value={formData.username}
+                            onChange={handleChange}
 
-                <div className={styles.inputGroup}>
-                    <FontAwesomeIcon icon={faLock} className={styles.icon} />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Mật khẩu"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
+                        />
+                    </div>
 
-                {error && <p className={styles.error}>{error}</p>}
+                    <div className={styles.inputGroup}>
+                        <FontAwesomeIcon icon={faLock} className={styles.icon} />
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Mật khẩu"
+                            value={formData.password}
+                            onChange={handleChange}
 
-                <button type="submit" className={styles.submitButton}>
-                    Đăng nhập
-                </button>
-            </form>
+                        />
+                    </div>
+
+                    {error && <p className={styles.error}>{error}</p>}
+
+                    <button type="submit" className={styles.submitButton}>
+                        Đăng nhập
+                    </button>
+                </form>
+            </div>
+            
+            <div className={styles.desc_container}>
+                <p className={styles.title}>HỆ THỐNG QUẢN LÝ<br />
+                NHÀ SÁCH ABC</p>
+                <p className={styles.desc}>
+                    Giúp bạn quản lý nhà sách một cách dễ dàng và hiệu quả
+                </p>
+            </div>
         </div>
     )
 }

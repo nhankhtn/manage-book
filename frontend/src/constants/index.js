@@ -43,7 +43,7 @@ export const BOOK_FIELDS = [{
 },
 {
     title: "Số lượng",
-    name: "amount",
+    name: "quantity",
     type: "text"
 },
 {
@@ -103,6 +103,52 @@ export const SEARCH_BOOK_FIELDS = [{
 {
     title: "Giá",
     name: "price",
+    type: "text"
+}]
+
+export const INVENTORY_BOOK_FIELDS = [{
+    title: "Tên sách",
+    name: "title",
+    type: "text"
+}, {
+    title: "Tác giả",
+    name: "author",
+    type: "text"
+},
+{
+    title: "Tồn đầu",
+    name: "initial_stock",
+    type: "text"
+},
+{
+    title: "Phát sinh",
+    name: "changes",
+    type: "text"
+},
+{
+    title: "Tồn cuối",
+    name: "final_stock",
+    type: "text"
+}]
+
+export const DEBT_CONSUMER_FIELDS = [{
+    title: "Tên khách hàng",
+    name: "full_name",
+    type: "text"
+},
+{
+    title: "Nợ đầu",
+    name: "initial_debt",
+    type: "text"
+},
+{
+    title: "Phát sinh",
+    name: "changes",
+    type: "text"
+},
+{
+    title: "Nợ cuối",
+    name: "final_debt",
     type: "text"
 }]
 

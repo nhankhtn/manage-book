@@ -6,7 +6,7 @@ const initState = {
         minStockQuantityBeforeImport: 0,
         maxDebt: 0,
         minStockAfterSale: 0,
-        maxDebtCollection: true,
+        allowOverpayment: true,
     },
     user: null
 }

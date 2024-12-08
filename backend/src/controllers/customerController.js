@@ -13,10 +13,10 @@ const reportDebt = (req, res) => {
 };
 
 const createPaymentReceipt = (req, res) => {
-  const { full_name, phone, address, email, payment_date, amount_received } =
+  const { fullName, phone, address, email, payment_date, amount_received } =
     req.body;
   customerService.createPaymentReceipt(
-    { full_name, phone, address, email, payment_date, amount_received },
+    { fullName, phone, address, email, payment_date, amount_received },
     (err, result) => {
       if (err) {
         return res.status(err.statusCode || 500).json({ error: err.message });
@@ -38,14 +38,26 @@ const getPaymentReceipt = (req, res) => {
     res.status(200).json(receipt);
   });
 };
-
-const CreatePaymentInvoice = (req, res) => {
-  const { full_name, phone, email, address, books } = req.body;
+const getCustomer = (req, res) => {
+  //get by name and phone
+  const { fullName, phone } = req.query;
+  Customer.getIDCustomer1(fullName, phone, (err, customer) => {
+    if (err) {
+      return res.status(500).json({ error: "Lấy dữ liệu thất bại" });
+    }
+    if (customer.length === 0) {
+      return res.status(404).json({ message: "No customer found" });
+    }
+    res.status(200).json(customer[0]);
+  });
+}
+const createPaymentInvoice = (req, res) => {
+  const { fullName, phone, email, address, books } = req.body;
   books.forEach((book) => {
     book.id = null;
   });
-  customerService.CreatePaymentInvoice(
-    { full_name, phone, email, address, books },
+  customerService.createPaymentInvoice(
+    { fullName, phone, email, address, books },
     (err, result) => {
       if (err) {
         return res.status(err.statusCode || 500).json({ error: err.message });
@@ -55,10 +67,10 @@ const CreatePaymentInvoice = (req, res) => {
   );
 };
 
-const CreatePaymentDebt = (req, res) => {
-  const { full_name, phone, email, address, books } = req.body;
-  customerService.CreatePaymentDebt(
-    { full_name, phone, email, address, books },
+const createPaymentDebt = (req, res) => {
+  const { fullName, phone, email, address, books } = req.body;
+  customerService.createPaymentDebt(
+    { fullName, phone, email, address, books },
     (err, result) => {
       if (err) {
         return res.status(err.statusCode || 500).json({ error: err.message });
@@ -71,6 +83,7 @@ module.exports = {
   reportDebt,
   createPaymentReceipt,
   getPaymentReceipt,
-  CreatePaymentInvoice,
-  CreatePaymentDebt,
+  createPaymentInvoice,
+  createPaymentDebt,
+  getCustomer
 };

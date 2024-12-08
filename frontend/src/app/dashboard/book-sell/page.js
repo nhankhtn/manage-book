@@ -11,10 +11,16 @@ import { BOOK_FIELDS, SELL_BOOK_FIELDS } from "@/constants";
 import Modal from "@/components/Modal";
 import { searchBooks } from "@/services/searchService";
 import { formatCurrency } from "@/utils/formatNumber";
+import { useStore } from "@/hooks/useStore";
+import { createDebt, createInvoice } from "@/services/paymentService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import useModalAlert from "@/hooks/useModal";
 
 export default function BookSell() {
     const [booksAvailable, setBooksAvailable] = useState([]);
     const [books, setBooks] = useState([]);
+    const { state: { config: { minStockAfterSale } } } = useStore();
 
     const [formInfo, setFormInfo] = useState({
         name: '',
@@ -23,10 +29,11 @@ export default function BookSell() {
         address: ''
     })
     const formRef = useRef();
-    const [error, setError] = useState();
     const [errorAddBooks, setErrorAddBooks] = useState();
     const [openModalAddBook, setOpenModalAddBook] = useState(false);
-
+    const { openModalAlert, hideModalAlert } = useModalAlert();
+    const [error, setError] = useState('');
+    const [filterText, setFilterText] = useState("");
     useEffect(() => {
         const fetchBooks = async () => {
             try {
@@ -42,17 +49,52 @@ export default function BookSell() {
             }
         }
         fetchBooks();
+
+        return () => {
+            setBooksAvailable([]);
+        }
     }, [])
 
-    const handlePayment = async (e) => {
+    const handlePayment = async (e, isDebt = false) => {
         try {
             if (formRef.current) {
                 await formRef.current.validate();
             }
+            if (books.length === 0) {
+                setError('Chưa chọn sách');
+                return;
+            }
+            setError('');
+            const data = {
+                fullName: formInfo.name,
+                phone: formInfo.phone,
+                email: formInfo.email,
+                address: formInfo.address,
+                books
+            }
+
+            if (isDebt) {
+                await createDebt(data);
+            } else {
+                await createInvoice(data);
+            }
+            setBooks([]);
+            setFormInfo({
+                name: '',
+                phone: '',
+                email: '',
+                address: ''
+            })
+            openModalAlert(true);
         } catch (err) {
-            setError(err.message);
+            console.log(err)
+            if (err.message === 'Info error') {
+                return;
+            }
+            openModalAlert(false);
         }
     }
+
     const handleChangeForm = (e) => {
         const { name, value } = e.target;
         setFormInfo(prev => ({
@@ -68,7 +110,7 @@ export default function BookSell() {
         setBooksAvailable(prevBooks => {
             return prevBooks.map(book => {
                 if (book.title === bookToDelete.title) {
-                    book.quantity += bookToDelete.amount;
+                    book.quantity += bookToDelete.quantity;
                 }
                 return book;
             });
@@ -76,21 +118,30 @@ export default function BookSell() {
     }
 
     const handleAddBooks = () => {
-        const hasError = booksAvailable.some(book => book.amount > book.quantity);
-        if (hasError) {
+        if (booksAvailable.some(book => book.amount > book.quantity)) {
             setErrorAddBooks('Số lượng sách không đủ');
             return;
         }
+        if (booksAvailable.some(book => book.quantity - book.amount < minStockAfterSale && book.amount > 0)) {
+            setErrorAddBooks(`Số lượng sách còn lại không được vượt quá ${minStockAfterSale}`);
+            return;
+        }
+
         setErrorAddBooks('');
         setBooks(prevBooks => {
             const newBooks = booksAvailable
                 .filter(book => book.amount > 0)
-                .map(book => ({ ...book }));
+                .map(book =>{
+                    return {
+                        ...book,
+                        quantity: book.amount
+                }}
+                );
 
             return prevBooks.map(book => {
                 const newBook = newBooks.find(nb => nb.title === book.title);
                 if (newBook) {
-                    return { ...book, amount: book.amount + newBook.amount };
+                    return { ...book,  quantity: book.quantity + newBook.amount };
                 }
                 return book;
             }).concat(
@@ -114,13 +165,14 @@ export default function BookSell() {
                 return book;
             })
         })
+        setFilterText('');
         setOpenModalAddBook(true);
     }
 
-    const handleUpdateRow = (indexRow, key, value) => {
+    const handleUpdateRow = (row, key, value) => {
         setBooksAvailable(preValues => {
-            return preValues.map((book, index) => {
-                if (index === indexRow) {
+            return preValues.map((book, _) => {
+                if (book.title === row.title) {
                     book[key] = value;
                 }
                 return book;
@@ -129,9 +181,11 @@ export default function BookSell() {
     }
 
     const totalPrice = useMemo(() => {
-        return books.reduce((total, book) => total + book.amount * book.price, 0);
+        return books.reduce((total, book) => total + book.quantity * book.price, 0);
     }, [books])
-
+    const filteredBooks = booksAvailable.filter(book =>
+        book.title.toLowerCase().includes(filterText.toLowerCase())
+    );
     return (
         <div className={styles.wrapper}>
             <div className={styles.info}>
@@ -147,15 +201,23 @@ export default function BookSell() {
             <div className={styles.content}>
                 <Table data={books} fieldCols={BOOK_FIELDS} deleteRow={deleteAt} />
             </div>
+            {error && <p className={styles.error}>{error}</p>}
             <div className={styles["wrap-btn"]}>
-                <Button>Ghi nợ</Button>
-                <Button onClick={handlePayment}>Thanh toán</Button>
+                <Button onClick={(e) => handlePayment(e, true)}>Ghi nợ</Button>
+                <Button onClick={(e) => handlePayment(e, false)}>Thanh toán</Button>
             </div>
             <Modal show={openModalAddBook} onHide={e => setOpenModalAddBook(false)}>
                 <div className={styles['wrapper-content-modal']}>
                     <h2 className={styles['heading-modal']}>Thêm sách</h2>
+                    <input
+                    className={styles['filter-input']}
+                    type="text"
+                    placeholder="Filter by title"
+                    value={filterText}
+                    onChange={(e) => {setFilterText(e.target.value)}}
+                    />
                     <div className={styles['list-books']}>
-                        <Table data={booksAvailable} fieldCols={SELL_BOOK_FIELDS} updateRow={handleUpdateRow} />
+                        <Table data={filteredBooks} fieldCols={SELL_BOOK_FIELDS} updateRow={handleUpdateRow} />
                     </div>
                     {errorAddBooks && <p className={styles['error-add-books']}>{errorAddBooks}</p>}
                     <div className={styles["btn-modal"]} >
@@ -166,4 +228,5 @@ export default function BookSell() {
             </Modal>
         </div>
     )
+
 }

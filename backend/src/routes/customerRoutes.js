@@ -8,8 +8,8 @@ router.post("/payment", customerController.createPaymentReceipt);
 
 router.get("/payment-receipt", customerController.getPaymentReceipt);
 
-router.post("/pay-invoice", customerController.CreatePaymentInvoice);
+router.post("/pay-invoice", customerController.createPaymentInvoice);
 
-router.post("/pay-debt", customerController.CreatePaymentDebt);
-
+router.post("/pay-debt", customerController.createPaymentDebt);
+router.get("/get-customer", customerController.getCustomer);
 module.exports = router;

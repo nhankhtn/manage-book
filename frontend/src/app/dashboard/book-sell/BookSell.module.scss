@@ -28,6 +28,7 @@
   flex: 1;
   max-height: 323px;
   margin: var(--spacer-tb) 0;
+  overflow: auto;
 }
 .wrap-btn {
   display: flex;
@@ -43,10 +44,20 @@
 .heading-modal {
   text-align: center;
 }
+
+.filter-input {
+  align-self: end;
+  width: 250px;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
 .list-books {
   flex: 1;
-  padding: var(--spacer-lr) 0;
   max-height: 85%;
+  overflow: auto;
+  margin: 10px 0 var(--spacer-tb) 0;
 }
 
 .btn-modal {
@@ -56,5 +67,37 @@
 }
 .error-add-books {
   font-size: 0.8rem;
+  color: red;
+  margin-bottom: 4px;
+}
+
+.btn-close {
+  background-color: #e11f1f !important;
+  min-width: 60px !important;
+}
+.wrapper-icon {
+  width: 60px;
+  height: 60px;
+  padding: 12px;
+  border-radius: 50%;
+}
+.icon-success {
+  color: #fff;
+  background-color: #3a9f40;
+}
+.icon-fail {
+  color: #fff;
+  background-color: #cc2626;
+}
+.icon {
+  width: 36px;
+  height: 36px;
+}
+.message {
+  font-size: 1rem;
+  margin: 12px 0;
+}
+.error {
+  font-size: 0.9rem;
   color: red;
 }

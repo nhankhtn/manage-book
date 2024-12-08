@@ -1,27 +1,29 @@
+import paths from "@/paths"
+
 export const MENU_ITEMS = [
     {
         title: "Lập phiếu nhập sách",
-        to: "/book-import"
+        to: paths.dashboard.bookImport
     },
     {
         title: "Lập hoá đơn bán sách",
-        to: "/book-sell"
+        to: paths.dashboard.bookSell
     },
     {
         title: "Tra cứu sách",
-        to: "/book-search"
+        to: paths.dashboard.bookSearch
     },
     {
         title: "Lập báo cáo tháng",
-        to: "/month-report"
+        to: paths.dashboard.monthReport
     },
     {
         title: "Lập phiếu thu tiền",
-        to: "/collect-money"
+        to: paths.dashboard.collectMoney
     },
     {
         title: "Thay đổi quy định",
-        to: "/change-rules"
+        to: paths.dashboard.changeRules
     }
 ]
 
@@ -67,7 +69,7 @@ export const SELL_BOOK_FIELDS = [{
     type: "text"
 }, {
     title: "Có sẵn",
-    name: "available",
+    name: "quantity",
     type: "text"
 },
 {
@@ -76,7 +78,7 @@ export const SELL_BOOK_FIELDS = [{
     type: "text"
 }, {
     title: "Số lượng",
-    name: "quantity",
+    name: "amount",
     type: "input"
 }]
 
@@ -103,3 +105,52 @@ export const SEARCH_BOOK_FIELDS = [{
     name: "price",
     type: "text"
 }]
+
+export const INVENTORY_BOOK_FIELDS = [{
+    title: "Tên sách",
+    name: "title",
+    type: "text"
+}, {
+    title: "Tác giả",
+    name: "author",
+    type: "text"
+},
+{
+    title: "Tồn đầu",
+    name: "initial_stock",
+    type: "text"
+},
+{
+    title: "Phát sinh",
+    name: "changes",
+    type: "text"
+},
+{
+    title: "Tồn cuối",
+    name: "final_stock",
+    type: "text"
+}]
+
+export const DEBT_CONSUMER_FIELDS = [{
+    title: "Tên khách hàng",
+    name: "full_name",
+    type: "text"
+},
+{
+    title: "Nợ đầu",
+    name: "initial_debt",
+    type: "text"
+},
+{
+    title: "Phát sinh",
+    name: "changes",
+    type: "text"
+},
+{
+    title: "Nợ cuối",
+    name: "final_debt",
+    type: "text"
+}]
+
+export const SET_CONFIG = "SET_CONFIG";
+export const SET_USER = "SET_USER";

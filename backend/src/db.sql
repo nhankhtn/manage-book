@@ -151,7 +151,7 @@ INSERT INTO rules (rule_name, rule_value, description) VALUES
 ('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
 ('maxDebt', '20000', 'Tiền nợ tối đa'),
 ('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
-('maxDebtCollection', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
+('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
 use book_management;
 
@@ -231,6 +231,23 @@ END $$
 
 DELIMITER ;
 
+DROP TRIGGER IF EXISTS books_before_update;
+DELIMITER $$
+CREATE TRIGGER books_before_update
+BEFORE UPDATE ON books
+FOR EACH ROW
+BEGIN
+    DECLARE max_import decimal(10,2);
+    
+    SELECT CAST(rule_value as UNSIGNED) into max_import
+    from rules
+    where rule_name = "minStockQuantityBeforeImport";
+    IF OLD.quantity > max_import AND OLD.quantity < NEW.Quantity THEN
+        SET @msg = CONCAT(OLD.quantity," ",OLD.title);
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @msg;
+    END IF;
+END  $$
+DELIMITER ;
 
 drop trigger if exists check_amount_received;
 

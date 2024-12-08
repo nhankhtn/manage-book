@@ -1,11 +1,11 @@
 
-import { forwardRef, useImperativeHandle, useState } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { object, string } from "yup";
 import styles from "./FormInfoCustomer.module.scss";
 
 const phone_PATTERN = /^(\+?\d{1,3}[- ]?)?\d{10}$/
 
-function FormInfoCustomer({ formData, onChange, className }, ref) {
+const FormInfoCustomer = ({ formData, onChange, className }, ref) => {
     const [errors, setErrors] = useState({});
 
     let userSchema = object({
@@ -20,6 +20,7 @@ function FormInfoCustomer({ formData, onChange, className }, ref) {
     const validate = async () => {
         try {
             await userSchema.validate(formData, { abortEarly: false });
+            setErrors({});
         } catch (validationErrors) {
             const formattedErrors = {};
             validationErrors.inner.forEach(error => {
@@ -44,7 +45,7 @@ function FormInfoCustomer({ formData, onChange, className }, ref) {
                 </div>
                 <div className={styles["form-item"]}>
                     <label htmlFor="phone">Số điện thoại</label>
-                    <input type="number" name="phone" id="phone" title="Số điện thoại" value={formData.phone} onChange={onChange} />
+                    <input type="text" name="phone" id="phone" title="Số điện thoại" value={formData.phone} onChange={onChange} />
                 </div>
             </div>
             {(errors?.name || errors?.phone) && <span className={styles.message}>{errors?.name || errors?.phone}</span>}
@@ -61,4 +62,4 @@ function FormInfoCustomer({ formData, onChange, className }, ref) {
         </div>
     </div>
 }
-export default forwardRef(FormInfoCustomer);
+export default React.memo(forwardRef(FormInfoCustomer));

@@ -1,30 +1,17 @@
 const Customer = require("../models/Customer");
 const customerService = require("../services/customerService");
 
-// reportDebt
-const reportDebt = (req, res) => {
-  const { month, year } = req.query;
-  Customer.getReportDebt(month, year, (err, report) => {
-    if (err) {
-      return res.status(500).json({ error: "Lấy dữ liệu thất bại" });
-    }
-    res.json(report);
-  });
-};
-
 const createPaymentReceipt = (req, res) => {
-  const { fullName, phone, address, email, payment_date, amount_received } =
-    req.body;
-  customerService.createPaymentReceipt(
-    { fullName, phone, address, email, payment_date, amount_received },
-    (err, result) => {
-      if (err) {
-        return res.status(err.statusCode || 500).json({ error: err.message });
-      }
-      res.status(200).json(result);
-    }
-  );
-};
+    const { full_name, phone, address, email, payment_date, amount_received } = req.body;
+    customerService.createPaymentReceipt(
+      { full_name, phone, address, email, payment_date, amount_received },
+      (err, result) => {
+        if (err) {
+            return res.status(err.statusCode || 500).json({ error: err.message });
+        }
+        res.status(200).json(result);
+      });
+}
 
 const getPaymentReceipt = (req, res) => {
   // const { id_payment } = req.query;
@@ -38,6 +25,7 @@ const getPaymentReceipt = (req, res) => {
     res.status(200).json(receipt);
   });
 };
+
 const getCustomer = (req, res) => {
   //get by name and phone
   const { fullName, phone } = req.query;
@@ -67,6 +55,20 @@ const createPaymentInvoice = (req, res) => {
   );
 };
 
+const getCustomerDebtAndLatestInvoice = (req, res) => {
+  const { full_name, phone, address, email } = req.body;
+
+  customerService.getCustomerDebtAndLatestInvoice(
+    { full_name, phone, address, email },
+    (err, data) => {
+      if (err) {
+        return res.status(err.statusCode || 500).json({ error: err.message });
+      }
+      res.status(200).json(data);
+    }
+  );
+};  
+
 const createPaymentDebt = (req, res) => {
   const { fullName, phone, email, address, books } = req.body;
   customerService.createPaymentDebt(
@@ -80,10 +82,10 @@ const createPaymentDebt = (req, res) => {
   );
 };
 module.exports = {
-  reportDebt,
   createPaymentReceipt,
   getPaymentReceipt,
   createPaymentInvoice,
   createPaymentDebt,
-  getCustomer
+  getCustomer,
+  getCustomerDebtAndLatestInvoice
 };

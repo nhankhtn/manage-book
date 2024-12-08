@@ -12,7 +12,7 @@ CREATE TABLE books (
     author NVARCHAR(30),
     quantity INT,
     price DECIMAl(10,2),
-    
+    slug NVARCHAR(70) UNIQUE NOT NULL,
     CONSTRAINT PK_BOOK PRIMARY KEY (id_book)
 );
 
@@ -113,10 +113,10 @@ CREATE TABLE rules (
 );
 
 -- Insert data into BOOK table
-INSERT INTO books (title, category, author, quantity, price) VALUES
-('The Alchemist', 'Novel', 'Paulo Coelho', 10, 10000.00),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00);
+INSERT INTO books (title, category, author, quantity, price,slug) VALUES
+('The Alchemist', 'Novel', 'Paulo Coelho', 10, 10000.00, 'the-Alchemist'),
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00, 'When-Breath-Becomes-Air'),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00,'In-Search-of-Lost-Time');
 
 -- Insert data into customers table
 INSERT INTO customers (full_name, address, phone, email) VALUES

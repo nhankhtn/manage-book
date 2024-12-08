@@ -2,9 +2,9 @@ const Customer = require("../models/Customer");
 const customerService = require("../services/customerService");
 
 const createPaymentReceipt = (req, res) => {
-    const { full_name, phone, address, email, payment_date, amount_received } = req.body;
+    const { fullName, phone, address, email, payment_date, amount_received } = req.body;
     customerService.createPaymentReceipt(
-      { full_name, phone, address, email, payment_date, amount_received },
+      { fullName, phone, address, email, payment_date, amount_received },
       (err, result) => {
         if (err) {
             return res.status(err.statusCode || 500).json({ error: err.message });

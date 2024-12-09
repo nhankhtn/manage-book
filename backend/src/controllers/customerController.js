@@ -2,16 +2,19 @@ const Customer = require("../models/Customer");
 const customerService = require("../services/customerService");
 
 const createPaymentReceipt = (req, res) => {
-    const { fullName, phone, address, email, payment_date, amount_received } = req.body;
-    customerService.createPaymentReceipt(
-      { fullName, phone, address, email, payment_date, amount_received },
-      (err, result) => {
-        if (err) {
-            return res.status(err.statusCode || 500).json({ error: err.message });
-        }
-        res.status(200).json(result);
-      });
-}
+  const { fullName, phone, address, email, payment_date, amount_received } =
+    req.body;
+  customerService.createPaymentReceipt(
+    { fullName, phone, address, email, payment_date, amount_received },
+    (err, result) => {
+      if (err) {
+        return res.status(err.statusCode || 500).json({ error: err.message });
+      }
+      res.status(200).json(result);
+    }
+  );
+};
+
 
 const getPaymentReceipt = (req, res) => {
   // const { id_payment } = req.query;
@@ -38,7 +41,7 @@ const getCustomer = (req, res) => {
     }
     res.status(200).json(customer[0]);
   });
-}
+};
 const createPaymentInvoice = (req, res) => {
   const { fullName, phone, email, address, books } = req.body;
   books.forEach((book) => {
@@ -67,7 +70,7 @@ const getCustomerDebtAndLatestInvoice = (req, res) => {
       res.status(200).json(data);
     }
   );
-};  
+};
 
 const createPaymentDebt = (req, res) => {
   const { fullName, phone, email, address, books } = req.body;
@@ -87,5 +90,5 @@ module.exports = {
   createPaymentInvoice,
   createPaymentDebt,
   getCustomer,
-  getCustomerDebtAndLatestInvoice
+  getCustomerDebtAndLatestInvoice,
 };

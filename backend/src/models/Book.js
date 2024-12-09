@@ -90,16 +90,40 @@ const updateBook = ({ slug }, { quantity }, callback) => {
 };
 
 const getStock = (month, year, callback) => {
+  if (
+    !Number.isInteger(month) ||
+    !Number.isInteger(year) ||
+    month < 1 ||
+    month > 12
+  ) {
+    return callback({ message: "Tháng hoặc năm không hợp lệ" }, null);
+  }
+
+  console.log(month, year);
+
   connection.query(
-    `SELECT b.title, b.author, srd.initial_stock, srd.changes, srd.final_stock
-         FROM stock_reports sr
-         INNER JOIN stock_reports_details srd ON sr.id_stock_report = srd.id_stock_report
-         INNER JOIN books b on srd.id_book = b.id_book 
-         WHERE MONTH(sr.report_date) = ? AND YEAR(sr.report_date) = ?`,
+    `SELECT 
+         b.title, 
+         b.author, 
+         COALESCE(srd.initial_stock, 0) AS initial_stock, 
+         COALESCE(srd.changes, 0) AS changes, 
+         COALESCE(srd.final_stock, 0) AS final_stock
+     FROM stock_reports sr
+     INNER JOIN stock_reports_details srd ON sr.id_stock_report = srd.id_stock_report
+     INNER JOIN books b ON srd.id_book = b.id_book
+     WHERE MONTH(sr.report_date) = ? AND YEAR(sr.report_date) = ?`,
     [month, year],
     (error, results) => {
       if (error) {
-        return callback(error, null);
+        return callback(
+          { message: "Lỗi khi truy vấn dữ liệu tồn kho", error },
+          null
+        );
+      }
+      if (results.length === 0) {
+        return callback(null, {
+          message: "Không tìm thấy dữ liệu tồn kho cho tháng và năm này",
+        });
       }
       callback(null, results);
     }

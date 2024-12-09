@@ -6,7 +6,10 @@ router.post("/payment", customerController.createPaymentReceipt);
 
 router.get("/payment-receipt", customerController.getPaymentReceipt);
 
-router.post("/get-invoice-and-debt", customerController.getCustomerDebtAndLatestInvoice);
+router.post(
+  "/get-invoice-and-debt",
+  customerController.getCustomerDebtAndLatestInvoice
+);
 
 router.post("/pay-invoice", customerController.createPaymentInvoice);
 

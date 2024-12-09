@@ -13,7 +13,7 @@ const getIDCustomer = async (fullName, phone, address, email, callback) => {
     }
   );
 };
-const getIDCustomer1 = (fullName, phone, callback) => {
+const getCustomer = (fullName, phone, callback) => {
   // Đảm bảo rằng name và phone đều là chuỗi
   const fullNameStr = String(fullName);
   const phoneStr = String(phone);
@@ -52,7 +52,7 @@ const createPaymentReceipt = (
 
 const getCustomerDebtAndLatestInvoice = (id_customer, callback) => {
   connection.query(
-      `SELECT 
+    `SELECT 
           debt.final_debt, 
           SUM(id.unit_price*id.quantity) AS total_invoice_amount
       FROM customers c
@@ -61,13 +61,13 @@ const getCustomerDebtAndLatestInvoice = (id_customer, callback) => {
       LEFT JOIN invoices_details id ON id.id_invoice = i.id_invoice
       WHERE c.id_customer = ?
       GROUP BY debt.final_debt, id.id_invoice`,
-      [id_customer, id_customer],
-      (error, results) => {
-          if (error) {
-              return callback(error, null);
-          }
-          callback(null, results[0]);
+    [id_customer, id_customer],
+    (error, results) => {
+      if (error) {
+        return callback(error, null);
       }
+      callback(null, results[0]);
+    }
   );
 };
 
@@ -289,7 +289,6 @@ const updateDebt = (id_customer, books, callback) => {
 //     });
 // };
 
-
 module.exports = {
   getIDCustomer,
   createPaymentReceipt,
@@ -297,7 +296,7 @@ module.exports = {
   addCustomer,
   paymentInvoice,
   updateBookQuantities,
-  getIDCustomer1,
+  getCustomer,
   updateDebt,
-getCustomerDebtAndLatestInvoice,
+  getCustomerDebtAndLatestInvoice,
 };

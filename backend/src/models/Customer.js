@@ -36,7 +36,7 @@ const createPaymentReceipt = (
   amount_received,
   callback
 ) => {
-  const id_payment_receipt = generate.generateIDPaymentReceipt(); // Create id for payment receipt
+  const id_payment_receipt = generate.generateID(); // Create id for payment receipt
 
   connection.query(
     `INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES (?, ?, ?, ?)`,

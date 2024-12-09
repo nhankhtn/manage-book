@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: Bookstore API
+  version: 1.0.0
+  description: API for managing books, customers, and reports
+
+paths:
+  # Books APIs
+  /api/books/search:
+    summary: Books
+    get:
+      summary: Search for books
+      responses:
+        "200":
+          description: A list of books
+
+  /api/books/update:
+    summary: Books
+    put:
+      summary: Update books
+      responses:
+        "200":
+          description: Books updated successfully
+
+  /api/books/stocks/report:
+    summary: Books
+    get:
+      summary: Get stock report for books
+      responses:
+        "200":
+          description: Stock report
+
+  /api/books/total/price:
+    summary: Books
+    get:
+      summary: Get total price of all books
+      responses:
+        "200":
+          description: Total price of books
+
+  # Customers APIs
+  /api/customers/payment:
+    summary: Customers
+    post:
+      summary: Create a payment receipt
+      responses:
+        "200":
+          description: Payment receipt created
+
+  /api/customers/payment-receipt:
+    summary: Customers
+    get:
+      summary: Get payment receipts
+      responses:
+        "200":
+          description: List of payment receipts
+
+  /api/customers/invoice-and-debt:
+    summary: Customers
+    post:
+      summary: Get customer debt and latest invoice
+      responses:
+        "200":
+          description: Customer debt and latest invoice
+
+  /api/customers/pay-invoice:
+    summary: Customers
+    post:
+      summary: Pay an invoice
+      responses:
+        "200":
+          description: Invoice paid
+
+  /api/customers/pay-debt:
+    summary: Customers
+    post:
+      summary: Pay customer debt
+      responses:
+        "200":
+          description: Debt paid
+
+  /api/customers/get-customer:
+    summary: Customers
+    get:
+      summary: Get customer information
+      responses:
+        "200":
+          description: Customer information
+
+  # Reports APIs
+  /api/reports/debt:
+    summary: Reports
+    get:
+      summary: Get debt report
+      responses:
+        "200":
+          description: Debt report
+
+  /api/reports/all-debt:
+    summary: Reports
+    get:
+      summary: Get all debt report
+      responses:
+        "200":
+          description: All debt report
+
+  # Rules APIs
+  /api/rules:
+    summary: Rules
+    get:
+      summary: Get the current rules
+      responses:
+        "200":
+          description: List of rules
+    put:
+      summary: Update rules
+      responses:
+        "200":
+          description: Rules updated

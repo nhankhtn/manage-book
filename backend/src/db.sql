@@ -12,7 +12,7 @@ CREATE TABLE books (
     author NVARCHAR(30),
     quantity INT,
     price DECIMAl(10,2),
-    
+    slug NVARCHAR(70) UNIQUE NOT NULL,
     CONSTRAINT PK_BOOK PRIMARY KEY (id_book)
 );
 
@@ -113,10 +113,10 @@ CREATE TABLE rules (
 );
 
 -- Insert data into BOOK table
-INSERT INTO books (title, category, author, quantity, price) VALUES
-('The Alchemist', 'Novel', 'Paulo Coelho', 10, 10000.00),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00);
+INSERT INTO books (title, category, author, quantity, price,slug) VALUES
+('The Alchemist', 'Novel', 'Paulo Coelho', 10, 10000.00, 'the-Alchemist'),
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00, 'When-Breath-Becomes-Air'),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00,'In-Search-of-Lost-Time');
 
 -- Insert data into customers table
 INSERT INTO customers (full_name, address, phone, email) VALUES
@@ -151,7 +151,7 @@ INSERT INTO rules (rule_name, rule_value, description) VALUES
 ('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
 ('maxDebt', '20000', 'Tiền nợ tối đa'),
 ('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
-('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
+('maxDebtCollection', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
 use book_management;
 
@@ -232,21 +232,37 @@ END $$
 DELIMITER ;
 
 DROP TRIGGER IF EXISTS books_before_update;
+
 DELIMITER $$
+
 CREATE TRIGGER books_before_update
+
 BEFORE UPDATE ON books
+
 FOR EACH ROW
+
 BEGIN
+
     DECLARE max_import decimal(10,2);
+
     
+
     SELECT CAST(rule_value as UNSIGNED) into max_import
+
     from rules
+
     where rule_name = "minStockQuantityBeforeImport";
+
     IF OLD.quantity > max_import AND OLD.quantity < NEW.Quantity THEN
+
         SET @msg = CONCAT(OLD.quantity," ",OLD.title);
+
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @msg;
+
     END IF;
+
 END  $$
+
 DELIMITER ;
 
 drop trigger if exists check_amount_received;
@@ -543,7 +559,8 @@ INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
 ('INV001', 1, '2023-01-20'),
 ('INV002', 2, '2023-02-25'),
 ('INV003', 2, '2023-03-25'),
-('INV004', 1, '2023-03-25');
+('INV004', 1, '2023-03-25'),
+('INV005', 3, '2023-01-25');
 
 -- Insert data into invoices_details table
 INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
@@ -559,9 +576,11 @@ INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amo
 
 INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
 ('INV003', 3, 3, 150.00),
-('INV004', 3, 3, 150.00);
+('INV004', 3, 3, 150.00),
+('INV005', 3, 5, 100.00);
 
 -- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
 -- ('INV003', 1, 1, 150.00);
 
 use book_management;
+

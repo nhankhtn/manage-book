@@ -7,23 +7,68 @@ info:
 paths:
   # Books APIs
   /api/books/search:
-    summary: Books
     get:
       summary: Search for books
+      parameters:
+        - in: query
+          name: title
+          required: false
+          schema:
+            type: string
+            maxLength: 70
+        - in: query
+          name: category
+          required: false
+          schema:
+            type: string
+            maxLength: 50
+        - in: query
+          name: author
+          required: false
+          schema:
+            type: string
+            maxLength: 30
+        - in: query
+          name: price
+          required: false
+          schema:
+            type: number
+            format: decimal
+            maximum: 9999999999.99
       responses:
         "200":
           description: A list of books
 
   /api/books/update:
-    summary: Books
     put:
       summary: Update books
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 70
+                category:
+                  type: string
+                  maxLength: 50
+                author:
+                  type: string
+                  maxLength: 30
+                quantity:
+                  type: integer
+                price:
+                  type: number
+                  format: decimal
+                  maximum: 9999999999.99
       responses:
         "200":
           description: Books updated successfully
 
   /api/books/stocks/report:
-    summary: Books
     get:
       summary: Get stock report for books
       responses:
@@ -31,7 +76,6 @@ paths:
           description: Stock report
 
   /api/books/total/price:
-    summary: Books
     get:
       summary: Get total price of all books
       responses:
@@ -40,15 +84,34 @@ paths:
 
   # Customers APIs
   /api/customers/payment:
-    summary: Customers
     post:
       summary: Create a payment receipt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                phone:
+                  type: string
+                address:
+                  type: string
+                email:
+                  type: string
+                payment_date:
+                  type: string
+                  format: date
+                amount_received:
+                  type: number
+                  format: decimal
       responses:
         "200":
           description: Payment receipt created
 
   /api/customers/payment-receipt:
-    summary: Customers
     get:
       summary: Get payment receipts
       responses:
@@ -56,31 +119,90 @@ paths:
           description: List of payment receipts
 
   /api/customers/invoice-and-debt:
-    summary: Customers
     post:
       summary: Get customer debt and latest invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name:
+                  type: string
+                phone:
+                  type: string
+                address:
+                  type: string
+                email:
+                  type: string
       responses:
         "200":
           description: Customer debt and latest invoice
 
   /api/customers/pay-invoice:
-    summary: Customers
     post:
       summary: Pay an invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                address:
+                  type: string
+                books:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      book_id:
+                        type: integer
+                      quantity:
+                        type: integer
       responses:
         "200":
           description: Invoice paid
 
   /api/customers/pay-debt:
-    summary: Customers
     post:
       summary: Pay customer debt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                address:
+                  type: string
+                books:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      book_id:
+                        type: integer
+                      quantity:
+                        type: integer
       responses:
         "200":
           description: Debt paid
 
   /api/customers/get-customer:
-    summary: Customers
     get:
       summary: Get customer information
       responses:
@@ -89,15 +211,24 @@ paths:
 
   # Reports APIs
   /api/reports/debt:
-    summary: Reports
     get:
       summary: Get debt report
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
       responses:
         "200":
           description: Debt report
 
   /api/reports/all-debt:
-    summary: Reports
     get:
       summary: Get all debt report
       responses:
@@ -106,7 +237,6 @@ paths:
 
   # Rules APIs
   /api/rules:
-    summary: Rules
     get:
       summary: Get the current rules
       responses:
@@ -114,6 +244,24 @@ paths:
           description: List of rules
     put:
       summary: Update rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                minImportQuantity:
+                  type: integer
+                minStockQuantityBeforeImport:
+                  type: integer
+                maxDebt:
+                  type: number
+                  format: decimal
+                minStockAfterSale:
+                  type: integer
+                allowOverpayment:
+                  type: boolean
       responses:
         "200":
           description: Rules updated

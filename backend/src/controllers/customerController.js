@@ -15,6 +15,7 @@ const createPaymentReceipt = (req, res) => {
   );
 };
 
+
 const getPaymentReceipt = (req, res) => {
   // const { id_payment } = req.query;
   Customer.getPaymentReceipt((err, receipt) => {

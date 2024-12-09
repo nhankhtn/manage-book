@@ -1,22 +1,6 @@
 const connection = require("../config/database");
 const generate = require("../utils/generate");
 
-const getReportDebt = (month, year, callback) => {
-  connection.query(
-    `SELECT c.full_name, drd.initial_debt, drd.changes, drd.final_debt
-                      FROM debt_reports_details drd inner join debt_reports dr on drd.id_debt_report = dr.id_debt_report
-                                                   inner join customers c on c.id_customer = drd.id_customer
-                      where MONTH(dr.report_date) = ? AND YEAR(dr.report_date) = ?`,
-    [month, year],
-    (error, results) => {
-      if (error) {
-        return callback(error, null);
-      }
-      callback(null, results);
-    }
-  );
-};
-
 const getIDCustomer = async (fullName, phone, address, email, callback) => {
   connection.query(
     `SELECT id_customer FROM customers WHERE full_name = ? AND phone = ? AND address = ? AND email = ?`,
@@ -29,7 +13,7 @@ const getIDCustomer = async (fullName, phone, address, email, callback) => {
     }
   );
 };
-const getIDCustomer1 = (fullName, phone, callback) => {
+const getCustomer = (fullName, phone, callback) => {
   // Đảm bảo rằng name và phone đều là chuỗi
   const fullNameStr = String(fullName);
   const phoneStr = String(phone);
@@ -65,6 +49,37 @@ const createPaymentReceipt = (
     }
   );
 };
+
+const getCustomerDebtAndLatestInvoice = (id_customer, callback) => {
+  connection.query(
+    `SELECT 
+          debt.final_debt, 
+          SUM(id.unit_price*id.quantity) AS total_invoice_amount
+      FROM customers c
+      LEFT JOIN debt_reports_details debt ON debt.id_customer = c.id_customer
+      LEFT JOIN invoices i ON i.id_customer = c.id_customer
+      LEFT JOIN invoices_details id ON id.id_invoice = i.id_invoice
+      WHERE c.id_customer = ?
+      GROUP BY debt.final_debt, id.id_invoice`,
+    [id_customer, id_customer],
+    (error, results) => {
+      if (error) {
+        return callback(error, null);
+      }
+      callback(null, results[0]);
+    }
+  );
+};
+
+// const getCustomerDebt = (id_customer, callback) => {
+//     connection.query(`SELECT debt FROM customers WHERE id_customer = ?`, [id_customer], (error, results) => {
+//         if (error) {
+//             return callback(error, null);
+//         }
+//         console.log("Customer debt: ", results);
+//         callback(null, results);
+//     });
+// };
 
 const getPaymentReceipt = (callback) => {
   const query = `SELECT * FROM payment_receipts`;
@@ -259,14 +274,29 @@ const updateDebt = (id_customer, books, callback) => {
   );
 };
 
+// const updateCustomerDebt = (id_customer, amount_paid, callback) => {
+//     const updateDebtQuery = `
+//     UPDATE customers
+//     SET debt = debt + ?
+//     WHERE id_customer = ?
+//     `;
+//     connection.query(updateDebtQuery, [amount_paid, id_customer], (err, updateDebtResult) => {
+//         if (err) {
+//             return callback({ statusCode: 500, message: "Lỗi khi cập nhật nợ khách hàng" }, null);
+//         }
+//         console.log("Updated debt:", updateDebtResult);
+//         callback(null, { updateDebtResult });
+//     });
+// };
+
 module.exports = {
-  getReportDebt,
   getIDCustomer,
   createPaymentReceipt,
   getPaymentReceipt,
   addCustomer,
   paymentInvoice,
   updateBookQuantities,
-  getIDCustomer1,
+  getCustomer,
   updateDebt,
+  getCustomerDebtAndLatestInvoice,
 };

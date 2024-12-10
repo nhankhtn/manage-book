@@ -6,7 +6,7 @@ info:
 
 paths:
   # Books APIs
-  /api/books/search:
+  /api/books:
     get:
       summary: Search for books
       parameters:
@@ -39,31 +39,32 @@ paths:
         "200":
           description: A list of books
 
-  /api/books/update:
     put:
-      summary: Update books
+      summary: Update multiple books
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  maxLength: 70
-                category:
-                  type: string
-                  maxLength: 50
-                author:
-                  type: string
-                  maxLength: 30
-                quantity:
-                  type: integer
-                price:
-                  type: number
-                  format: decimal
-                  maximum: 9999999999.99
+              type: array
+              items:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    maxLength: 70
+                  category:
+                    type: string
+                    maxLength: 50
+                  author:
+                    type: string
+                    maxLength: 30
+                  quantity:
+                    type: integer
+                  price:
+                    type: number
+                    format: decimal
+                    maximum: 9999999999.99
       responses:
         "200":
           description: Books updated successfully
@@ -71,6 +72,17 @@ paths:
   /api/books/stocks/report:
     get:
       summary: Get stock report for books
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
       responses:
         "200":
           description: Stock report
@@ -118,7 +130,7 @@ paths:
         "200":
           description: List of payment receipts
 
-  /api/customers/invoice-and-debt:
+  /api/customers/get-invoice-and-debt:
     post:
       summary: Get customer debt and latest invoice
       requestBody:
@@ -205,6 +217,17 @@ paths:
   /api/customers/get-customer:
     get:
       summary: Get customer information
+      parameters:
+        - in: query
+          name: fullName
+          required: false
+          schema:
+            type: String
+        - in: query
+          name: phone
+          required: false
+          schema:
+            type: String
       responses:
         "200":
           description: Customer information
@@ -234,6 +257,31 @@ paths:
       responses:
         "200":
           description: All debt report
+
+  /api/reports/stock:
+    get:
+      summary: Get stock report
+      parameters:
+        - in: query
+          name: month
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: year
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Stock report
+
+  /api/reports/all-stock:
+    get:
+      summary: Get all stock report
+      responses:
+        "200":
+          description: Stock report
 
   # Rules APIs
   /api/rules:

@@ -7,14 +7,22 @@ const createPaymentReceipt = (data, callback) => {
     data;
 
   // Retrieve the ID of the customer from the data
-  Customer.getIDCustomer(fullName, phone, address, email, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
         null
       );
     } else {
+      if (results.length === 0) {
+        return callback(
+          { statusCode: 404, message: "Không tìm thấy khách hàng" },
+          null
+        );
+      }
+      console.log(results);
       const id_customer = results[0].id_customer;
+      console.log(id_customer);
 
       // Create a payment receipt (Has to be nested inside the getIDCustomer callback to ensure id_customer is retrieved first)
       Customer.createPaymentReceipt(
@@ -38,7 +46,7 @@ const createPaymentReceipt = (data, callback) => {
 const getCustomerDebtAndLatestInvoice = (data, callback) => {
   const { full_name, phone, address, email } = data;
 
-  Customer.getIDCustomer(full_name, phone, address, email, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -70,7 +78,7 @@ const getCustomerDebtAndLatestInvoice = (data, callback) => {
 
 const createPaymentInvoice = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getIDCustomer1(fullName, phone, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -105,7 +113,7 @@ const createPaymentInvoice = (data, callback) => {
 
 const createPaymentDebt = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getIDCustomer1(fullName, phone, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },

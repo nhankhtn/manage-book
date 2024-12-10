@@ -31,7 +31,7 @@ const getPaymentReceipt = (req, res) => {
 const getCustomer = (req, res) => {
   //get by name and phone
   const { fullName, phone } = req.query;
-  Customer.getIDCustomer1(fullName, phone, (err, customer) => {
+  Customer.getCustomer({ fullName, phone }, (err, customer) => {
     if (err) {
       return res.status(500).json({ error: "Lấy dữ liệu thất bại" });
     }

@@ -32,8 +32,8 @@ const getBooks = (params = {}, callback, options = { comparison: "exact" }) => {
 const addBook = ({ title, category, author, quantity, price }, callback) => {
   const slug = generateSlug(title);
   connection.query(
-    "INSERT INTO books (title, category, author, quantity, slug, price) VALUES (?, ?, ?, ?,?, ?)",
-    [title, category, author, quantity, slug, price],
+    "INSERT INTO books (title, category, author, quantity,  price,slug) VALUES (?, ?, ?, ?,?, ?)",
+    [title, category, author, quantity, price, slug],
 
     (error, result) => {
       if (error) {
@@ -111,9 +111,10 @@ const getStock = (month, year, callback) => {
      FROM stock_reports sr
      INNER JOIN stock_reports_details srd ON sr.id_stock_report = srd.id_stock_report
      INNER JOIN books b ON srd.id_book = b.id_book
-     WHERE MONTH(sr.report_date) = ? AND YEAR(sr.report_date) = ?`,
+     WHERE MONTH(sr.report_date) <= ? AND YEAR(sr.report_date) = ?`,
     [month, year],
     (error, results) => {
+      console.log(results);
       if (error) {
         return callback(
           { message: "Lỗi khi truy vấn dữ liệu tồn kho", error },

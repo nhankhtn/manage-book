@@ -1,33 +1,27 @@
 const connection = require("../config/database");
 const generate = require("../utils/generate");
 
-const getIDCustomer = async (fullName, phone, address, email, callback) => {
-  connection.query(
-    `SELECT id_customer FROM customers WHERE full_name = ? AND phone = ? AND address = ? AND email = ?`,
-    [fullName, phone, address, email],
-    (error, results) => {
-      if (error) {
-        return callback(error, null);
-      }
-      callback(null, results);
-    }
-  );
-};
-const getCustomer = (fullName, phone, callback) => {
-  // Đảm bảo rằng name và phone đều là chuỗi
-  const fullNameStr = String(fullName);
-  const phoneStr = String(phone);
+const getCustomer = (data, callback) => {
+  const { fullName, phone, address, email } = data;
+  const fullNameStr = fullName?.toString().trim();
+  const phoneStr = phone?.toString().trim();
+  let queryStr = `SELECT * FROM customers WHERE full_name = ? AND phone = ?`;
+  const queryParams = [fullNameStr, phoneStr];
 
-  connection.query(
-    `SELECT * FROM customers WHERE full_name = ? AND phone = ?`,
-    [fullNameStr, phoneStr],
-    (error, results) => {
-      if (error) {
-        return callback(error, null);
-      }
-      callback(null, results);
+  if (address) {
+    queryStr += ` AND address = ?`;
+    queryParams.push(address.toString().trim());
+  }
+  if (email) {
+    queryStr += ` AND email = ?`;
+    queryParams.push(email.toString().trim());
+  }
+  connection.query(queryStr, queryParams, (error, results) => {
+    if (error) {
+      return callback(error, null);
     }
-  );
+    callback(null, results);
+  });
 };
 
 const createPaymentReceipt = (
@@ -290,7 +284,6 @@ const updateDebt = (id_customer, books, callback) => {
 // };
 
 module.exports = {
-  getIDCustomer,
   createPaymentReceipt,
   getPaymentReceipt,
   addCustomer,

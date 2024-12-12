@@ -211,7 +211,7 @@ async function updateBooksData(books) {
           resolve(results);
         });
       });
-      book.id = id_book.id_book;
+      book.id = id_book;
     } catch (err) {
       console.error(err);
     }

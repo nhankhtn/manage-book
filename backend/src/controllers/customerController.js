@@ -43,9 +43,6 @@ const getCustomer = (req, res) => {
 };
 const createPaymentInvoice = (req, res) => {
   const { fullName, phone, email, address, books } = req.body;
-  books.forEach((book) => {
-    book.id = null;
-  });
   customerService.createPaymentInvoice(
     { fullName, phone, email, address, books },
     (err, result) => {

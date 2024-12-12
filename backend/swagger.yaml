@@ -175,10 +175,17 @@ paths:
                   items:
                     type: object
                     properties:
-                      book_id:
-                        type: integer
+                      title:
+                        type: string
+                      author:
+                        type: string
+                      category:
+                        type: string
                       quantity:
                         type: integer
+                      price:
+                        type: number
+                        format: decimal
       responses:
         "200":
           description: Invoice paid

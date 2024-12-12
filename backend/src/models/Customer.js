@@ -133,7 +133,7 @@ const paymentInvoice = (id_customer, books, callback) => {
       connection.query(
         `INSERT INTO invoices (id_invoice, id_customer, invoices_date) VALUES (?, ?, NOW())`,
         [newInvoiceId, id_customer],
-        (error, results) => {
+        (error) => {
           if (error) {
             return callback(
               { statusCode: 500, message: "Lỗi khi tạo hóa đơn" },
@@ -148,20 +148,20 @@ const paymentInvoice = (id_customer, books, callback) => {
             book.category,
             book.quantity,
             book.price,
-            null,
+            null, // id_book sẽ được thêm sau
           ]);
 
           const promises = invoiceItems.map(
-            (item, index) =>
+            (item) =>
               new Promise((resolve, reject) => {
                 connection.query(
                   `SELECT id_book FROM books WHERE title = ? AND author = ? AND category = ?`,
                   [item[1], item[2], item[3]],
                   (error, results) => {
-                    if (error) {
-                      return reject(error);
-                    }
-                    item[6] = results[0].id_book;
+                    if (error) return reject(error);
+                    if (results.length === 0)
+                      return reject("Sách không tồn tại");
+                    item[6] = results[0].id_book; // Cập nhật id_book
                     resolve();
                   }
                 );
@@ -179,31 +179,50 @@ const paymentInvoice = (id_customer, books, callback) => {
 
               const insertQuery = `INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES ?`;
 
-              connection.query(
-                insertQuery,
-                [invoiceDetailsValues],
-                (error, results) => {
-                  if (error) {
-                    return callback(
-                      {
-                        statusCode: 500,
-                        message: "Lỗi khi thêm sách vào hóa đơn",
-                      },
-                      null
-                    );
-                  }
-
-                  callback(null, {
-                    message:
-                      "Hóa đơn và chi tiết hóa đơn đã được tạo thành công",
-                  });
+              connection.query(insertQuery, [invoiceDetailsValues], (error) => {
+                if (error) {
+                  return callback(
+                    {
+                      statusCode: 500,
+                      message: "Lỗi khi thêm sách vào hóa đơn",
+                    },
+                    null
+                  );
                 }
-              );
+
+                // Tính tổng tiền của hóa đơn
+                const totalAmount = invoiceDetailsValues.reduce(
+                  (sum, detail) => sum + detail[2] * detail[3],
+                  0
+                );
+
+                // Tạo phiếu thanh toán
+                createPaymentReceipt(
+                  id_customer,
+                  new Date(), // Ngày thanh toán
+                  totalAmount,
+                  (error) => {
+                    if (error) {
+                      return callback(
+                        {
+                          statusCode: 500,
+                          message: "Lỗi khi tạo phiếu thanh toán",
+                        },
+                        null
+                      );
+                    }
+
+                    callback(null, {
+                      message:
+                        "Hóa đơn và phiếu thanh toán đã được tạo thành công",
+                    });
+                  }
+                );
+              });
             })
             .catch((error) => {
-              console.error("Error fetching id_book:", error);
               callback(
-                { statusCode: 500, message: "Lỗi khi truy xuất id_book" },
+                { statusCode: 500, message: "Lỗi khi xử lý chi tiết hóa đơn" },
                 null
               );
             });

@@ -127,27 +127,6 @@ INSERT INTO customers (full_name, address, phone, email) VALUES
 ('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com'),
 ('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com');
 
--- Insert data into stock_receipts table
-INSERT INTO stock_receipts (id_stock_receipt, receipt_date) VALUES
-('SR001', '2023-01-15'),
-('SR002', '2023-02-20');
-
--- Insert data into stock_receipts_details table
-INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity) VALUES
-('SR001', 1, 5),
-('SR001', 2, 3),
-('SR002', 3, 2);
-
--- Insert data into stock_reports table
-INSERT INTO stock_reports (id_stock_report, report_month, report_year) VALUES
-('SR001', 3,2023);
-
--- Insert data into stock_reports_details table
-INSERT INTO stock_reports_details (id_stock_report, id_book, initial_stock, changes, final_stock) VALUES
-('SR001', 1, 10, -5, 5),
-('SR001', 2, 5, -3, 2),
-('SR001', 3, 8, 0, 8);
-
 
 INSERT INTO rules (rule_name, rule_value, description) VALUES 
 ('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
@@ -657,6 +636,48 @@ END $$
 
 DELIMITER ;
 
+DELIMITER $$
+
+-- Trigger khi thêm mới hoặc cập nhật sách
+CREATE TRIGGER after_update_or_insert_books
+AFTER INSERT ON books
+FOR EACH ROW
+BEGIN
+    DECLARE receipt_id VARCHAR(6);
+    DECLARE current_date DATE;
+
+    -- Lấy ngày hiện tại
+    SET current_date = CURDATE();
+
+    -- Tìm phiếu nhập hàng của ngày hiện tại
+    SELECT id_stock_receipt
+    INTO receipt_id
+    FROM stock_receipts
+    WHERE receipt_date = current_date
+    LIMIT 1;
+
+    -- Nếu chưa có phiếu nhập hàng, tạo mới
+    IF receipt_id IS NULL THEN
+        SET receipt_id = CONCAT('RC', DATE_FORMAT(current_date, '%y%m%d'));
+
+        INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
+        VALUES (receipt_id, current_date);
+    END IF;
+
+    -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
+    IF EXISTS (SELECT 1 FROM stock_receipts_details WHERE id_stock_receipt = receipt_id AND id_book = NEW.id_book) THEN
+        -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
+        UPDATE stock_receipts_details
+        SET quantity = quantity + NEW.quantity
+        WHERE id_stock_receipt = receipt_id AND id_book = NEW.id_book;
+    ELSE
+        -- Nếu chưa có, thêm chi tiết nhập hàng
+        INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
+        VALUES (receipt_id, NEW.id_book, NEW.quantity);
+    END IF;
+END$$
+
+DELIMITER ;
 
 DELIMITER $$
 

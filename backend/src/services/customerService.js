@@ -147,8 +147,7 @@ const createPaymentDebt = (data, callback) => {
 };
 
 const createAndProcess = (id_customer, books, which, callback) => {
-  updateBooksData(books);
-  Customer.paymentInvoice(id_customer, books, (err, results) => {
+  Customer.paymentInvoice(id_customer, books, which, (err, results) => {
     if (err) {
       console.log(err);
       return callback(
@@ -156,6 +155,7 @@ const createAndProcess = (id_customer, books, which, callback) => {
         null
       );
     }
+
     if (which === "invoice") {
       Customer.updateBookQuantities(books, (updateErr) => {
         if (updateErr) {
@@ -174,6 +174,7 @@ const createAndProcess = (id_customer, books, which, callback) => {
         });
       });
     }
+
     if (which === "debt") {
       Customer.updateBookQuantities(books, (updateErr) => {
         if (updateErr) {
@@ -184,6 +185,7 @@ const createAndProcess = (id_customer, books, which, callback) => {
           );
         }
       });
+
       Customer.updateDebt(id_customer, books, (updateErr, results) => {
         if (updateErr) {
           console.log(updateErr);
@@ -200,23 +202,6 @@ const createAndProcess = (id_customer, books, which, callback) => {
   });
 };
 
-async function updateBooksData(books) {
-  for (const book of books) {
-    try {
-      const id_book = await new Promise((resolve, reject) => {
-        Books.getBookId(book, (err, results) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve(results);
-        });
-      });
-      book.id = id_book;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-}
 module.exports = {
   createPaymentReceipt,
   createPaymentInvoice,

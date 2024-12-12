@@ -1,5 +1,6 @@
 const connection = require("../config/database");
 const generate = require("../utils/generate");
+const { generateSlug } = require("../utils/generate");
 
 const getCustomer = (data, callback) => {
   const { fullName, phone, address, email } = data;
@@ -108,7 +109,7 @@ const addCustomer = (fullName, address, phone, email, callback) => {
   );
 };
 
-const paymentInvoice = (id_customer, books, callback) => {
+const paymentInvoice = (id_customer, books, which, callback) => {
   // Kiểm tra ID hóa đơn trước đó
   connection.query(
     `SELECT id_invoice FROM invoices ORDER BY id_invoice DESC LIMIT 1`,
@@ -190,34 +191,40 @@ const paymentInvoice = (id_customer, books, callback) => {
                   );
                 }
 
-                // Tính tổng tiền của hóa đơn
-                const totalAmount = invoiceDetailsValues.reduce(
-                  (sum, detail) => sum + detail[2] * detail[3],
-                  0
-                );
+                if (which === "invoice") {
+                  // Tính tổng tiền của hóa đơn
+                  const totalAmount = invoiceDetailsValues.reduce(
+                    (sum, detail) => sum + detail[2] * detail[3],
+                    0
+                  );
 
-                // Tạo phiếu thanh toán
-                createPaymentReceipt(
-                  id_customer,
-                  new Date(), // Ngày thanh toán
-                  totalAmount,
-                  (error) => {
-                    if (error) {
-                      return callback(
-                        {
-                          statusCode: 500,
-                          message: "Lỗi khi tạo phiếu thanh toán",
-                        },
-                        null
-                      );
+                  // Tạo phiếu thanh toán
+                  createPaymentReceipt(
+                    id_customer,
+                    new Date(), // Ngày thanh toán
+                    totalAmount,
+                    (error) => {
+                      if (error) {
+                        return callback(
+                          {
+                            statusCode: 500,
+                            message: "Lỗi khi tạo phiếu thanh toán",
+                          },
+                          null
+                        );
+                      }
+
+                      callback(null, {
+                        message:
+                          "Hóa đơn và phiếu thanh toán đã được tạo thành công",
+                      });
                     }
-
-                    callback(null, {
-                      message:
-                        "Hóa đơn và phiếu thanh toán đã được tạo thành công",
-                    });
-                  }
-                );
+                  );
+                } else {
+                  callback(null, {
+                    message: "Hóa đơn đã được tạo thành công",
+                  });
+                }
               });
             })
             .catch((error) => {
@@ -233,21 +240,22 @@ const paymentInvoice = (id_customer, books, callback) => {
 };
 
 const updateBookQuantities = (books, callback) => {
-  const promises = books.map(
-    (book) =>
-      new Promise((resolve, reject) => {
-        connection.query(
-          `UPDATE books SET quantity = quantity - ? WHERE id_book = ?`,
-          [book.quantity, book.id],
-          (err) => {
-            if (err) {
-              return reject(err);
-            }
-            resolve();
+  const promises = books.map((book) => {
+    const slug = generateSlug(book.title);
+
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `UPDATE books SET quantity = quantity - ? WHERE slug = ?`,
+        [book.quantity, slug],
+        (err) => {
+          if (err) {
+            return reject(err);
           }
-        );
-      })
-  );
+          resolve();
+        }
+      );
+    });
+  });
 
   Promise.all(promises)
     .then(() => {

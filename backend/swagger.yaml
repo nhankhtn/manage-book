@@ -177,15 +177,21 @@ paths:
                     properties:
                       title:
                         type: string
+                        example: "The Alchemist"
                       author:
                         type: string
+                        example: "Paulo Coelho"
                       category:
                         type: string
+                        example: "Novel"
                       quantity:
                         type: integer
+                        example: 10
                       price:
                         type: number
-                        format: decimal
+                        format: float
+                        example: 10000.00
+
       responses:
         "200":
           description: Invoice paid

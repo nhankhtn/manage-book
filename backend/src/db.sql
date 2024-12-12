@@ -27,13 +27,13 @@ CREATE TABLE customers (
 );
 
 CREATE TABLE stock_receipts (
-    id_stock_receipt VARCHAR(15),
+    id_stock_receipt VARCHAR(10),
     receipt_date DATE,
     CONSTRAINT PK_stock_receipts PRIMARY KEY (id_stock_receipt)
 );
 
 CREATE TABLE stock_receipts_details (
-    id_stock_receipt VARCHAR(15),
+    id_stock_receipt VARCHAR(10),
     id_book INT,
     quantity INT,
     CONSTRAINT PK_stock_receipts_details PRIMARY KEY (id_stock_receipt, id_book),
@@ -113,6 +113,19 @@ CREATE TABLE rules (
     rule_value NVARCHAR(255) NOT NULL, 
     description text 
 );
+
+-- Insert data into BOOK table
+INSERT INTO books (title, category, author, quantity, price, slug) VALUES
+('The Alchemist', 'Novel', 'Paulo Coelho', 50, 10000.00, 'the-alchemist'),
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00, 'when-breath-becomes-air'),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00, 'in-search-of-lost-time');
+
+
+-- Insert data into customers table
+INSERT INTO customers (full_name, address, phone, email) VALUES
+('Nguyen Van A', 'Hanoi', '0123456789', 'a@gmail.com'),
+('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com'),
+('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com');
 
 
 INSERT INTO rules (rule_name, rule_value, description) VALUES 
@@ -623,7 +636,6 @@ END $$
 
 DELIMITER ;
 
-
 DELIMITER $$
 
 CREATE TRIGGER after_insert_books
@@ -699,25 +711,24 @@ BEGIN
     );
 
     -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
-    IF NEW.Quantity > Old.Quantity then
-        IF EXISTS (
-            SELECT 1
-            FROM stock_receipts_details
-            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
-        ) THEN
-            -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
-            UPDATE stock_receipts_details
-            SET quantity = quantity + (NEW.quantity-Old.quantity)
-            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
-        ELSE
-            -- Nếu chưa có, thêm chi tiết nhập hàng
-            INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
-            VALUES (@receipt_id, NEW.id_book, NEW.quantity);
-        END IF;
+    IF EXISTS (
+        SELECT 1
+        FROM stock_receipts_details
+        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
+    ) THEN
+        -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
+        UPDATE stock_receipts_details
+        SET quantity = quantity + NEW.quantity
+        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
+    ELSE
+        -- Nếu chưa có, thêm chi tiết nhập hàng
+        INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
+        VALUES (@receipt_id, NEW.id_book, NEW.quantity);
     END IF;
 END$$
 
 DELIMITER ;
+
 
 DELIMITER $$
 
@@ -881,41 +892,28 @@ DELIMITER ;
 
 
 
--- Insert data into BOOK table
-INSERT INTO books (title, category, author, quantity, price, slug) VALUES
-('The Alchemist', 'Novel', 'Paulo Coelho', 10, 10000.00, 'the-alchemist'),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00, 'when-breath-becomes-air'),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00, 'in-search-of-lost-time');
+-- Insert data into invoices table
+INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
+('INV001', 1, '2023-01-20'),
+('INV002', 2, '2023-02-25'),
+('INV003', 2, '2023-03-25'),
+('INV004', 1, '2023-03-25');
 
+-- Insert data into invoices_details table
+INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+('INV001', 2, 2, 150.00),
+('INV002', 3, 5, 300.00),
+('INV003', 1, 1, 150.00);
 
--- -- Insert data into customers table
--- INSERT INTO customers (full_name, address, phone, email) VALUES
--- ('Nguyen Van A', 'Hanoi', '0123456789', 'a@gmail.com'),
--- ('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com'),
--- ('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com');
+-- Insert data into payment_receipts table
+INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
+('PR001', 1, '2023-01-21', 150.00),
+('PR002', 2, '2023-02-26', 1500.00),
+('PR003', 1, '2023-03-21', 150.00);
 
--- -- Insert data into invoices table
--- INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
--- ('INV001', 1, '2023-01-20'),
--- ('INV002', 2, '2023-02-25'),
--- ('INV003', 2, '2023-03-25'),
--- ('INV004', 1, '2023-03-25');
-
--- -- Insert data into invoices_details table
--- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
--- ('INV001', 2, 2, 150.00),
--- ('INV002', 3, 5, 300.00),
--- ('INV003', 1, 1, 150.00);
-
--- -- Insert data into payment_receipts table
--- INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
--- ('PR001', 1, '2023-01-21', 150.00),
--- ('PR002', 2, '2023-02-26', 1500.00),
--- ('PR003', 1, '2023-03-21', 150.00);
-
--- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
--- ('INV003', 3, 3, 150.00),
--- ('INV004', 3, 3, 150.00);
+INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+('INV003', 3, 3, 150.00),
+('INV004', 3, 3, 150.00);
 
 -- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
 -- ('INV003', 1, 1, 150.00);

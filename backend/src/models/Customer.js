@@ -109,6 +109,46 @@ const addCustomer = (fullName, address, phone, email, callback) => {
   );
 };
 const paymentInvoice = (id_customer, books, which, callback) => {
+  const promises = books.map((book) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT id_book FROM books WHERE title = ? AND author = ? AND category = ?`,
+        [book.title, book.author, book.category],
+        (error, results) => {
+          if (error || results.length === 0) {
+            return reject(
+              error || { message: "Không tìm thấy sách tương ứng" }
+            );
+          }
+          book.id_book = results[0].id_book;
+          resolve();
+        }
+      );
+    });
+  });
+
+  Promise.all(promises)
+    .then(() => {
+      updateBookQuantities(books, (error) => {
+        if (error) {
+          return callback(
+            { statusCode: 422, message: "Lỗi khi cập nhật số lượng sách" },
+            null
+          );
+        }
+        callback(null, { message: "Cập nhật thành công" });
+      });
+    })
+    .catch((error) => {
+      callback(
+        {
+          statusCode: 422,
+          message: error.message || "Lỗi khi lấy ID sách",
+        },
+        null
+      );
+    });
+
   connection.query(
     `SELECT id_invoice FROM invoices ORDER BY id_invoice DESC LIMIT 1`,
     (error, results) => {
@@ -133,29 +173,10 @@ const paymentInvoice = (id_customer, books, which, callback) => {
         (error) => {
           if (error) {
             return callback(
-              { statusCode: 500, message: "Lỗi khi tạo hóa đơn" },
+              { statusCode: 422, message: "Lỗi khi tạo hóa đơn" },
               null
             );
           }
-
-          // Lấy ID sách dựa trên tiêu đề, tác giả, thể loại
-          const promises = books.map((book) => {
-            return new Promise((resolve, reject) => {
-              connection.query(
-                `SELECT id_book FROM books WHERE title = ? AND author = ? AND category = ?`,
-                [book.title, book.author, book.category],
-                (error, results) => {
-                  if (error || results.length === 0) {
-                    return reject(
-                      error || { message: "Không tìm thấy sách tương ứng" }
-                    );
-                  }
-                  book.id_book = results[0].id_book; // Gắn id_book vào đối tượng book
-                  resolve();
-                }
-              );
-            });
-          });
 
           Promise.all(promises)
             .then(() => {
@@ -207,6 +228,7 @@ const paymentInvoice = (id_customer, books, which, callback) => {
                             if (err) {
                               return callback(err);
                             }
+
                             const currentDebt = selectResult[0].debt;
                             callback(null, { currentDebt });
                           }
@@ -233,7 +255,6 @@ const paymentInvoice = (id_customer, books, which, callback) => {
                             null
                           );
                         }
-
                         callback(null, { totalAmount });
                       }
                     );
@@ -250,6 +271,25 @@ const paymentInvoice = (id_customer, books, which, callback) => {
         }
       );
     }
+  );
+};
+
+const updateBookQuantities = (books, callback) => {
+  const promises = books.map(
+    (book) =>
+      new Promise((resolve, reject) => {
+        console.log(book.id_book);
+        connection.query(
+          `UPDATE books SET quantity = quantity - ? WHERE id_book = ?`,
+          [book.quantity, book.id_book],
+          (err) => {
+            if (err) {
+              return reject(err);
+            }
+            resolve();
+          }
+        );
+      })
   );
 };
 

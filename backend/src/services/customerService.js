@@ -147,61 +147,23 @@ const createPaymentDebt = (data, callback) => {
 };
 
 const createAndProcess = (id_customer, books, which, callback) => {
-  Customer.paymentInvoice(id_customer, books, which, (err, results) => {
+  Customer.paymentInvoice(id_customer, books, which, (err, result) => {
     if (err) {
       console.log(err);
       return callback(
-        { statusCode: 500, message: "Lỗi khi tạo hóa đơn" },
+        { statusCode: 500, message: "Lỗi trong quá trình tạo hóa đơn" },
         null
       );
     }
 
-    if (which === "invoice") {
-      Customer.updateBookQuantities(books, (updateErr) => {
-        if (updateErr) {
-          console.log(updateErr);
-          return callback(
-            { statusCode: 500, message: "Lỗi khi cập nhật số lượng sách" },
-            null
-          );
-        }
-        const totalAmount = books.reduce(
-          (sum, book) => sum + book.quantity * book.price,
-          0
-        );
-        callback(null, {
-          message: `Hóa đơn đã được tạo thành công. Tổng số tiền thanh toán là: ${totalAmount}`,
-        });
-      });
-    }
+    const responseMessage =
+      which === "invoice"
+        ? `Hóa đơn đã được tạo thành công. Tổng số tiền thanh toán là: ${result.totalAmount}`
+        : `Hóa đơn đã được tạo thành công. Số tiền nợ hiện tại là: ${result.debt}`;
 
-    if (which === "debt") {
-      Customer.updateBookQuantities(books, (updateErr) => {
-        if (updateErr) {
-          console.log(updateErr);
-          return callback(
-            { statusCode: 500, message: "Lỗi khi cập nhật số lượng sách" },
-            null
-          );
-        }
-      });
-
-      Customer.updateDebt(id_customer, books, (updateErr, results) => {
-        if (updateErr) {
-          console.log(updateErr);
-          return callback(
-            { statusCode: 500, message: "Lỗi khi cập nhật số tiền nợ" },
-            null
-          );
-        }
-        callback(null, {
-          message: `Hóa đơn đã được tạo thành công. Số tiền nợ hiện tại là: ${results}`,
-        });
-      });
-    }
+    callback(null, { message: responseMessage });
   });
 };
-
 module.exports = {
   createPaymentReceipt,
   createPaymentInvoice,

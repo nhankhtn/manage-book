@@ -114,27 +114,6 @@ CREATE TABLE rules (
     description text 
 );
 
--- Insert data into BOOK table
-INSERT INTO books (title, category, author, quantity, price, slug) VALUES
-('The Alchemist', 'Novel', 'Paulo Coelho', 50, 10000.00, 'the-alchemist'),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00, 'when-breath-becomes-air'),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00, 'in-search-of-lost-time');
-
-
--- Insert data into customers table
-INSERT INTO customers (full_name, address, phone, email) VALUES
-('Nguyen Van A', 'Hanoi', '0123456789', 'a@gmail.com'),
-('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com'),
-('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com');
-
-
-INSERT INTO rules (rule_name, rule_value, description) VALUES 
-('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
-('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
-('maxDebt', '20000', 'Tiền nợ tối đa'),
-('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
-('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
-
 use book_management;
 
 
@@ -202,7 +181,7 @@ BEGIN
     DECLARE min_inventory_after INT;
     SELECT CAST(rule_value AS UNSIGNED) INTO min_inventory_after
     FROM rules 
-    WHERE rule_name = 'Min book quantity after selling';
+    WHERE rule_name = 'minStockAfterSale';
 
 
     IF new.quantity < min_inventory_after THEN
@@ -520,6 +499,7 @@ END $$
 DELIMITER ;
 
 -- STOCK PROCEDURE
+
 DELIMITER $$
 
 CREATE PROCEDURE CreateOrUpdateStockReportDetail(
@@ -530,19 +510,18 @@ CREATE PROCEDURE CreateOrUpdateStockReportDetail(
 )
 BEGIN
     DECLARE reportID VARCHAR(6);
-    DECLARE initialStock INT;
-    DECLARE existingRecord INT;
+    DECLARE initialStock INT DEFAULT 0;
+    DECLARE existingRecord INT DEFAULT 0;
     DECLARE nextMonth INT;
     DECLARE nextYear INT;
     DECLARE nextReportID VARCHAR(6);
-    DECLARE currentFinalStock INT;
+    DECLARE currentFinalStock INT DEFAULT 0;
 
-    -- Kiểm tra báo cáo tồn tại
+    -- Lấy hoặc tạo mới ID báo cáo hiện tại
     SELECT id_stock_report INTO reportID
     FROM stock_reports
     WHERE report_month = reportMonth AND report_year = reportYear;
 
-    -- Nếu không tồn tại, tạo mới
     IF reportID IS NULL THEN
         SET reportID = CONCAT('SR', LPAD((SELECT COUNT(*) + 1 FROM stock_reports), 4, '0'));
         INSERT INTO stock_reports (id_stock_report, report_month, report_year)
@@ -550,17 +529,14 @@ BEGIN
     END IF;
 
     -- Lấy tồn kho đầu kỳ từ tháng trước
-    SET initialStock = (
-        SELECT final_stock
-        FROM stock_reports_details srd
-        JOIN stock_reports sr ON srd.id_stock_report = sr.id_stock_report
-        WHERE id_book = bookID
-        AND (sr.report_year < reportYear OR (sr.report_year = reportYear AND sr.report_month < reportMonth))
-        ORDER BY sr.report_year DESC, sr.report_month DESC
-        LIMIT 1
-    );
+    SELECT final_stock INTO initialStock
+    FROM stock_reports_details srd
+    JOIN stock_reports sr ON srd.id_stock_report = sr.id_stock_report
+    WHERE id_book = bookID
+      AND (sr.report_year < reportYear OR (sr.report_year = reportYear AND sr.report_month < reportMonth))
+    ORDER BY sr.report_year DESC, sr.report_month DESC
+    LIMIT 1;
 
-    -- Nếu không có báo cáo trước đó, khởi tạo tồn kho đầu kỳ là 0
     IF initialStock IS NULL THEN
         SET initialStock = 0;
     END IF;
@@ -573,7 +549,8 @@ BEGIN
     IF existingRecord > 0 THEN
         -- Nếu tồn tại, cập nhật
         UPDATE stock_reports_details
-        SET changes = changes + changeQuantity,
+        SET 
+            changes = changes + changeQuantity,
             final_stock = initialStock + changes
         WHERE id_stock_report = reportID AND id_book = bookID;
     ELSE
@@ -593,7 +570,7 @@ BEGIN
         SET nextYear = nextYear + 1;
     END IF;
 
-    -- Lấy tồn kho cuối cùng để truyền
+    -- Lấy tồn kho cuối kỳ để truyền
     SELECT final_stock INTO currentFinalStock
     FROM stock_reports_details
     WHERE id_stock_report = reportID AND id_book = bookID;
@@ -682,52 +659,58 @@ END$$
 
 DELIMITER ;
 
-
 DELIMITER $$
 
 CREATE TRIGGER after_update_books
 AFTER UPDATE ON books
 FOR EACH ROW
 BEGIN
-    -- Tìm phiếu nhập hàng của ngày hiện tại hoặc tạo mới nếu chưa tồn tại
-    IF NOT EXISTS (
-        SELECT 1
-        FROM stock_receipts
-        WHERE receipt_date = CURDATE()
-    ) THEN
-        INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
-        VALUES (
-            CONCAT('RC', DATE_FORMAT(CURDATE(), '%y%m%d')),
-            CURDATE()
+    -- Kiểm tra nếu số lượng sách mới lớn hơn số lượng sách cũ
+    IF NEW.quantity > OLD.quantity THEN
+        -- Tính số lượng thêm vào
+        SET @quantity_added = NEW.quantity - OLD.quantity;
+
+        -- Tìm phiếu nhập hàng của ngày hiện tại hoặc tạo mới nếu chưa tồn tại
+        IF NOT EXISTS (
+            SELECT 1
+            FROM stock_receipts
+            WHERE receipt_date = CURDATE()
+        ) THEN
+            INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
+            VALUES (
+                CONCAT('RC', DATE_FORMAT(CURDATE(), '%y%m%d')),
+                CURDATE()
+            );
+        END IF;
+
+        -- Lấy ID phiếu nhập hàng hiện tại
+        SET @receipt_id = (
+            SELECT id_stock_receipt
+            FROM stock_receipts
+            WHERE receipt_date = CURDATE()
+            LIMIT 1
         );
-    END IF;
 
-    -- Lấy ID phiếu nhập hàng hiện tại
-    SET @receipt_id = (
-        SELECT id_stock_receipt
-        FROM stock_receipts
-        WHERE receipt_date = CURDATE()
-        LIMIT 1
-    );
-
-    -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
-    IF EXISTS (
-        SELECT 1
-        FROM stock_receipts_details
-        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
-    ) THEN
-        -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
-        UPDATE stock_receipts_details
-        SET quantity = quantity + NEW.quantity
-        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
-    ELSE
-        -- Nếu chưa có, thêm chi tiết nhập hàng
-        INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
-        VALUES (@receipt_id, NEW.id_book, NEW.quantity);
+        -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
+        IF EXISTS (
+            SELECT 1
+            FROM stock_receipts_details
+            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
+        ) THEN
+            -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
+            UPDATE stock_receipts_details
+            SET quantity = quantity + @quantity_added
+            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
+        ELSE
+            -- Nếu chưa có, thêm chi tiết nhập hàng
+            INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
+            VALUES (@receipt_id, NEW.id_book, @quantity_added);
+        END IF;
     END IF;
 END$$
 
 DELIMITER ;
+
 
 
 DELIMITER $$
@@ -782,21 +765,6 @@ END $$
 DELIMITER ;
 
 
-DELIMITER $$
-
-CREATE TRIGGER AfterUpdateInvoiceDetailsForStock
-AFTER UPDATE ON invoices_details
-FOR EACH ROW
-BEGIN
-    CALL CreateOrUpdateStockReportDetail(
-        MONTH((SELECT invoices_date FROM invoices WHERE id_invoice = NEW.id_invoice)),
-        YEAR((SELECT invoices_date FROM invoices WHERE id_invoice = NEW.id_invoice)),
-        NEW.id_book,
-        OLD.quantity - NEW.quantity
-    );
-END $$
-
-DELIMITER ;
 
 
 
@@ -817,39 +785,8 @@ END $$
 DELIMITER ;
 
 
-DELIMITER $$
-
-CREATE TRIGGER AfterDeleteInvoiceDetailsForStock
-AFTER DELETE ON invoices_details
-FOR EACH ROW
-BEGIN
-    CALL CreateOrUpdateStockReportDetail(
-        MONTH((SELECT invoices_date FROM invoices WHERE id_invoice = OLD.id_invoice)),
-        YEAR((SELECT invoices_date FROM invoices WHERE id_invoice = OLD.id_invoice)),
-        OLD.id_book,
-        OLD.quantity
-    );
-END $$
-
-DELIMITER ;
 
 
-DELIMITER $$
-
-CREATE TRIGGER AfterUpdateBookStock
-AFTER UPDATE ON books
-FOR EACH ROW
-BEGIN
-    -- Cập nhật báo cáo kho khi số lượng sách trong bảng books thay đổi
-    CALL CreateOrUpdateStockReportDetail(
-        MONTH(CURRENT_DATE),  -- Tháng hiện tại
-        YEAR(CURRENT_DATE),   -- Năm hiện tại
-        OLD.id_book,          -- ID sách
-        NEW.quantity - OLD.quantity  -- Sự thay đổi số lượng
-    );
-END $$
-
-DELIMITER ;
 
 DELIMITER $$
 
@@ -892,30 +829,53 @@ DELIMITER ;
 
 
 
--- Insert data into invoices table
-INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
-('INV001', 1, '2023-01-20'),
-('INV002', 2, '2023-02-25'),
-('INV003', 2, '2023-03-25'),
-('INV004', 1, '2023-03-25');
+-- Insert data into BOOK table
+INSERT INTO books (title, category, author, quantity, price, slug) VALUES
+('The Alchemist', 'Novel', 'Paulo Coelho', 50, 10000.00, 'the-alchemist'),
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00, 'when-breath-becomes-air'),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00, 'in-search-of-lost-time');
 
--- Insert data into invoices_details table
-INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
-('INV001', 2, 2, 150.00),
-('INV002', 3, 5, 300.00),
-('INV003', 1, 1, 150.00);
 
--- Insert data into payment_receipts table
-INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
-('PR001', 1, '2023-01-21', 150.00),
-('PR002', 2, '2023-02-26', 1500.00),
-('PR003', 1, '2023-03-21', 150.00);
+-- Insert data into customers table
+INSERT INTO customers (full_name, address, phone, email) VALUES
+('Nguyen Van A', 'Hanoi', '0123456789', 'a@gmail.com'),
+('Tran Thi B', 'Ho Chi Minh City', '0987654321', 'b@gmail.com'),
+('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com');
 
-INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
-('INV003', 3, 3, 150.00),
-('INV004', 3, 3, 150.00);
+
+INSERT INTO rules (rule_name, rule_value, description) VALUES 
+('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
+('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
+('maxDebt', '20000', 'Tiền nợ tối đa'),
+('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
+('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
+
+
+
+-- -- Insert data into invoices table
+-- INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
+-- ('INV001', 1, '2023-01-20'),
+-- ('INV002', 2, '2023-02-25'),
+-- ('INV003', 2, '2023-03-25'),
+-- ('INV004', 1, '2023-03-25');
+
+-- -- Insert data into invoices_details table
+-- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+-- ('INV001', 2, 2, 150.00),
+-- ('INV002', 3, 5, 300.00),
+-- ('INV003', 1, 1, 150.00);
+
+-- -- Insert data into payment_receipts table
+-- INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
+-- ('PR001', 1, '2023-01-21', 150.00),
+-- ('PR002', 2, '2023-02-26', 1500.00),
+-- ('PR003', 1, '2023-03-21', 150.00);
 
 -- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
--- ('INV003', 1, 1, 150.00);
+-- ('INV003', 3, 3, 150.00),
+-- ('INV004', 3, 3, 150.00);
+
+-- -- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+-- -- ('INV003', 1, 1, 150.00);
 
 use book_management;

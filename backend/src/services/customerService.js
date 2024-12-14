@@ -7,14 +7,22 @@ const createPaymentReceipt = (data, callback) => {
     data;
 
   // Retrieve the ID of the customer from the data
-  Customer.getIDCustomer(fullName, phone, address, email, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
         null
       );
     } else {
+      if (results.length === 0) {
+        return callback(
+          { statusCode: 404, message: "Không tìm thấy khách hàng" },
+          null
+        );
+      }
+      console.log(results);
       const id_customer = results[0].id_customer;
+      console.log(id_customer);
 
       // Create a payment receipt (Has to be nested inside the getIDCustomer callback to ensure id_customer is retrieved first)
       Customer.createPaymentReceipt(
@@ -38,7 +46,7 @@ const createPaymentReceipt = (data, callback) => {
 const getCustomerDebtAndLatestInvoice = (data, callback) => {
   const { full_name, phone, address, email } = data;
 
-  Customer.getIDCustomer(full_name, phone, address, email, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -70,7 +78,7 @@ const getCustomerDebtAndLatestInvoice = (data, callback) => {
 
 const createPaymentInvoice = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getCustomer(fullName, phone, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -105,7 +113,7 @@ const createPaymentInvoice = (data, callback) => {
 
 const createPaymentDebt = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getCustomer(fullName, phone, (err, results) => {
+  Customer.getCustomer(data, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -139,76 +147,23 @@ const createPaymentDebt = (data, callback) => {
 };
 
 const createAndProcess = (id_customer, books, which, callback) => {
-  updateBooksData(books);
-  Customer.paymentInvoice(id_customer, books, (err, results) => {
+  Customer.paymentInvoice(id_customer, books, which, (err, result) => {
     if (err) {
       console.log(err);
       return callback(
-        { statusCode: 500, message: "Lỗi khi tạo hóa đơn" },
+        { statusCode: 500, message: "Lỗi trong quá trình tạo hóa đơn" },
         null
       );
     }
-    if (which === "invoice") {
-      Customer.updateBookQuantities(books, (updateErr) => {
-        if (updateErr) {
-          console.log(updateErr);
-          return callback(
-            { statusCode: 500, message: "Lỗi khi cập nhật số lượng sách" },
-            null
-          );
-        }
-        const totalAmount = books.reduce(
-          (sum, book) => sum + book.quantity * book.price,
-          0
-        );
-        callback(null, {
-          message: `Hóa đơn đã được tạo thành công. Tổng số tiền thanh toán là: ${totalAmount}`,
-        });
-      });
-    }
-    if (which === "debt") {
-      Customer.updateBookQuantities(books, (updateErr) => {
-        if (updateErr) {
-          console.log(updateErr);
-          return callback(
-            { statusCode: 500, message: "Lỗi khi cập nhật số lượng sách" },
-            null
-          );
-        }
-      });
-      Customer.updateDebt(id_customer, books, (updateErr, results) => {
-        if (updateErr) {
-          console.log(updateErr);
-          return callback(
-            { statusCode: 500, message: "Lỗi khi cập nhật số tiền nợ" },
-            null
-          );
-        }
-        callback(null, {
-          message: `Hóa đơn đã được tạo thành công. Số tiền nợ hiện tại là: ${results}`,
-        });
-      });
-    }
+
+    const responseMessage =
+      which === "invoice"
+        ? `Hóa đơn đã được tạo thành công. Tổng số tiền thanh toán là: ${result.totalAmount}`
+        : `Hóa đơn đã được tạo thành công. Số tiền nợ hiện tại là: ${result.debt}`;
+
+    callback(null, { message: responseMessage });
   });
 };
-
-async function updateBooksData(books) {
-  for (const book of books) {
-    try {
-      const id_book = await new Promise((resolve, reject) => {
-        Books.getBookId(book, (err, results) => {
-          if (err) {
-            return reject(err);
-          }
-          resolve(results);
-        });
-      });
-      book.id = id_book.id_book;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-}
 module.exports = {
   createPaymentReceipt,
   createPaymentInvoice,

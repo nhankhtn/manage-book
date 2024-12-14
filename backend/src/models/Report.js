@@ -1,51 +1,62 @@
-const connection = require('../config/database');
+const connection = require("../config/database");
 
 const getAllDebtReport = (callback) => {
-    connection.query(`SELECT dr.id_debt_report, dr.report_month, dr.report_year, drd.id_customer, drd.initial_debt, drd.changes, drd.final_debt 
+  connection.query(
+    `SELECT dr.id_debt_report, dr.report_month, dr.report_year, drd.id_customer, drd.initial_debt, drd.changes, drd.final_debt 
                       FROM debt_reports dr JOIN debt_reports_details drd 
-                      ON dr.id_debt_report = drd.id_debt_report`, (error, results) => {
-        if (error) {
-            return callback(error, null);
-        }
-        callback(null, results);
-    });
+                      ON dr.id_debt_report = drd.id_debt_report`,
+    (error, results) => {
+      if (error) {
+        return callback(error, null);
+      }
+      callback(null, results);
+    }
+  );
 };
 
 const isDebtReportExist = (month, year, callback) => {
-    connection.query(`SELECT * FROM debt_reports WHERE report_month = ? AND report_year = ?`, [month, year], (error, results) => {
-        if (error) {
-            console.log('lỗi1');
-            return callback(error, null);
-        }
-        callback(null, results);
-    });
-}
+  connection.query(
+    `SELECT * FROM debt_reports WHERE report_month = ? AND report_year = ?`,
+    [month, year],
+    (error, results) => {
+      if (error) {
+        console.log("lỗi1");
+        return callback(error, null);
+      }
+      callback(null, results);
+    }
+  );
+};
 
 const getDebtReport = (month, year, callback) => {
-    // Check if the debt report for the given month and year exists
-    isDebtReportExist(month, year, (error, results) => {
-        if (error) {
-            return callback(error, null);
-        }
+  // Check if the debt report for the given month and year exists
+  isDebtReportExist(month, year, (error, results) => {
+    if (error) {
+      return callback(error, null);
+    }
 
-        if (results.length === 0) {
-            // Insert a new debt report if it does not exist
-            const insertQuery = `
+    if (results.length === 0) {
+      // Insert a new debt report if it does not exist
+      const insertQuery = `
                 INSERT INTO debt_reports (id_debt_report, report_month, report_year)
                 SELECT CONCAT('DR', LPAD(COUNT(*) + 1, 4, '0')), ?, ?
                 FROM debt_reports;
             `;
-            connection.query(insertQuery, [month, year], (insertError, insertResults) => {
-                if (insertError) {
-                    return callback(insertError, null);
-                }
+      connection.query(
+        insertQuery,
+        [month, year],
+        (insertError, insertResults) => {
+          if (insertError) {
+            return callback(insertError, null);
+          }
 
-                // After inserting, fetch the new debt report data
-                getDebtReport(month, year, callback);
-            });
-        } else {
-            // If the report exists, retrieve the data
-            const sqlQuery = `
+          // After inserting, fetch the new debt report data
+          getDebtReport(month, year, callback);
+        }
+      );
+    } else {
+      // If the report exists, retrieve the data
+      const sqlQuery = `
                 WITH LastKnownDebts AS (
                 SELECT
                     drd.id_customer,
@@ -94,19 +105,145 @@ const getDebtReport = (month, year, callback) => {
             LEFT JOIN debt_reports dr ON dr.report_month = ? AND dr.report_year = ?;
             `;
 
-            // Execute the query
-            connection.query(sqlQuery, [year, year, month, month, year, month, year], (queryError, queryResults) => {
-                if (queryError) {
-                    return callback(queryError, null);
-                }
-                callback(null, queryResults);
-            });
+      // Execute the query
+      connection.query(
+        sqlQuery,
+        [year, year, month, month, year, month, year],
+        (queryError, queryResults) => {
+          if (queryError) {
+            return callback(queryError, null);
+          }
+          callback(null, queryResults);
         }
-    });
+      );
+    }
+  });
 };
 
+// Stock
+
+const getAllStockReport = (callback) => {
+  connection.query(
+    `SELECT sr.id_stock_report, sr.report_month, sr.report_year, srd.id_book, srd.initial_stock, srd.changes, srd.final_stock
+                        FROM stock_reports sr JOIN stock_reports_details srd 
+                        ON sr.id_stock_report = srd.id_stock_report`,
+    (error, results) => {
+      if (error) {
+        return callback(error, null);
+      }
+      callback(null, results);
+    }
+  );
+};
+
+const isStockReportExist = (month, year, callback) => {
+  connection.query(
+    `SELECT * FROM stock_reports WHERE report_month = ? AND report_year = ?`,
+    [month, year],
+    (error, results) => {
+      if (error) {
+        return callback(error, null);
+      }
+      callback(null, results);
+    }
+  );
+};
+
+const getStockReport = (month, year, callback) => {
+  // Kiểm tra xem báo cáo kho cho tháng và năm đã tồn tại chưa
+  isStockReportExist(month, year, (error, results) => {
+    if (error) {
+      return callback(error, null);
+    }
+
+    if (results.length === 0) {
+      // Nếu báo cáo chưa tồn tại, thêm báo cáo mới
+      const insertQuery = `
+                  INSERT INTO stock_reports (id_stock_report, report_month, report_year)
+                  SELECT CONCAT('SR', LPAD(COUNT(*) + 1, 4, '0')), ?, ?
+                  FROM stock_reports;
+              `;
+      connection.query(
+        insertQuery,
+        [month, year],
+        (insertError, insertResults) => {
+          if (insertError) {
+            return callback(insertError, null);
+          }
+
+          // Sau khi thêm báo cáo mới, lấy dữ liệu báo cáo
+          getStockReport(month, year, callback);
+        }
+      );
+    } else {
+      // Nếu báo cáo tồn tại, lấy dữ liệu báo cáo
+      const sqlQuery = `
+                  WITH LastKnownStocks AS (
+                  SELECT
+                      srd.id_book,
+                      srd.final_stock AS last_final_stock,
+                      ROW_NUMBER() OVER (
+                          PARTITION BY srd.id_book
+                          ORDER BY sr.report_year DESC, sr.report_month DESC
+                      ) AS row_num
+                  FROM stock_reports_details srd
+                  JOIN stock_reports sr ON sr.id_stock_report = srd.id_stock_report
+                  WHERE sr.report_year < ? OR (sr.report_year = ? AND sr.report_month < ?)
+              ),
+              CurrentStocks AS (
+                  SELECT
+                      sr.id_stock_report,
+                      sr.report_month,
+                      sr.report_year,
+                      srd.id_book,
+                      srd.initial_stock,
+                      srd.changes,
+                      srd.final_stock
+                  FROM stock_reports_details srd
+                  JOIN stock_reports sr ON sr.id_stock_report = srd.id_stock_report
+                  WHERE sr.report_month = ? AND sr.report_year = ?
+              ),
+              AllBooks AS (
+                  SELECT id_book FROM CurrentStocks
+                  UNION
+                  SELECT id_book FROM LastKnownStocks
+              )
+              SELECT
+                  COALESCE(cs.id_stock_report, sr.id_stock_report) AS id_stock_report,
+                  sr.report_month,
+                  sr.report_year,
+                  ab.id_book,
+                  COALESCE(cs.initial_stock, lks.last_final_stock) AS initial_stock,
+                  COALESCE(cs.changes, 0.00) AS changes,
+                  COALESCE(cs.final_stock, COALESCE(lks.last_final_stock, 0.00)) AS final_stock
+              FROM AllBooks ab
+              LEFT JOIN CurrentStocks cs ON ab.id_book = cs.id_book
+              LEFT JOIN (
+                  SELECT id_book, last_final_stock
+                  FROM LastKnownStocks
+                  WHERE row_num = 1
+              ) lks ON ab.id_book = lks.id_book
+              LEFT JOIN stock_reports sr ON sr.report_month = ? AND sr.report_year = ?;
+              `;
+
+      // Thực thi câu truy vấn
+      connection.query(
+        sqlQuery,
+        [year, year, month, month, year, month, year],
+        (queryError, queryResults) => {
+          if (queryError) {
+            return callback(queryError, null);
+          }
+          callback(null, queryResults);
+        }
+      );
+    }
+  });
+};
 
 module.exports = {
-    getAllDebtReport,
-    getDebtReport
+  getAllDebtReport,
+  getDebtReport,
+  getAllStockReport,
+  getStockReport,
 };

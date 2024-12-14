@@ -1,33 +1,28 @@
 const connection = require("../config/database");
 const generate = require("../utils/generate");
+const { generateSlug } = require("../utils/generate");
 
-const getIDCustomer = async (fullName, phone, address, email, callback) => {
-  connection.query(
-    `SELECT id_customer FROM customers WHERE full_name = ? AND phone = ? AND address = ? AND email = ?`,
-    [fullName, phone, address, email],
-    (error, results) => {
-      if (error) {
-        return callback(error, null);
-      }
-      callback(null, results);
-    }
-  );
-};
-const getCustomer = (fullName, phone, callback) => {
-  // Đảm bảo rằng name và phone đều là chuỗi
-  const fullNameStr = String(fullName);
-  const phoneStr = String(phone);
+const getCustomer = (data, callback) => {
+  const { fullName, phone, address, email } = data;
+  const fullNameStr = fullName?.toString().trim();
+  const phoneStr = phone?.toString().trim();
+  let queryStr = `SELECT * FROM customers WHERE full_name = ? AND phone = ?`;
+  const queryParams = [fullNameStr, phoneStr];
 
-  connection.query(
-    `SELECT * FROM customers WHERE full_name = ? AND phone = ?`,
-    [fullNameStr, phoneStr],
-    (error, results) => {
-      if (error) {
-        return callback(error, null);
-      }
-      callback(null, results);
+  if (address) {
+    queryStr += ` AND address = ?`;
+    queryParams.push(address.toString().trim());
+  }
+  if (email) {
+    queryStr += ` AND email = ?`;
+    queryParams.push(email.toString().trim());
+  }
+  connection.query(queryStr, queryParams, (error, results) => {
+    if (error) {
+      return callback(error, null);
     }
-  );
+    callback(null, results);
+  });
 };
 
 const createPaymentReceipt = (
@@ -113,9 +108,47 @@ const addCustomer = (fullName, address, phone, email, callback) => {
     }
   );
 };
+const paymentInvoice = (id_customer, books, which, callback) => {
+  const promises = books.map((book) => {
+    return new Promise((resolve, reject) => {
+      connection.query(
+        `SELECT id_book FROM books WHERE title = ? AND author = ? AND category = ?`,
+        [book.title, book.author, book.category],
+        (error, results) => {
+          if (error || results.length === 0) {
+            return reject(
+              error || { message: "Không tìm thấy sách tương ứng" }
+            );
+          }
+          book.id_book = results[0].id_book;
+          resolve();
+        }
+      );
+    });
+  });
 
-const paymentInvoice = (id_customer, books, callback) => {
-  // Kiểm tra ID hóa đơn trước đó
+  Promise.all(promises)
+    .then(() => {
+      updateBookQuantities(books, (error) => {
+        if (error) {
+          return callback(
+            { statusCode: 422, message: "Lỗi khi cập nhật số lượng sách" },
+            null
+          );
+        }
+        callback(null, { message: "Cập nhật thành công" });
+      });
+    })
+    .catch((error) => {
+      callback(
+        {
+          statusCode: 422,
+          message: error.message || "Lỗi khi lấy ID sách",
+        },
+        null
+      );
+    });
+
   connection.query(
     `SELECT id_invoice FROM invoices ORDER BY id_invoice DESC LIMIT 1`,
     (error, results) => {
@@ -126,7 +159,6 @@ const paymentInvoice = (id_customer, books, callback) => {
         );
       }
 
-      // Tạo ID hóa đơn mới
       let newInvoiceId = "INV001";
       if (results.length > 0) {
         const lastInvoiceId = results[0].id_invoice;
@@ -135,60 +167,30 @@ const paymentInvoice = (id_customer, books, callback) => {
         newInvoiceId = `INV${String(newIdNumber).padStart(3, "0")}`;
       }
 
-      // Tạo hóa đơn mới
       connection.query(
         `INSERT INTO invoices (id_invoice, id_customer, invoices_date) VALUES (?, ?, NOW())`,
         [newInvoiceId, id_customer],
-        (error, results) => {
+        (error) => {
           if (error) {
             return callback(
-              { statusCode: 500, message: "Lỗi khi tạo hóa đơn" },
+              { statusCode: 422, message: "Lỗi khi tạo hóa đơn" },
               null
             );
           }
 
-          const invoiceItems = books.map((book) => [
-            newInvoiceId,
-            book.title,
-            book.author,
-            book.category,
-            book.quantity,
-            book.price,
-            null,
-          ]);
-
-          const promises = invoiceItems.map(
-            (item, index) =>
-              new Promise((resolve, reject) => {
-                connection.query(
-                  `SELECT id_book FROM books WHERE title = ? AND author = ? AND category = ?`,
-                  [item[1], item[2], item[3]],
-                  (error, results) => {
-                    if (error) {
-                      return reject(error);
-                    }
-                    item[6] = results[0].id_book;
-                    resolve();
-                  }
-                );
-              })
-          );
-
           Promise.all(promises)
             .then(() => {
-              const invoiceDetailsValues = invoiceItems.map((item) => [
-                item[0], // id_invoice
-                item[6], // id_book
-                item[4], // quantity
-                item[5], // unit_price
+              const invoiceDetailsValues = books.map((book) => [
+                newInvoiceId,
+                book.id_book,
+                book.quantity,
+                book.price,
               ]);
 
-              const insertQuery = `INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES ?`;
-
               connection.query(
-                insertQuery,
+                `INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES ?`,
                 [invoiceDetailsValues],
-                (error, results) => {
+                (error) => {
                   if (error) {
                     return callback(
                       {
@@ -199,17 +201,70 @@ const paymentInvoice = (id_customer, books, callback) => {
                     );
                   }
 
-                  callback(null, {
-                    message:
-                      "Hóa đơn và chi tiết hóa đơn đã được tạo thành công",
-                  });
+                  if (which === "debt") {
+                    const total = books.reduce(
+                      (sum, book) => sum + book.quantity * book.price,
+                      0
+                    );
+
+                    connection.query(
+                      `UPDATE customers SET debt = debt + ? WHERE id_customer = ?`,
+                      [total, id_customer],
+                      (err) => {
+                        if (err) {
+                          return callback(
+                            {
+                              statusCode: 500,
+                              message: "Lỗi khi cập nhật số tiền nợ",
+                            },
+                            null
+                          );
+                        }
+
+                        connection.query(
+                          `SELECT debt FROM customers WHERE id_customer = ?`,
+                          [id_customer],
+                          (err, selectResult) => {
+                            if (err) {
+                              return callback(err);
+                            }
+
+                            const currentDebt = selectResult[0].debt;
+                            callback(null, { currentDebt });
+                          }
+                        );
+                      }
+                    );
+                  } else {
+                    const totalAmount = books.reduce(
+                      (sum, book) => sum + book.quantity * book.price,
+                      0
+                    );
+
+                    createPaymentReceipt(
+                      id_customer,
+                      new Date(),
+                      totalAmount,
+                      (error) => {
+                        if (error) {
+                          return callback(
+                            {
+                              statusCode: 500,
+                              message: "Lỗi khi tạo phiếu thanh toán",
+                            },
+                            null
+                          );
+                        }
+                        callback(null, { totalAmount });
+                      }
+                    );
+                  }
                 }
               );
             })
             .catch((error) => {
-              console.error("Error fetching id_book:", error);
               callback(
-                { statusCode: 500, message: "Lỗi khi truy xuất id_book" },
+                { statusCode: 500, message: "Lỗi khi xử lý chi tiết hóa đơn" },
                 null
               );
             });
@@ -223,9 +278,10 @@ const updateBookQuantities = (books, callback) => {
   const promises = books.map(
     (book) =>
       new Promise((resolve, reject) => {
+        console.log(book.id_book);
         connection.query(
           `UPDATE books SET quantity = quantity - ? WHERE id_book = ?`,
-          [book.quantity, book.id],
+          [book.quantity, book.id_book],
           (err) => {
             if (err) {
               return reject(err);
@@ -234,43 +290,6 @@ const updateBookQuantities = (books, callback) => {
           }
         );
       })
-  );
-
-  Promise.all(promises)
-    .then(() => {
-      callback(null);
-    })
-    .catch((err) => {
-      callback(err);
-    });
-};
-
-const updateDebt = (id_customer, books, callback) => {
-  const total = books.reduce(
-    (sum, book) => sum + book.quantity * book.price,
-    0
-  );
-  console.log(books);
-  connection.query(
-    `UPDATE customers SET debt = debt + ? WHERE id_customer = ?`,
-    [total, id_customer],
-    (err) => {
-      if (err) {
-        return callback(err);
-      }
-      connection.query(
-        `SELECT debt FROM customers WHERE id_customer = ?`,
-        [id_customer],
-        (err, selectResult) => {
-          if (err) {
-            return callback(err);
-          }
-          selectResult = Number(selectResult[0].debt);
-          console.log(selectResult);
-          callback(null, selectResult);
-        }
-      );
-    }
   );
 };
 
@@ -290,13 +309,10 @@ const updateDebt = (id_customer, books, callback) => {
 // };
 
 module.exports = {
-  getIDCustomer,
   createPaymentReceipt,
   getPaymentReceipt,
   addCustomer,
   paymentInvoice,
-  updateBookQuantities,
   getCustomer,
-  updateDebt,
   getCustomerDebtAndLatestInvoice,
 };

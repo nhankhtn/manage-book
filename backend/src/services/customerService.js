@@ -70,7 +70,7 @@ const getCustomerDebtAndLatestInvoice = (data, callback) => {
 
 const createPaymentInvoice = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getIDCustomer1(fullName, phone, (err, results) => {
+  Customer.getCustomer(fullName, phone, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -105,7 +105,7 @@ const createPaymentInvoice = (data, callback) => {
 
 const createPaymentDebt = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getIDCustomer1(fullName, phone, (err, results) => {
+  Customer.getCustomer(fullName, phone, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },

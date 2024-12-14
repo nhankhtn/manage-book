@@ -6,8 +6,6 @@ import Button from "@/components/Button";
 import { INVENTORY_BOOK_FIELDS, DEBT_CONSUMER_FIELDS } from "@/constants";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
-import { getStockReport } from "@/services/getStockReport";
-import { getDebtReport } from "@/services/getDebtReport";
 import Modal from "@/components/Modal";
 import Table from "@/components/Table";
 import { useReportBooks } from "@/hooks/useReportBooks";
@@ -80,11 +78,10 @@ const mockBooksDebt = [
 export default function MonthReport() {
     const [openModalInventoryReport, setOpenModalInventoryReport] = useState(false);
     const [openModalDebtReport, setOpenModalDebtReport] = useState(false);
-
     const { booksInventory, booksDebt, date, booksData, debtsData,getLastThreeMonths, fetchStockReport, fetchDebtReport, setDate } = useReportBooks();
 
     const bookStockData = {
-        labels: getLastThreeMonths(),
+        labels: getLastThreeMonths().map((monthYear) => monthYear.months),
         datasets: [
             {
                 label: 'Số sách tồn',
@@ -97,7 +94,7 @@ export default function MonthReport() {
     };
 
     const debtData = {
-        labels: getLastThreeMonths(),
+        labels: getLastThreeMonths().map((monthYear) => monthYear.months),
         datasets: [
             {
                 label: 'Tổng số tiền nợ',

@@ -8,6 +8,8 @@
 .content {
   display: flex;
   gap: 90px;
+  margin-top: 60px;
+  margin-bottom: 100px;
 }
 .form-info {
   flex: 1;
@@ -59,4 +61,34 @@
   color: red;
   font-size: 14px;
   margin-top: 10px;
+}
+.customer-check {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: rgba(149, 149, 149, 0.766);
+  color:rgb(255, 255, 255);
+  font-weight: 600;
+}
+.customer-check-fail{
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: rgba(234, 29, 29, 0.8);
+  color:white;
+  font-weight: 600;
+}
+.customer-check-success{
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: rgb(17, 166, 17);
+  color:white;
+  font-weight: 600;
 }

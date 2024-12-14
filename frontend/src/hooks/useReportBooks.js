@@ -15,10 +15,20 @@ export const useReportBooks = () => {
         const today = new Date();
         const currentMonth = today.getMonth();
         const lastThreeMonths = [
-            months[(currentMonth - 2 + 12) % 12],
-            months[(currentMonth - 1 + 12) % 12],
-            months[currentMonth]
+            {
+                months: months[(currentMonth - 2 + 12) % 12],
+                year: (currentMonth - 2 + 12) % 12 >=10 ? today.getFullYear() - 1 : today.getFullYear()
+            },
+            {
+                months: months[(currentMonth - 1 + 12) % 12],
+                year: (currentMonth - 1 + 12) % 12 >=11 ? today.getFullYear() - 1 : today.getFullYear()
+            },
+            {
+                months: months[currentMonth],
+                year: today.getFullYear()
+            }
         ];
+
         return lastThreeMonths;
     };
     async function fetchData(month,year, stock = true){ // stock = true -> lấy dữ liệu cho stock, ngược lại lấy dữ liệu cho nợ vào tháng năm cụ thể
@@ -39,10 +49,8 @@ export const useReportBooks = () => {
             setDate(e.target.value);
         }
         else [currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
-        console.log(currentYear, currentMonth);
        try {
             const response = await fetchData(currentMonth, currentYear, true);
-            console.log(response);
             setBooksInventory(response);
         } catch (error) {
             console.error("Error fetching stock report:", error);
@@ -57,10 +65,8 @@ export const useReportBooks = () => {
             setDate(e.target.value);
         }
         else [currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
-        console.log(currentYear, currentMonth);
        try {
             const response = await fetchData(currentMonth, currentYear, false);
-            console.log(response);
             setBooksDebt(response);
         } catch (error) {
             console.error("Error fetching stock report:", error);
@@ -72,14 +78,15 @@ export const useReportBooks = () => {
     useEffect(() => {
         async function fetchDataMonths() {
             try {
-                const year = new Date().getFullYear() ;
                 const lastThreeMonths = getLastThreeMonths();
                 const stockPromises = lastThreeMonths.map(monthYear => {
-                    const month = monthYear.split(" ")[1];
+                    const month = monthYear.months.split(" ")[1];
+                    const year = monthYear.year;
                     return fetchData(month, year,true);
                 });
                 const debtPromises = lastThreeMonths.map(monthYear => {
-                    const month = monthYear.split(" ")[1];
+                    const month = monthYear.months.split(" ")[1];
+                    const year = monthYear.year;
                     return fetchData(month, year,false);
                 });
                 let stockResponses = await Promise.all(stockPromises);
@@ -88,7 +95,6 @@ export const useReportBooks = () => {
                 debtResponses= debtResponses.map(response => response.reduce((acc, book) => acc +parseFloat(book.final_debt), 0));
                 setBooksData(stockResponses);
                 setDebtsData(debtResponses);
-                console.log(stockResponses, debtResponses);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }

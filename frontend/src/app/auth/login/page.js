@@ -83,10 +83,10 @@ export default function Component() {
                     </button>
                 </form>
             </div>
-            
+
             <div className={styles.desc_container}>
                 <p className={styles.title}>HỆ THỐNG QUẢN LÝ<br />
-                NHÀ SÁCH ABC</p>
+                    NHÀ SÁCH ABC</p>
                 <p className={styles.desc}>
                     Giúp bạn quản lý nhà sách một cách dễ dàng và hiệu quả
                 </p>

@@ -29,7 +29,7 @@ export default function FormAddBook({ handleAdd }) {
       setFormData(form);
       await validate(form);
       handleAdd(form);
-    } catch (err) {}
+    } catch (err) { }
   }
   function handleChange(e) {
     var { id, value } = e.target;
@@ -72,7 +72,7 @@ export default function FormAddBook({ handleAdd }) {
             value={formData.quantity ? formData.quantity : ""}
           />
           {errors.quantity && (
-            <div className={styles.error}>{errors.quantity}</div>
+            <div className={`${styles.error} error`}>{errors.quantity}</div>
           )}
         </div>
         <div className={!errors.price ? styles.errorGap : ""}>
@@ -86,7 +86,7 @@ export default function FormAddBook({ handleAdd }) {
           />
           {errors.price && <div className={styles.error}>{errors.price}</div>}
         </div>
-        <Button className={styles.submitBtn} type="submit">
+        <Button className={styles.submitBtn} id="btn-form-add-book" type="submit">
           Submit
         </Button>
       </form>

@@ -11,7 +11,7 @@ import FormAddBook from "@/components/FormAddBook/FormAddBook";
 import { useStore } from "@/hooks/useStore";
 import TableBooksError from "@/components/TableBooksError";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarDay, faWarning} from "@fortawesome/free-solid-svg-icons";
+import { faCalendarDay, faWarning } from "@fortawesome/free-solid-svg-icons";
 
 export default function BookImport() {
   const {
@@ -87,9 +87,6 @@ export default function BookImport() {
       <Modal show={showModalAdd} onHide={() => setShowModalAdd(false)}>
         <FormAddBook handleAdd={handleAdd} />
       </Modal>
-      <Modal show={showModalAdd} onHide={() => setShowModalAdd(false)}>
-        <FormAddBook handleAdd={handleAdd} />
-      </Modal>
       <Modal
         show={showModalBooksErr}
         onHide={() => setShowModalBooksErr(false)}
@@ -97,7 +94,7 @@ export default function BookImport() {
         <div className={styles.book_err_container}>
           <div className={styles.err_title}>
             <h2 className={styles.title}>
-            <FontAwesomeIcon className={styles["alert-icon"]} icon={faWarning} />
+              <FontAwesomeIcon className={styles["alert-icon"]} icon={faWarning} />
               Các sách lỗi
             </h2>
             <p className={styles.sub_title}>
@@ -114,7 +111,7 @@ export default function BookImport() {
         </div>
       </Modal>
 
-      
+
       <Modal show={showModalDuplicate} onHide={() => setShowModalDuplicate(false)}>
         <div className={styles.duplicate_container}>
           <h2>Phát hiện sách trùng lặp</h2>
@@ -122,18 +119,18 @@ export default function BookImport() {
             <FontAwesomeIcon className={styles["warn-icon"]} icon={faWarning} />
             <div>
               <h3>Sách đã tồn tại</h3>
-              <p> 
+              <p>
                 "{duplicateBook.title}" đã tồn tại trong kho với {duplicateBook.currentQuantity} bản sao.
                 Bạn có muốn thêm {duplicateBook.quantity} vào số lượng tồn kho hiện tại không?
               </p>
             </div>
           </div>
           <div className={styles["modal-actions"]}>
-              <button className={styles["cancel"]} onClick={() => setShowModalDuplicate(false)}>Hủy</button>
-              <button className={styles["confirm"]} onClick={() => addQuantityToExistingBook(duplicateBook)}>Cập nhật</button>
-            </div>
+            <button className={styles["cancel"]} onClick={() => setShowModalDuplicate(false)}>Hủy</button>
+            <button className={styles["confirm"]} onClick={() => addQuantityToExistingBook(duplicateBook)}>Cập nhật</button>
+          </div>
         </div>
-      
+
       </Modal>
     </>
   );

@@ -81,7 +81,7 @@ export default function MonthReport() {
     const [openModalInventoryReport, setOpenModalInventoryReport] = useState(false);
     const [openModalDebtReport, setOpenModalDebtReport] = useState(false);
 
-    const { booksInventory, booksDebt, date, booksData, debtsData,getLastThreeMonths, fetchStockReport, fetchDebtReport, setDate } = useReportBooks();
+    const { booksInventory, booksDebt, date, booksData, debtsData, getLastThreeMonths, fetchStockReport, fetchDebtReport, setDate } = useReportBooks();
 
     const bookStockData = {
         labels: getLastThreeMonths(),
@@ -112,16 +112,14 @@ export default function MonthReport() {
         <h2 className={styles.heading}>Lập báo cáo</h2>
 
         <div className={styles['wrap-btn']}>
-            <Button title="Báo cáo tồn" onClick={e => 
-            {
+            <Button title="Báo cáo tồn" onClick={e => {
                 setOpenModalInventoryReport(true)
                 setDate(`${new Date().getFullYear()}-${new Date().getMonth() + 1}`)
                 fetchStockReport();
             }}>
                 Báo cáo tồn
             </Button>
-            <Button title="Báo cáo công nợ" onClick={e => 
-            {
+            <Button title="Báo cáo công nợ" onClick={e => {
                 setOpenModalDebtReport(true)
                 setDate(`${new Date().getFullYear()}-${new Date().getMonth() + 1}`)
                 fetchDebtReport();
@@ -136,12 +134,13 @@ export default function MonthReport() {
         </div>
 
         <Modal show={openModalInventoryReport} onHide={e => {
-            setOpenModalInventoryReport(false)}}>
+            setOpenModalInventoryReport(false)
+        }}>
             <div className={styles['wrapper-content-modal']}>
                 <div className={styles['heading-modal']}>
                     <h2>Báo cáo tồn</h2>
                     <div className={styles['date']}>
-                        <input id="month" type="month" value={date} onChange={fetchStockReport}/>
+                        <input id="month" type="month" value={date} onChange={fetchStockReport} />
                     </div>
                 </div>
                 <div className={styles["list"]}>
@@ -154,12 +153,13 @@ export default function MonthReport() {
         </Modal>
 
         <Modal show={openModalDebtReport} onHide={e => {
-            setOpenModalDebtReport(false)}}>
+            setOpenModalDebtReport(false)
+        }}>
             <div className={styles['wrapper-content-modal']}>
                 <div className={styles['heading-modal']}>
                     <h2>Báo cáo công nợ</h2>
                     <div className={styles['date']}>
-                        <input id="month" type="month" value={date} onChange={fetchDebtReport}/>
+                        <input id="month" type="month" value={date} onChange={fetchDebtReport} />
                     </div>
                 </div>
                 <div className={styles["list"]}>

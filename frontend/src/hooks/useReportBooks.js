@@ -21,28 +21,26 @@ export const useReportBooks = () => {
         ];
         return lastThreeMonths;
     };
-    async function fetchData(month,year, stock = true){ // stock = true -> lấy dữ liệu cho stock, ngược lại lấy dữ liệu cho nợ vào tháng năm cụ thể
+    async function fetchData(month, year, stock = true) { // stock = true -> lấy dữ liệu cho stock, ngược lại lấy dữ liệu cho nợ vào tháng năm cụ thể
         var response;
         try {
-            if(stock) response = await getStockReport({month, year});
-            else response = await getDebtReport({month, year});
+            if (stock) response = await getStockReport({ month, year });
+            else response = await getDebtReport({ month, year });
         } catch (error) {
             throw error;
         }
         return response;
     }
     async function fetchStockReport(e) {
-        var currentYear, currentMonth ;
-        if(e)
-        {
+        var currentYear, currentMonth;
+        if (e) {
             [currentYear, currentMonth] = e.target.value.split("-");
             setDate(e.target.value);
         }
-        else [currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
-        console.log(currentYear, currentMonth);
-       try {
+        else[currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
+
+        try {
             const response = await fetchData(currentMonth, currentYear, true);
-            console.log(response);
             setBooksInventory(response);
         } catch (error) {
             console.error("Error fetching stock report:", error);
@@ -50,17 +48,15 @@ export const useReportBooks = () => {
     }
 
     async function fetchDebtReport(e) {
-        var currentYear, currentMonth ;
-        if(e)
-        {
+        var currentYear, currentMonth;
+        if (e) {
             [currentYear, currentMonth] = e.target.value.split("-");
             setDate(e.target.value);
         }
-        else [currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
-        console.log(currentYear, currentMonth);
-       try {
+        else[currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
+
+        try {
             const response = await fetchData(currentMonth, currentYear, false);
-            console.log(response);
             setBooksDebt(response);
         } catch (error) {
             console.error("Error fetching stock report:", error);
@@ -72,28 +68,27 @@ export const useReportBooks = () => {
     useEffect(() => {
         async function fetchDataMonths() {
             try {
-                const year = new Date().getFullYear() ;
+                const year = new Date().getFullYear();
                 const lastThreeMonths = getLastThreeMonths();
                 const stockPromises = lastThreeMonths.map(monthYear => {
                     const month = monthYear.split(" ")[1];
-                    return fetchData(month, year,true);
+                    return fetchData(month, year, true);
                 });
                 const debtPromises = lastThreeMonths.map(monthYear => {
                     const month = monthYear.split(" ")[1];
-                    return fetchData(month, year,false);
+                    return fetchData(month, year, false);
                 });
                 let stockResponses = await Promise.all(stockPromises);
                 let debtResponses = await Promise.all(debtPromises);
                 stockResponses = stockResponses.map(response => response.reduce((acc, book) => acc + parseFloat(book.final_stock), 0));
-                debtResponses= debtResponses.map(response => response.reduce((acc, book) => acc +parseFloat(book.final_debt), 0));
+                debtResponses = debtResponses.map(response => response.reduce((acc, book) => acc + parseFloat(book.final_debt), 0));
                 setBooksData(stockResponses);
                 setDebtsData(debtResponses);
-                console.log(stockResponses, debtResponses);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         }
         fetchDataMonths(); // lấy dữ liệu cho 3 tháng gần nhất
     }, []);
-    return { booksInventory, booksDebt, date, booksData, debtsData,getLastThreeMonths, fetchStockReport, fetchDebtReport, setDate };
+    return { booksInventory, booksDebt, date, booksData, debtsData, getLastThreeMonths, fetchStockReport, fetchDebtReport, setDate };
 }

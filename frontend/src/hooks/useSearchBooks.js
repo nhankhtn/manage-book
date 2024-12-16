@@ -7,11 +7,11 @@ export const useSearchBooks = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSearch = useCallback(async (formInfo) => {
-        if (!formInfo.title && !formInfo.author && !formInfo.category && !formInfo.price) {
-            setError("Vui lòng điền ít nhất một thông tin sách");
-            setBooks([]);
-            return;
-        }
+        // if (!formInfo.title && !formInfo.author && !formInfo.category && !formInfo.price) {
+        //     setError("Vui lòng điền ít nhất một thông tin sách");
+        //     setBooks([]);
+        //     return;
+        // }
         try {
             setIsLoading(true);
             setError('');

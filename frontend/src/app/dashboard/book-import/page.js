@@ -49,7 +49,6 @@ export default function BookImport() {
     setShowModalAdd(false);
     add(book);
   }
-  console.log("bôks", books)
   return (
     <>
       <div className={styles.container}>
@@ -85,9 +84,6 @@ export default function BookImport() {
         </Button>
         {err && <div className={styles.error}>Vui lòng thêm sách</div>}
       </div>
-      <Modal show={showModalAdd} onHide={() => setShowModalAdd(false)}>
-        <FormAddBook handleAdd={handleAdd} />
-      </Modal>
       <Modal show={showModalAdd} onHide={() => setShowModalAdd(false)}>
         <FormAddBook handleAdd={handleAdd} />
       </Modal>

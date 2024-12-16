@@ -1,0 +1,16 @@
+[
+  {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "category": "Fiction",
+    "quantity": 5,
+    "price": 10.99
+  },
+  {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "category": "Fiction",
+    "quantity": 45,
+    "price": 10.99
+  }
+]

@@ -79,7 +79,6 @@ const totalPrice = (
 const search = ({ title, author, category, price }, callback) => {
   const slug = generateSlug(title);
 
-  console.log("slug", slug);
   const params = {};
   if (slug !== undefined) {
     params.slug = slug;

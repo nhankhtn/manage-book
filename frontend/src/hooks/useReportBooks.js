@@ -31,25 +31,25 @@ export const useReportBooks = () => {
 
         return lastThreeMonths;
     };
-    async function fetchData(month,year, stock = true){ // stock = true -> lấy dữ liệu cho stock, ngược lại lấy dữ liệu cho nợ vào tháng năm cụ thể
+    async function fetchData(month, year, stock = true) { // stock = true -> lấy dữ liệu cho stock, ngược lại lấy dữ liệu cho nợ vào tháng năm cụ thể
         var response;
         try {
-            if(stock) response = await getStockReport({month, year});
-            else response = await getDebtReport({month, year});
+            if (stock) response = await getStockReport({ month, year });
+            else response = await getDebtReport({ month, year });
         } catch (error) {
             throw error;
         }
         return response;
     }
     async function fetchStockReport(e) {
-        var currentYear, currentMonth ;
-        if(e)
-        {
+        var currentYear, currentMonth;
+        if (e) {
             [currentYear, currentMonth] = e.target.value.split("-");
             setDate(e.target.value);
         }
-        else [currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
-       try {
+        else[currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
+
+        try {
             const response = await fetchData(currentMonth, currentYear, true);
             setBooksInventory(response);
         } catch (error) {
@@ -58,14 +58,13 @@ export const useReportBooks = () => {
     }
 
     async function fetchDebtReport(e) {
-        var currentYear, currentMonth ;
-        if(e)
-        {
+        var currentYear, currentMonth;
+        if (e) {
             [currentYear, currentMonth] = e.target.value.split("-");
             setDate(e.target.value);
         }
         else [currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
-       try {
+        try {
             const response = await fetchData(currentMonth, currentYear, false);
             setBooksDebt(response);
         } catch (error) {
@@ -92,7 +91,7 @@ export const useReportBooks = () => {
                 let stockResponses = await Promise.all(stockPromises);
                 let debtResponses = await Promise.all(debtPromises);
                 stockResponses = stockResponses.map(response => response.reduce((acc, book) => acc + parseFloat(book.final_stock), 0));
-                debtResponses= debtResponses.map(response => response.reduce((acc, book) => acc +parseFloat(book.final_debt), 0));
+                debtResponses = debtResponses.map(response => response.reduce((acc, book) => acc + parseFloat(book.final_debt), 0));
                 setBooksData(stockResponses);
                 setDebtsData(debtResponses);
             } catch (error) {
@@ -101,5 +100,5 @@ export const useReportBooks = () => {
         }
         fetchDataMonths(); // lấy dữ liệu cho 3 tháng gần nhất
     }, []);
-    return { booksInventory, booksDebt, date, booksData, debtsData,getLastThreeMonths, fetchStockReport, fetchDebtReport, setDate };
+    return { booksInventory, booksDebt, date, booksData, debtsData, getLastThreeMonths, fetchStockReport, fetchDebtReport, setDate };
 }

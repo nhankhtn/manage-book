@@ -7,7 +7,7 @@ const createPaymentReceipt = (data, callback) => {
     data;
 
   // Retrieve the ID of the customer from the data
-  Customer.getCustomer(data, (err, results) => {
+  Customer.getCustomer({fullName, phone}, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -20,10 +20,16 @@ const createPaymentReceipt = (data, callback) => {
           null
         );
       }
-      console.log(results);
       const id_customer = results[0].id_customer;
-      console.log(id_customer);
-
+      // Update the customer's email and address if they changed
+      Customer.updateCustomer(id_customer,{ email, address }, (err, results) => {
+        if (err) {
+          return callback(
+            { statusCode: 500, message: "Lỗi khi cập nhật thông tin khách hàng" },
+            null
+          );
+        }
+      });
       // Create a payment receipt (Has to be nested inside the getIDCustomer callback to ensure id_customer is retrieved first)
       Customer.createPaymentReceipt(
         id_customer,
@@ -78,7 +84,7 @@ const getCustomerDebtAndLatestInvoice = (data, callback) => {
 
 const createPaymentInvoice = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getCustomer(data, (err, results) => {
+  Customer.getCustomer({fullName, phone}, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },

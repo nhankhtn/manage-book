@@ -66,7 +66,7 @@ const getDebtReport = (month, year, callback) => {
                         ORDER BY dr.report_year DESC, dr.report_month DESC
                     ) AS row_num
                 FROM debt_reports_details drd
-                JOIN debt_reports dr ON dr.id_debt_report = drd.id_debt_report
+                JOIN debt_reports dr ON dr.id_debt_report = drd.id_debt_report   
                 WHERE dr.report_year < ? OR (dr.report_year = ? AND dr.report_month < ?)
             ),
             CurrentDebts AS (
@@ -92,11 +92,13 @@ const getDebtReport = (month, year, callback) => {
                 dr.report_month,
                 dr.report_year,
                 ac.id_customer,
+                c.full_name,
                 COALESCE(cd.initial_debt, lkd.last_final_debt) AS initial_debt,
                 COALESCE(cd.changes, 0.00) AS changes,
                 COALESCE(cd.final_debt, COALESCE(lkd.last_final_debt, 0.00)) AS final_debt
             FROM AllCustomers ac
             LEFT JOIN CurrentDebts cd ON ac.id_customer = cd.id_customer
+            JOIN customers c ON c.id_customer = ac.id_customer
             LEFT JOIN (
                 SELECT id_customer, last_final_debt
                 FROM LastKnownDebts
@@ -213,11 +215,14 @@ const getStockReport = (month, year, callback) => {
                   sr.report_month,
                   sr.report_year,
                   ab.id_book,
+                  b.title,
+                  b.author,
                   COALESCE(cs.initial_stock, lks.last_final_stock) AS initial_stock,
                   COALESCE(cs.changes, 0.00) AS changes,
                   COALESCE(cs.final_stock, COALESCE(lks.last_final_stock, 0.00)) AS final_stock
               FROM AllBooks ab
               LEFT JOIN CurrentStocks cs ON ab.id_book = cs.id_book
+              JOIN books b ON b.id_book = ab.id_book
               LEFT JOIN (
                   SELECT id_book, last_final_stock
                   FROM LastKnownStocks

@@ -24,6 +24,28 @@ const getCustomer = (data, callback) => {
     callback(null, results);
   });
 };
+const updateCustomer = (id_customer, params = {}, callback) => {
+  let query = `UPDATE customers SET `;
+  const entries = [];
+  const setClauses = [];
+
+  Object.entries(params).forEach(([key, value]) => {
+    if(value !== "") { 
+      setClauses.push(`?? = ?`);
+      entries.push(key, value);
+    }
+  });
+  query += setClauses.join(", ");
+  query += ` WHERE id_customer = ?`;
+  entries.push(id_customer);
+
+  connection.query(query, entries, (error, results) => {
+    if (error) {
+      return callback(error, null);
+    }
+    callback(null, results);
+  });
+};
 
 const createPaymentReceipt = (
   id_customer,
@@ -206,7 +228,7 @@ const paymentInvoice = (id_customer, books, which, callback) => {
                       (sum, book) => sum + book.quantity * book.price,
                       0
                     );
-
+                    console.log(total);
                     connection.query(
                       `UPDATE customers SET debt = debt + ? WHERE id_customer = ?`,
                       [total, id_customer],
@@ -314,5 +336,6 @@ module.exports = {
   addCustomer,
   paymentInvoice,
   getCustomer,
+  updateCustomer,
   getCustomerDebtAndLatestInvoice,
 };

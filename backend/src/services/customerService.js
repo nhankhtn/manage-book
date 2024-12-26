@@ -65,7 +65,6 @@ const getCustomerDebtAndLatestInvoice = (data, callback) => {
     }
 
     const id_customer = results[0].id_customer;
-    console.log(id_customer);
 
     Customer.getCustomerDebtAndLatestInvoice(id_customer, (err, data) => {
       if (err) {
@@ -92,7 +91,6 @@ const createPaymentInvoice = (data, callback) => {
       );
     }
     const isInvoice = "invoice";
-
     if (results.length === 0) {
       Customer.addCustomer(
         fullName,
@@ -112,6 +110,15 @@ const createPaymentInvoice = (data, callback) => {
       );
     } else {
       const id_customer = results[0].id_customer;
+       // Update the customer's email and address if they changed
+       Customer.updateCustomer(id_customer,{ email, address }, (err, results) => {
+        if (err) {
+          return callback(
+            { statusCode: 500, message: "Lỗi khi cập nhật thông tin khách hàng" },
+            null
+          );
+        }
+      });
       createAndProcess(id_customer, books, isInvoice, callback);
     }
   });
@@ -119,7 +126,7 @@ const createPaymentInvoice = (data, callback) => {
 
 const createPaymentDebt = (data, callback) => {
   const { fullName, address, phone, email, books } = data;
-  Customer.getCustomer(data, (err, results) => {
+  Customer.getCustomer({fullName, phone}, (err, results) => {
     if (err) {
       return callback(
         { statusCode: 500, message: "Lỗi khi tìm khách hàng" },
@@ -147,6 +154,15 @@ const createPaymentDebt = (data, callback) => {
       );
     } else {
       const id_customer = results[0].id_customer;
+       // Update the customer's email and address if they changed
+       Customer.updateCustomer(id_customer,{ email, address }, (err, results) => {
+        if (err) {
+          return callback(
+            { statusCode: 500, message: "Lỗi khi cập nhật thông tin khách hàng" },
+            null
+          );
+        }
+      });
       createAndProcess(id_customer, books, isDebt, callback);
     }
   });

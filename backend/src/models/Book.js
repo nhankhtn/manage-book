@@ -156,7 +156,17 @@ const getBookId = (data, callback) => {
     }
   );
 };
-
+const getAvailableBooks = (callback) => {
+  connection.query(
+    `SELECT * FROM books join rules on rule_name ='minStockQuantityBeforeImport' and books.quantity < rule_value ORder by books.title`,
+    (error, results) => {
+      if (error) {
+        return callback(error, null);
+      }
+      callback(null, results);
+    }
+  );
+};
 module.exports = {
   getBooks,
   addBook,
@@ -164,4 +174,5 @@ module.exports = {
   getStock,
   deleteBook,
   getBookId,
+  getAvailableBooks,
 };

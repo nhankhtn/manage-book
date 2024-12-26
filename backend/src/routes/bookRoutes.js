@@ -13,5 +13,5 @@ router.get("/", bookController.searchBooks);
 
 // totalPrice
 router.get("/total/price", bookController.totalPrice);
-
+router.get("/available", bookController.getAvailableBooks);
 module.exports = router;

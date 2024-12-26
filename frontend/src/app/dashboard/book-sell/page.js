@@ -6,28 +6,29 @@ import FormInfoCustomer from "@/components/FormInfoCustomer";
 import styles from "./BookSell.module.scss";
 import Button from "@/components/Button";
 import Table from "@/components/Table";
-import { date } from "yup";
 import { BOOK_FIELDS, SELL_BOOK_FIELDS } from "@/constants";
 import Modal from "@/components/Modal";
 import { searchBooks } from "@/services/searchService";
 import { formatCurrency } from "@/utils/formatNumber";
 import { useStore } from "@/hooks/useStore";
 import { createDebt, createInvoice } from "@/services/paymentService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import useModalAlert from "@/hooks/useModal";
+import { useDebounce } from "@/hooks/useDebounce";
+import { getCustomerDB } from "@/services/getCustomer";
 
 export default function BookSell() {
     const [booksAvailable, setBooksAvailable] = useState([]);
     const [books, setBooks] = useState([]);
-    const { state: { config: { minStockAfterSale } } } = useStore();
-
+    const { state: { config: { minStockAfterSale, maxDebt } } } = useStore();
     const [formInfo, setFormInfo] = useState({
         name: '',
         phone: '',
         email: '',
-        address: ''
+        address: '',
+        debt: 0
     })
+    const debouncedName = useDebounce(formInfo.name);
+    const debouncedPhone = useDebounce(formInfo.phone);
     const formRef = useRef();
     const [errorAddBooks, setErrorAddBooks] = useState();
     const [openModalAddBook, setOpenModalAddBook] = useState(false);
@@ -54,11 +55,41 @@ export default function BookSell() {
             setBooksAvailable([]);
         }
     }, [])
-
+    useEffect(() => {
+        async function getCustomer() {
+        try {
+            console.log(debouncedName, debouncedPhone);
+            const response = await getCustomerDB({
+            params: {
+                fullName: debouncedName,
+                phone: debouncedPhone,
+            },
+            });
+            setFormInfo({
+            ...formInfo,
+            email: response.email,
+            address: response.address,
+            debt: parseFloat(response.debt),
+            });
+        } catch (error) {
+            setFormInfo((prev) => ({
+            ...prev,
+            email: "",
+            address: "",
+            debt: 0,
+            }));
+        }
+        }
+        getCustomer();
+    }, [debouncedName, debouncedPhone]);
     const handlePayment = async (e, isDebt = false) => {
         try {
             if (formRef.current) {
                 await formRef.current.validate();
+            }
+            if(isDebt && formInfo.debt + totalPrice > maxDebt) {
+                setError(`Số tiền nợ không được vượt quá ${maxDebt}, số tiền nợ hiện tại là ${formInfo.debt}`);
+                return;
             }
             if (books.length === 0) {
                 setError('Chưa chọn sách');
@@ -74,6 +105,10 @@ export default function BookSell() {
             }
 
             if (isDebt) {
+                if (formInfo.email === '' && formInfo.address === '') {
+                    setError('Email và địa chỉ không được để trống khi ghi nợ');
+                    return;
+                }
                 await createDebt(data);
             } else {
                 await createInvoice(data);

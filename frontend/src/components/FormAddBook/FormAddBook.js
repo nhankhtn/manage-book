@@ -1,8 +1,25 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../Button";
 import styles from "./FormAddBook.module.scss";
 import { useAddBook } from "../../hooks/useAddBook";
+import { searchAvailableBooks } from "@/services/searchService";
+
 export default function FormAddBook({ handleAdd }) {
+
+  const [menuItems, setMenuItems] = useState([]);
+  const [originalMenuItems, setOriginalMenuItems] = useState([
+    { 
+      title: "Nhập sách mới",
+      author: "",
+      category: "",
+      quantity: 0,
+      price: 0, 
+    },
+  ]);
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState("Nhập sách mới")
+  const dropdownRef = useRef(null)
+  const inputRef = useRef(null)
   const { errors, validate } = useAddBook();
   const [formData, setFormData] = useState({
     title: "",
@@ -11,6 +28,68 @@ export default function FormAddBook({ handleAdd }) {
     quantity: null,
     price: null,
   });
+
+  const toggleDropdown = (e) => {
+    e.preventDefault()
+    setIsOpen(!isOpen)
+    setMenuItems(originalMenuItems)
+    inputRef.current.value = ""
+  }
+
+  const handleItemClick = (e, item) => {
+    e.preventDefault()
+    setSelectedItem(item.title)
+    inputRef.current.value = item.title
+    setFormData({
+      title: item.title === "Nhập sách mới" ? "" : item.title,
+      author: item.author,
+      category: item.category,
+      quantity: 0,
+      price: item.price,
+    })
+    setIsOpen(false)
+  }
+  const handleSearchChange = (e) => {
+    const searchValue = e.target.value.toLowerCase()
+    const filteredItems = originalMenuItems.filter((item,index) => item.title.toLowerCase().includes(searchValue) || index === 0)
+    setMenuItems(filteredItems)
+  }
+  // handle click outside for input value
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        inputRef.current.value = selectedItem
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [selectedItem])
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false)
+        setMenuItems(originalMenuItems)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    async function getAvailableBooks() {
+      try {
+        // Call API to get available books
+        const books = await searchAvailableBooks()
+        setOriginalMenuItems(prev => [...prev, ...books])
+        setMenuItems([...originalMenuItems, ...books])
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
+    getAvailableBooks();
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
   function removeRedundantSpaces(formData) {
     return Object.keys(formData).reduce((acc, key) => {
       if (typeof formData[key] === "number") acc[key] = formData[key];
@@ -44,6 +123,49 @@ export default function FormAddBook({ handleAdd }) {
   return (
     <div className={styles.container}>
       <div className={styles.title}>Add Book</div>
+
+      <div className={styles.dropdown} ref={dropdownRef}>
+        <label className={styles.label}>
+          Các sách có thể nhập thêm
+        </label>
+        <input
+          ref={inputRef}
+          className={styles.dropdown_toggle}
+          href="#"
+          role="button"
+          onClick={toggleDropdown}
+          onChange={handleSearchChange}
+          aria-expanded={isOpen}
+        />
+
+
+        <ul className={`${styles.dropdown_menu} ${isOpen ? styles.show : ''}`}>
+          {menuItems && menuItems.map((item, index) => (
+            <li key={index}>
+              <a 
+                className={styles.dropdown_item} 
+                href="#"
+                onClick={(e) => handleItemClick(e, item)}
+              >
+                {item.title}
+                {index !==0 &&
+                  <div className={styles.dropdown_item_info}>
+                  <div>
+                    Tác giả: <span>{item.author} &#x2022; </span>
+                  </div>
+                  <div>
+                    Thể loại: <span>{item.category}</span>
+                  </div>
+                </div>
+                }
+               
+          
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <form onSubmit={handleSubmit}>
         <div className={!errors.title ? styles.errorGap : ""}>
           <label htmlFor="title">Tên sách</label>

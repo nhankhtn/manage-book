@@ -97,7 +97,7 @@ export const SEARCH_BOOK_FIELDS = [{
     type: "text"
 }, {
     title: "Số lượng",
-    name: "available",
+    name: "quantity",
     type: "text"
 },
 {

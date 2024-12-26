@@ -228,33 +228,44 @@ const paymentInvoice = (id_customer, books, which, callback) => {
                       (sum, book) => sum + book.quantity * book.price,
                       0
                     );
-                    console.log(total);
+                    // connection.query(
+                    //   `UPDATE customers SET debt = debt + ? WHERE id_customer = ?`,
+                    //   [total, id_customer],
+                    //   (err) => {
+                    //     if (err) {
+                    //       return callback(
+                    //         {
+                    //           statusCode: 500,
+                    //           message: "Lỗi khi cập nhật số tiền nợ",
+                    //         },
+                    //         null
+                    //       );
+                    //     }
+
+                    //     connection.query(
+                    //       `SELECT debt FROM customers WHERE id_customer = ?`,
+                    //       [id_customer],
+                    //       (err, selectResult) => {
+                    //         if (err) {
+                    //           return callback(err);
+                    //         }
+
+                    //         const currentDebt = selectResult[0].debt;
+                    //         callback(null, { currentDebt });
+                    //       }
+                    //     );
+                    //   }
+                    // );
                     connection.query(
-                      `UPDATE customers SET debt = debt + ? WHERE id_customer = ?`,
-                      [total, id_customer],
-                      (err) => {
+                      `SELECT debt FROM customers WHERE id_customer = ?`,
+                      [id_customer],
+                      (err, selectResult) => {
                         if (err) {
-                          return callback(
-                            {
-                              statusCode: 500,
-                              message: "Lỗi khi cập nhật số tiền nợ",
-                            },
-                            null
-                          );
+                          return callback(err);
                         }
 
-                        connection.query(
-                          `SELECT debt FROM customers WHERE id_customer = ?`,
-                          [id_customer],
-                          (err, selectResult) => {
-                            if (err) {
-                              return callback(err);
-                            }
-
-                            const currentDebt = selectResult[0].debt;
-                            callback(null, { currentDebt });
-                          }
-                        );
+                        const currentDebt = selectResult[0].debt;
+                        callback(null, { currentDebt });
                       }
                     );
                   } else {

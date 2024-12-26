@@ -93,6 +93,14 @@ const searchBooks = (req, res) => {
     res.status(200).json({ data: books });
   });
 };
+
+// get available books
+const getAvailableBooks = (req, res) => {
+  Book.getAvailableBooks((err, books) => {
+    if (err) return res.status(500).json({ message: "Lỗi khi tìm sách" });
+    res.json(books);
+  });
+};
 // Không cần sử dụng
 const deleteBooks = (req, res) => {
   const { slug } = req.query;
@@ -102,10 +110,12 @@ const deleteBooks = (req, res) => {
   });
 };
 
+
 module.exports = {
   getBooks,
   updateBooks,
   reportStock,
   searchBooks,
   totalPrice,
+  getAvailableBooks,
 };

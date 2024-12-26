@@ -8,3 +8,12 @@ export const searchBooks = async (params) => {
         throw error;
     }
 }
+
+export const searchAvailableBooks = async () => {
+    try {
+        const response = await httpRequest.get('/books/available');
+        return response;
+    } catch (error) {
+        throw error;
+    }
+}

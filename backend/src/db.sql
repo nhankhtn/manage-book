@@ -32,10 +32,6 @@ CREATE TABLE stock_receipts (
     CONSTRAINT PK_stock_receipts PRIMARY KEY (id_stock_receipt)
 );
 
-INSERT into stock_receipts values 
-('RC220301', '2023-03-01'), 
-('RC220302', '2023-03-02'), 
-('RC220303', '2023-03-03');
 CREATE TABLE stock_receipts_details (
     id_stock_receipt VARCHAR(10),
     id_book INT,

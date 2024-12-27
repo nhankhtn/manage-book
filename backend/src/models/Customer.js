@@ -214,6 +214,7 @@ const paymentInvoice = (id_customer, books, which, callback) => {
                 [invoiceDetailsValues],
                 (error) => {
                   if (error) {
+                    console.log(error);
                     return callback(
                       {
                         statusCode: 500,
@@ -311,7 +312,7 @@ const updateBookQuantities = (books, callback) => {
   const promises = books.map(
     (book) =>
       new Promise((resolve, reject) => {
-        console.log(book.id_book);
+   //     console.log(book.id_book);
         connection.query(
           `UPDATE books SET quantity = quantity - ? WHERE id_book = ?`,
           [book.quantity, book.id_book],

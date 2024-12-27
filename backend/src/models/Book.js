@@ -99,7 +99,7 @@ const getStock = (month, year, callback) => {
     return callback({ message: "Tháng hoặc năm không hợp lệ" }, null);
   }
 
-  console.log(month, year);
+  //console.log(month, year);
 
   connection.query(
     `SELECT 
@@ -114,7 +114,7 @@ const getStock = (month, year, callback) => {
      WHERE MONTH(sr.report_date) <= ? AND YEAR(sr.report_date) = ?`,
     [month, year],
     (error, results) => {
-      console.log(results);
+      //console.log(results);
       if (error) {
         return callback(
           { message: "Lỗi khi truy vấn dữ liệu tồn kho", error },

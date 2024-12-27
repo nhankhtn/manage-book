@@ -32,6 +32,10 @@ CREATE TABLE stock_receipts (
     CONSTRAINT PK_stock_receipts PRIMARY KEY (id_stock_receipt)
 );
 
+INSERT into stock_receipts values 
+('RC220301', '2023-03-01'), 
+('RC220302', '2023-03-02'), 
+('RC220303', '2023-03-03');
 CREATE TABLE stock_receipts_details (
     id_stock_receipt VARCHAR(10),
     id_book INT,
@@ -117,31 +121,31 @@ CREATE TABLE rules (
 use book_management;
 
 
-DROP TRIGGER IF EXISTS check_max_debt;
+-- DROP TRIGGER IF EXISTS check_max_debt;
 
-DELIMITER $$
-CREATE TRIGGER check_max_debt
-BEFORE UPDATE ON customers
-FOR EACH ROW
-BEGIN
-	DECLARE max_debt decimal(10,2);
-    DECLARE debt_curr decimal(10,2);
+-- DELIMITER $$
+-- CREATE TRIGGER check_max_debt
+-- BEFORE UPDATE ON customers
+-- FOR EACH ROW
+-- BEGIN
+-- 	DECLARE max_debt decimal(10,2);
+--     DECLARE debt_curr decimal(10,2);
     
-    SELECT CAST(rule_value as UNSIGNED) into max_debt
-    from rules
-    where rule_name = "Max debt";
+--     SELECT CAST(rule_value as UNSIGNED) into max_debt
+--     from rules
+--     where rule_name = "Max debt";
     
-    SELECT CAST(debt as UNSIGNED) into debt_curr
-    from customers
-    where id_customer = OLD.id_customer;
+--     SELECT CAST(debt as UNSIGNED) into debt_curr
+--     from customers
+--     where id_customer = OLD.id_customer;
     
-    if debt_curr > max_debt  then
-    SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Lượng tồn kho hiện tại đã lớn hơn hoặc bằng giới hạn cho phép'; 
-    END IF;
-END $$
+--     if debt_curr > max_debt  then
+--     SIGNAL SQLSTATE '45000'
+--         SET MESSAGE_TEXT = 'Lượng tồn kho hiện tại đã lớn hơn hoặc bằng giới hạn cho phép'; 
+--     END IF;
+-- END $$
     
-DELIMITER ;
+-- DELIMITER ;
 
 
 
@@ -613,105 +617,6 @@ END $$
 
 DELIMITER ;
 
-DELIMITER $$
-
-CREATE TRIGGER after_insert_books
-AFTER INSERT ON books
-FOR EACH ROW
-BEGIN
-    -- Tìm phiếu nhập hàng của ngày hiện tại hoặc tạo mới nếu chưa tồn tại
-    IF NOT EXISTS (
-        SELECT 1
-        FROM stock_receipts
-        WHERE receipt_date = CURDATE()
-    ) THEN
-        INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
-        VALUES (
-            CONCAT('RC', DATE_FORMAT(CURDATE(), '%y%m%d')),
-            CURDATE()
-        );
-    END IF;
-
-    -- Lấy ID phiếu nhập hàng hiện tại
-    SET @receipt_id = (
-        SELECT id_stock_receipt
-        FROM stock_receipts
-        WHERE receipt_date = CURDATE()
-        LIMIT 1
-    );
-
-    -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
-    IF EXISTS (
-        SELECT 1
-        FROM stock_receipts_details
-        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
-    ) THEN
-        -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
-        UPDATE stock_receipts_details
-        SET quantity = quantity + NEW.quantity
-        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
-    ELSE
-        -- Nếu chưa có, thêm chi tiết nhập hàng
-        INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
-        VALUES (@receipt_id, NEW.id_book, NEW.quantity);
-    END IF;
-END$$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE TRIGGER after_update_books
-AFTER UPDATE ON books
-FOR EACH ROW
-BEGIN
-    -- Kiểm tra nếu số lượng sách mới lớn hơn số lượng sách cũ
-    IF NEW.quantity > OLD.quantity THEN
-        -- Tính số lượng thêm vào
-        SET @quantity_added = NEW.quantity - OLD.quantity;
-
-        -- Tìm phiếu nhập hàng của ngày hiện tại hoặc tạo mới nếu chưa tồn tại
-        IF NOT EXISTS (
-            SELECT 1
-            FROM stock_receipts
-            WHERE receipt_date = CURDATE()
-        ) THEN
-            INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
-            VALUES (
-                CONCAT('RC', DATE_FORMAT(CURDATE(), '%y%m%d')),
-                CURDATE()
-            );
-        END IF;
-
-        -- Lấy ID phiếu nhập hàng hiện tại
-        SET @receipt_id = (
-            SELECT id_stock_receipt
-            FROM stock_receipts
-            WHERE receipt_date = CURDATE()
-            LIMIT 1
-        );
-
-        -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
-        IF EXISTS (
-            SELECT 1
-            FROM stock_receipts_details
-            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
-        ) THEN
-            -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
-            UPDATE stock_receipts_details
-            SET quantity = quantity + @quantity_added
-            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
-        ELSE
-            -- Nếu chưa có, thêm chi tiết nhập hàng
-            INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
-            VALUES (@receipt_id, NEW.id_book, @quantity_added);
-        END IF;
-    END IF;
-END$$
-
-DELIMITER ;
-
-
 
 DELIMITER $$
 
@@ -828,12 +733,130 @@ END $$
 DELIMITER ;
 
 
-
 -- Insert data into BOOK table
 INSERT INTO books (title, category, author, quantity, price, slug) VALUES
 ('The Alchemist', 'Novel', 'Paulo Coelho', 50, 10000.00, 'the-alchemist'),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 5, 15000.00, 'when-breath-becomes-air'),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 8, 20000.00, 'in-search-of-lost-time');
+('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 10, 15000.00, 'when-breath-becomes-air'),
+('In Search of Lost Time', 'Novel', 'Marcel Proust', 15, 20000.00, 'in-search-of-lost-time');
+
+INSERT into stock_receipts values 
+('RC231215', '2023-12-15'), 
+('RC240103', '2024-01-03'), 
+('RC240105', '2024-01-05');
+
+Insert INTO stock_receipts_details(id_stock_receipt, id_book, quantity) VALUES
+('RC231215', 1, 10),
+('RC231215', 2, 10),
+('RC231215', 3, 5),
+('RC240103', 1, 20),
+('RC240103', 3, 10),
+('RC240105', 1, 20);
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER after_insert_books
+AFTER INSERT ON books
+FOR EACH ROW
+BEGIN
+    -- Tìm phiếu nhập hàng của ngày hiện tại hoặc tạo mới nếu chưa tồn tại
+    IF NOT EXISTS (
+        SELECT 1
+        FROM stock_receipts
+        WHERE receipt_date = CURDATE()
+    ) THEN
+        INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
+        VALUES (
+            CONCAT('RC', DATE_FORMAT(CURDATE(), '%y%m%d')),
+            CURDATE()
+        );
+    END IF;
+
+    -- Lấy ID phiếu nhập hàng hiện tại
+    SET @receipt_id = (
+        SELECT id_stock_receipt
+        FROM stock_receipts
+        WHERE receipt_date = CURDATE()
+        LIMIT 1
+    );
+
+    -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
+    IF EXISTS (
+        SELECT 1
+        FROM stock_receipts_details
+        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
+    ) THEN
+        -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
+        UPDATE stock_receipts_details
+        SET quantity = quantity + NEW.quantity
+        WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
+    ELSE
+        -- Nếu chưa có, thêm chi tiết nhập hàng
+        INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
+        VALUES (@receipt_id, NEW.id_book, NEW.quantity);
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER after_update_books
+AFTER UPDATE ON books
+FOR EACH ROW
+BEGIN
+    -- Kiểm tra nếu số lượng sách mới lớn hơn số lượng sách cũ
+    IF NEW.quantity > OLD.quantity THEN
+        -- Tính số lượng thêm vào
+        SET @quantity_added = NEW.quantity - OLD.quantity;
+
+        -- Tìm phiếu nhập hàng của ngày hiện tại hoặc tạo mới nếu chưa tồn tại
+        IF NOT EXISTS (
+            SELECT 1
+            FROM stock_receipts
+            WHERE receipt_date = CURDATE()
+        ) THEN
+            INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
+            VALUES (
+                CONCAT('RC', DATE_FORMAT(CURDATE(), '%y%m%d')),
+                CURDATE()
+            );
+        END IF;
+
+        -- Lấy ID phiếu nhập hàng hiện tại
+        SET @receipt_id = (
+            SELECT id_stock_receipt
+            FROM stock_receipts
+            WHERE receipt_date = CURDATE()
+            LIMIT 1
+        );
+
+        -- Thêm hoặc cập nhật chi tiết phiếu nhập hàng
+        IF EXISTS (
+            SELECT 1
+            FROM stock_receipts_details
+            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book
+        ) THEN
+            -- Nếu đã có trong chi tiết, chỉ cần cập nhật số lượng
+            UPDATE stock_receipts_details
+            SET quantity = quantity + @quantity_added
+            WHERE id_stock_receipt = @receipt_id AND id_book = NEW.id_book;
+        ELSE
+            -- Nếu chưa có, thêm chi tiết nhập hàng
+            INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
+            VALUES (@receipt_id, NEW.id_book, @quantity_added);
+        END IF;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+
+
+
+
 
 
 -- Insert data into customers table
@@ -843,6 +866,33 @@ INSERT INTO customers (full_name, address, phone, email) VALUES
 ('Le Van C', 'Da Nang', '0112233445', 'c@gmail.com');
 
 
+
+-- Insert data into invoices table
+INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
+('INV001', 1, '2024-02-20'),
+('INV002', 2, '2024-02-25'),
+('INV003', 2, '2024-03-25'),
+('INV004', 1, '2024-03-25');
+
+-- Insert data into invoices_details table
+INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+('INV001', 2, 2, 15000.00),
+('INV002', 3, 5, 20000.00),
+('INV003', 1, 1, 10000.00);
+
+-- Insert data into payment_receipts table
+INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
+('PR001', 1, '2024-02-21', 15000.00),
+('PR002', 2, '2024-02-26', 20000.00),
+('PR003', 1, '2024-03-21', 10000.00);
+
+INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
+('INV004', 1, 3, 10000.00);
+
+UPDATE books SET quantity = 46 WHERE id_book = 1;
+UPDATE books SET quantity = 8 WHERE id_book = 2;
+UPDATE books SET quantity = 10 WHERE id_book = 3;
+
 INSERT INTO rules (rule_name, rule_value, description) VALUES 
 ('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
 ('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
@@ -850,32 +900,7 @@ INSERT INTO rules (rule_name, rule_value, description) VALUES
 ('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
 ('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 
-
-
--- -- Insert data into invoices table
--- INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
--- ('INV001', 1, '2023-01-20'),
--- ('INV002', 2, '2023-02-25'),
--- ('INV003', 2, '2023-03-25'),
--- ('INV004', 1, '2023-03-25');
-
--- -- Insert data into invoices_details table
 -- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
--- ('INV001', 2, 2, 150.00),
--- ('INV002', 3, 5, 300.00),
 -- ('INV003', 1, 1, 150.00);
-
--- -- Insert data into payment_receipts table
--- INSERT INTO payment_receipts (id_payment_receipt, id_customer, payment_date, amount_received) VALUES
--- ('PR001', 1, '2023-01-21', 150.00),
--- ('PR002', 2, '2023-02-26', 1500.00),
--- ('PR003', 1, '2023-03-21', 150.00);
-
--- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
--- ('INV003', 3, 3, 150.00),
--- ('INV004', 3, 3, 150.00);
-
--- -- INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
--- -- ('INV003', 1, 1, 150.00);
 
 use book_management;

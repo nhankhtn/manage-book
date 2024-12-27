@@ -58,7 +58,7 @@ const updateBooks = async (req, res) => {
         });
       })
     );
-    console.log(resultAdd);
+   // console.log(resultAdd);
     res.status(200).json({ message: resultAdd });
   } catch (error) {
     console.log(error);
@@ -72,7 +72,7 @@ const updateBooks = async (req, res) => {
 // REPORT STOCK
 const reportStock = (req, res) => {
   const { month, year } = req.query;
-  console.log(month, year);
+ // console.log(month, year);
   Book.getStock(month, year, (err, book) => {
     if (!book) {
       return res.status(404).json({ message: "Tháng này không có lượng tồn" });

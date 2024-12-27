@@ -23,7 +23,7 @@ const getAllDebtReport = (req, res) => {
 
 const getAllStockReport = (req, res) => {
   Report.getAllStockReport((err, report) => {
-    console.log(report);
+  //  console.log(report);
     if (err) {
       return res.status(500).json({ error: "Failed to get stock report" });
     }

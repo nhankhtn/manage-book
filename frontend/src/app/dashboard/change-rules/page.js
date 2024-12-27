@@ -81,7 +81,7 @@ export default function ChangeRules() {
             />
         </div>
         <div className={styles['wrap-item']}>
-            <p>Số tiền thu không vượt quá số tiền khách hàng đang nợ</p>
+            <p>Số tiền thu có thể vượt quá số tiền khách hàng đang nợ</p>
             <Input
                 type='checkbox'
                 checked={config.allowOverpayment === true}

@@ -20,7 +20,7 @@ const isDebtReportExist = (month, year, callback) => {
     [month, year],
     (error, results) => {
       if (error) {
-        console.log("lỗi1");
+      //  console.log("lỗi1");
         return callback(error, null);
       }
       callback(null, results);

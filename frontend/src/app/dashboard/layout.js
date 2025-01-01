@@ -1,14 +1,14 @@
 "use client";
 
+
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { ModalAlertProvider } from "@/context/ModalAlert"
 import AuthGuard from "@/guard/AuthGuard";
-import { useState } from "react";
+import {  useState } from "react";
 
 export default function LayoutClient({ children }) {
     const [isShowSidebar, setShowSidebar] = useState(true);
-
     const toggleSidebar = () => {
         setShowSidebar(!isShowSidebar);
     }

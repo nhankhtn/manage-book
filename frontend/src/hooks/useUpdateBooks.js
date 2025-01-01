@@ -8,15 +8,7 @@ export const useUpdateBooks = () => {
   const [showModalBooksErr, setShowModalBooksErr] = useState(false);
   const [showModalDuplicate, setShowModalDuplicate] = useState(false);
   const [duplicateBook, setDuplicateBook] = useState({});
-  const [books, setBooks] = useState([
-    {
-      title: "Lập trình RLập trình ReacLập trìnhtrình ReacLập trìnhcLập trình",
-      author: "React",
-      category: "Programming",
-      quantity: 10,
-      price: 10000,
-    },
-  ]);
+  const [books, setBooks] = useState([]);
   const [booksErr, setBooksErr] = useState([]);
   function deleteAt(index) {
     setBooks((preValues) => {

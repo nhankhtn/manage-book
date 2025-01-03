@@ -1,7 +1,7 @@
 'use client';
 
 import styles from "./MonthReport.module.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "@/components/Button";
 import { INVENTORY_BOOK_FIELDS, DEBT_CONSUMER_FIELDS } from "@/constants";
 import { Bar } from 'react-chartjs-2';
@@ -112,14 +112,14 @@ export default function MonthReport() {
         <div className={styles['wrap-btn']}>
             <Button title="Báo cáo tồn" onClick={e => {
                 setOpenModalInventoryReport(true)
-                setDate(`${new Date().getFullYear()}-${new Date().getMonth() + 1}`)
+                setDate(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`)
                 fetchStockReport();
             }}>
                 Báo cáo tồn
             </Button>
             <Button title="Báo cáo công nợ" onClick={e => {
                 setOpenModalDebtReport(true)
-                setDate(`${new Date().getFullYear()}-${new Date().getMonth() + 1}`)
+                setDate(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`)
                 fetchDebtReport();
             }}>
                 Báo cáo công nợ

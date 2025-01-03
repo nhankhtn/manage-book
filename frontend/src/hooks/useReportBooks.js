@@ -9,7 +9,8 @@ import { useEffect } from "react";
 export const useReportBooks = () => {
     const [booksInventory, setBooksInventory] = useState([]); // biến này dùng cho stock trong modal
     const [booksDebt, setBooksDebt] = useState([]); // biến này dùng cho nợ trong modal
-    const [date, setDate] = useState(`${new Date().getFullYear()}-${new Date().getMonth() + 1}`); // biến này dùng cho lấy tháng năm trong input của modal
+    const [date, setDate] = useState(null);
+    // biến này dùng cho lấy tháng năm trong input của modal
     const getLastThreeMonths = () => {
         const months = ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"];
         const today = new Date();
@@ -17,11 +18,11 @@ export const useReportBooks = () => {
         const lastThreeMonths = [
             {
                 months: months[(currentMonth - 2 + 12) % 12],
-                year: (currentMonth - 2 + 12) % 12 >=10 ? today.getFullYear() - 1 : today.getFullYear()
+                year: (currentMonth - 2 + 12) % 12 >= 10 ? today.getFullYear() - 1 : today.getFullYear()
             },
             {
                 months: months[(currentMonth - 1 + 12) % 12],
-                year: (currentMonth - 1 + 12) % 12 >=11 ? today.getFullYear() - 1 : today.getFullYear()
+                year: (currentMonth - 1 + 12) % 12 >= 11 ? today.getFullYear() - 1 : today.getFullYear()
             },
             {
                 months: months[currentMonth],
@@ -63,7 +64,7 @@ export const useReportBooks = () => {
             [currentYear, currentMonth] = e.target.value.split("-");
             setDate(e.target.value);
         }
-        else [currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
+        else[currentYear, currentMonth] = [new Date().getFullYear(), new Date().getMonth() + 1];
         try {
             const response = await fetchData(currentMonth, currentYear, false);
             setBooksDebt(response);
@@ -81,12 +82,12 @@ export const useReportBooks = () => {
                 const stockPromises = lastThreeMonths.map(monthYear => {
                     const month = monthYear.months.split(" ")[1];
                     const year = monthYear.year;
-                    return fetchData(month, year,true);
+                    return fetchData(month, year, true);
                 });
                 const debtPromises = lastThreeMonths.map(monthYear => {
                     const month = monthYear.months.split(" ")[1];
                     const year = monthYear.year;
-                    return fetchData(month, year,false);
+                    return fetchData(month, year, false);
                 });
                 let stockResponses = await Promise.all(stockPromises);
                 let debtResponses = await Promise.all(debtPromises);

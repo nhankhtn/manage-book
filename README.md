@@ -21,7 +21,7 @@
   - request body:
   - [
   -     {
-  -         "title": "Những con chó biết sủa",
+  -         "title": "Đắc nhân tâm",
   -         "author": "Nguyễn Hữu Khánh Nhân",
   -         "category": "Truyện hài",
   -         "quantity": 110,
@@ -29,7 +29,7 @@
   -         "needbuying": 1
   -     },
   -     {
-  -         "title": "Thần dâm",
+  -         "title": "Thần Tài",
   -         "author": "Nguyễn Đình Minh nhật?",
   -         "category": "Tiểu thuyết",
   -         "quantity": 101,

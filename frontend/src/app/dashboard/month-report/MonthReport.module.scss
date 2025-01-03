@@ -42,8 +42,9 @@
 
 .list {
   flex: 1;
-  padding: var(--spacer-lr) 0;
+  margin: var(--spacer-lr) 0;
   max-height: 509px;
+  overflow-y: auto;
 }
 
 .btn-modal {

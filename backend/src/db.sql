@@ -12,7 +12,7 @@ CREATE TABLE books (
     author NVARCHAR(30),
     quantity INT,
     price DECIMAL(10,2),
-    slug NVARCHAR(100), -- Added slug column
+    slug NVARCHAR(250), -- Added slug column
     CONSTRAINT PK_BOOK PRIMARY KEY (id_book)
 );
 
@@ -729,24 +729,143 @@ END $$
 DELIMITER ;
 
 
--- Insert data into BOOK table
+-- Insert data into books table
 INSERT INTO books (title, category, author, quantity, price, slug) VALUES
-('The Alchemist', 'Novel', 'Paulo Coelho', 50, 10000.00, 'the-alchemist'),
-('When Breath Becomes Air', 'Biography', 'Paul Kalanithi', 10, 15000.00, 'when-breath-becomes-air'),
-('In Search of Lost Time', 'Novel', 'Marcel Proust', 15, 20000.00, 'in-search-of-lost-time');
+('The Great Gatsby', 'Novel', 'F Scott Fitzgerald', 50, 10000.00, 'the-great-gatsby-novel-f-scott-fitzgerald'),
+('To Kill a Mockingbird', 'Novel', 'Harper Lee', 30, 12000.00, 'to-kill-a-mockingbird-novel-harper-lee'),
+('1984', 'Science Fiction', 'George Orwell', 40, 15000.00, '1984-science-fiction-george-orwell'),
+('Pride and Prejudice', 'Novel', 'Jane Austen', 25, 11000.00, 'pride-and-prejudice-novel-jane-austen'),
+('The Catcher in the Rye', 'Novel', 'JD Salinger', 35, 13000.00, 'the-catcher-in-the-rye-novel-jd-salinger'),
+('The Hobbit', 'Fantasy', 'JRR Tolkien', 45, 14000.00, 'the-hobbit-fantasy-jrr-tolkien'),
+('Fahrenheit 451', 'Science Fiction', 'Ray Bradbury', 20, 9000.00, 'fahrenheit-451-science-fiction-ray-bradbury'),
+('Jane Eyre', 'Novel', 'Charlotte Bronte', 50, 10000.00, 'jane-eyre-novel-charlotte-bronte'),
+('Animal Farm', 'Science Fiction', 'George Orwell', 30, 12000.00, 'animal-farm-science-fiction-george-orwell'),
+('Moby-Dick', 'Novel', 'Herman Melville', 40, 15000.00, 'moby-dick-novel-herman-melville'),
+('War and Peace', 'Novel', 'Leo Tolstoy', 25, 11000.00, 'war-and-peace-novel-leo-tolstoy'),
+('The Odyssey', 'Novel', 'Homer', 35, 13000.00, 'the-odyssey-novel-homer'),
+('Crime and Punishment', 'Novel', 'Fyodor Dostoevsky', 45, 14000.00, 'crime-and-punishment-novel-fyodor-dostoevsky'),
+('The Brothers Karamazov', 'Novel', 'Fyodor Dostoevsky', 20, 9000.00, 'the-brothers-karamazov-novel-fyodor-dostoevsky'),
+('Brave New World', 'Science Fiction', 'Aldous Huxley', 50, 10000.00, 'brave-new-world-science-fiction-aldous-huxley'),
+('Wuthering Heights', 'Novel', 'Emily Bronte', 30, 12000.00, 'wuthering-heights-novel-emily-bronte'),
+('The Iliad', 'Novel', 'Homer', 40, 15000.00, 'the-iliad-novel-homer'),
+('Les Misérables', 'Novel', 'Victor Hugo', 25, 11000.00, 'les-miserables-novel-victor-hugo'),
+('The Divine Comedy', 'Novel', 'Dante Alighieri', 35, 13000.00, 'the-divine-comedy-novel-dante-alighieri'),
+('The Picture of Dorian Gray', 'Novel', 'Oscar Wilde', 45, 14000.00, 'the-picture-of-dorian-gray-novel-oscar-wilde'),
+('The Count of Monte Cristo', 'Novel', 'Alexandre Dumas', 20, 9000.00, 'the-count-of-monte-cristo-novel-alexandre-dumas'),
+('Dracula', 'Novel', 'Bram Stoker', 50, 10000.00, 'dracula-novel-bram-stoker'),
+('The Adventures of Huckleberry Finn', 'Novel', 'Mark Twain', 30, 12000.00, 'the-adventures-of-huckleberry-finn-novel-mark-twain'),
+('The Scarlet Letter', 'Novel', 'Nathaniel Hawthorne', 40, 15000.00, 'the-scarlet-letter-novel-nathaniel-hawthorne'),
+('Frankenstein', 'Novel', 'Mary Shelley', 25, 11000.00, 'frankenstein-novel-mary-shelley'),
+('The Lord of the Rings', 'Fantasy', 'JRR Tolkien', 35, 13000.00, 'the-lord-of-the-rings-fantasy-jrr-tolkien'),
+('The Chronicles of Narnia', 'Fantasy', 'CS Lewis', 45, 14000.00, 'the-chronicles-of-narnia-fantasy-cs-lewis'),
+('Harry Potter and the Sorcerers Stone', 'Fantasy', 'JK Rowling', 20, 9000.00, 'harry-potter-and-the-sorcerers-stone-fantasy-jk-rowling'),
+('The Hunger Games', 'Science Fiction', 'Suzanne Collins', 50, 10000.00, 'the-hunger-games-science-fiction-suzanne-collins'),
+('The Maze Runner', 'Science Fiction', 'James Dashner', 30, 12000.00, 'the-maze-runner-science-fiction-james-dashner'),
+('Divergent', 'Science Fiction', 'Veronica Roth', 40, 15000.00, 'divergent-science-fiction-veronica-roth'),
+('The Fault in Our Stars', 'Novel', 'John Green', 25, 11000.00, 'the-fault-in-our-stars-novel-john-green'),
+('The Book Thief', 'Novel', 'Markus Zusak', 35, 13000.00, 'the-book-thief-novel-markus-zusak'),
+('The Kite Runner', 'Novel', 'Khaled Hosseini', 45, 14000.00, 'the-kite-runner-novel-khaled-hosseini'),
+('Life of Pi', 'Novel', 'Yann Martel', 20, 9000.00, 'life-of-pi-novel-yann-martel'),
+('The Road', 'Novel', 'Cormac McCarthy', 50, 10000.00, 'the-road-novel-cormac-mccarthy'),
+('The Girl with the Dragon Tattoo', 'Novel', 'Stieg Larsson', 30, 12000.00, 'the-girl-with-the-dragon-tattoo-novel-stieg-larsson'),
+('Gone Girl', 'Novel', 'Gillian Flynn', 40, 15000.00, 'gone-girl-novel-gillian-flynn'),
+('The Da Vinci Code', 'Novel', 'Dan Brown', 25, 11000.00, 'the-da-vinci-code-novel-dan-brown'),
+('Angels and Demons', 'Novel', 'Dan Brown', 35, 13000.00, 'angels-and-demons-novel-dan-brown'),
+('The Alchemist', 'Novel', 'Paulo Coelho', 45, 14000.00, 'the-alchemist-novel-paulo-coelho'),
+('The Little Prince', 'Novel', 'Antoine de Saint-Exupery', 20, 9000.00, 'the-little-prince-novel-antoine-de-saint-exupery'),
+('The Secret', 'Self Help', 'Rhonda Byrne', 50, 10000.00, 'the-secret-self-help-rhonda-byrne'),
+('The Power of Now', 'Self Help', 'Eckhart Tolle', 30, 12000.00, 'the-power-of-now-self-help-eckhart-tolle'),
+('The Art of War', 'Self Help', 'Sun Tzu', 40, 15000.00, 'the-art-of-war-self-help-sun-tzu'),
+('The 7 Habits of Highly Effective People', 'Self Help', 'Stephen R Covey', 25, 11000.00, 'the-7-habits-of-highly-effective-people-self-help-stephen-r-covey'),
+('How to Win Friends and Influence People', 'Self Help', 'Dale Carnegie', 35, 13000.00, 'how-to-win-friends-and-influence-people-self-help-dale-carnegie'),
+('Think and Grow Rich', 'Self Help', 'Napoleon Hill', 45, 14000.00, 'think-and-grow-rich-self-help-napoleon-hill'),
+('Rich Dad Poor Dad', 'Self Help', 'Robert Kiyosaki', 20, 9000.00, 'rich-dad-poor-dad-self-help-robert-kiyosaki'),
+('The Lean Startup', 'Self Help', 'Eric Ries', 50, 10000.00, 'the-lean-startup-self-help-eric-ries');
 
-INSERT into stock_receipts values 
-('RC231215', '2023-12-15'), 
-('RC240103', '2024-01-03'), 
-('RC240105', '2024-01-05');
 
-Insert INTO stock_receipts_details(id_stock_receipt, id_book, quantity) VALUES
-('RC231215', 1, 10),
-('RC231215', 2, 10),
-('RC231215', 3, 5),
-('RC240103', 1, 20),
-('RC240103', 3, 10),
-('RC240105', 1, 20);
+-- Insert stock receipts for each month from December 2023 to December 2024
+INSERT INTO stock_receipts (id_stock_receipt, receipt_date)
+VALUES
+('RC231201', '2023-12-01'),
+('RC240101', '2024-01-01'),
+('RC240201', '2024-02-01'),
+('RC240301', '2024-03-01'),
+('RC240401', '2024-04-01'),
+('RC240501', '2024-05-01'),
+('RC240601', '2024-06-01'),
+('RC240701', '2024-07-01'),
+('RC240801', '2024-08-01'),
+('RC240901', '2024-09-01'),
+('RC241001', '2024-10-01'),
+('RC241101', '2024-11-01'),
+('RC241201', '2024-12-01');
+
+-- Insert stock receipt details, assigning 4 books per month
+INSERT INTO stock_receipts_details (id_stock_receipt, id_book, quantity)
+VALUES
+-- December 2023
+('RC231201', 1, 50),
+('RC231201', 2, 30),
+('RC231201', 3, 40),
+('RC231201', 4, 25),
+-- January 2024
+('RC240101', 5, 35),
+('RC240101', 6, 45),
+('RC240101', 7, 20),
+('RC240101', 8, 50),
+-- February 2024
+('RC240201', 9, 30),
+('RC240201', 10, 40),
+('RC240201', 11, 25),
+('RC240201', 12, 35),
+-- March 2024
+('RC240301', 13, 45),
+('RC240301', 14, 20),
+('RC240301', 15, 50),
+('RC240301', 16, 30),
+-- April 2024
+('RC240401', 17, 40),
+('RC240401', 18, 25),
+('RC240401', 19, 35),
+('RC240401', 20, 45),
+-- May 2024
+('RC240501', 21, 20),
+('RC240501', 22, 50),
+('RC240501', 23, 30),
+('RC240501', 24, 40),
+-- June 2024
+('RC240601', 25, 25),
+('RC240601', 26, 35),
+('RC240601', 27, 45),
+('RC240601', 28, 20),
+-- July 2024
+('RC240701', 29, 50),
+('RC240701', 30, 30),
+('RC240701', 31, 40),
+('RC240701', 32, 25),
+-- August 2024
+('RC240801', 33, 35),
+('RC240801', 34, 45),
+('RC240801', 35, 20),
+('RC240801', 36, 50),
+-- September 2024
+('RC240901', 37, 30),
+('RC240901', 38, 40),
+('RC240901', 39, 25),
+('RC240901', 40, 35),
+-- October 2024
+('RC241001', 41, 45),
+('RC241001', 42, 20),
+('RC241001', 43, 50),
+('RC241001', 44, 30),
+-- November 2024
+('RC241101', 45, 40),
+('RC241101', 46, 25),
+('RC241101', 47, 35),
+('RC241101', 48, 45),
+-- December 2024
+('RC241201', 49, 20),
+('RC241201', 50, 50);
 
 
 
@@ -872,8 +991,8 @@ INSERT INTO invoices (id_invoice, id_customer, invoices_DATE) VALUES
 
 -- Insert data into invoices_details table
 INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
-('INV001', 2, 2, 15000.00),
-('INV002', 3, 5, 20000.00),
+('INV001', 2, 2, 12000.00),
+('INV002', 3, 5, 15000.00),
 ('INV003', 1, 1, 10000.00);
 
 -- Insert data into payment_receipts table
@@ -886,13 +1005,13 @@ INSERT INTO invoices_details (id_invoice, id_book, quantity, unit_price) VALUES
 ('INV004', 1, 3, 10000.00);
 
 UPDATE books SET quantity = 46 WHERE id_book = 1;
-UPDATE books SET quantity = 8 WHERE id_book = 2;
-UPDATE books SET quantity = 10 WHERE id_book = 3;
+UPDATE books SET quantity = 28 WHERE id_book = 2;
+UPDATE books SET quantity = 35 WHERE id_book = 3;
 
 INSERT INTO rules (rule_name, rule_value, description) VALUES 
 ('minImportQuantity', '150', 'Số lượng nhập tối thiểu'),
 ('minStockQuantityBeforeImport', '300', 'Lượng tồn tối thiểu trước khi nhập'),
-('maxDebt', '20000', 'Tiền nợ tối đa'),
+('maxDebt', '200000', 'Tiền nợ tối đa'),
 ('minStockAfterSale', '20', 'Lượng tồn tối thiểu sau khi bán'),
 ('allowOverpayment', 'true', 'Số tiền thu không vƣợt quá số tiền khách hàng đang nợ');
 

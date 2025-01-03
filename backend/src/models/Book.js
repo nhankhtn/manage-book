@@ -30,7 +30,7 @@ const getBooks = (params = {}, callback, options = { comparison: "exact" }) => {
 };
 
 const addBook = ({ title, category, author, quantity, price }, callback) => {
-  const slug = generateSlug(title);
+  const slug = generateSlug(title+" "+category+" "+author);
   connection.query(
     "INSERT INTO books (title, category, author, quantity,  price,slug) VALUES (?, ?, ?, ?,?, ?)",
     [title, category, author, quantity, price, slug],

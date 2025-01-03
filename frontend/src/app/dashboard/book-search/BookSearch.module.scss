@@ -26,8 +26,9 @@
 }
 .content {
   flex: 1;
-  max-height: 522px;
+  max-height: 410px;
   margin-top: var(--spacer-tb);
+  overflow-y: auto;
 }
 .message {
   position: absolute;

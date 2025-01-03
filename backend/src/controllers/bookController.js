@@ -101,14 +101,7 @@ const getAvailableBooks = (req, res) => {
     res.json(books);
   });
 };
-// Không cần sử dụng
-const deleteBooks = (req, res) => {
-  const { slug } = req.query;
-  bookService.deleteBook({ slug }, (err, result) => {
-    if (err) return res.status(500).json({ message: "Lỗi khi xóa sách" });
-    res.json(result);
-  });
-};
+
 
 
 module.exports = {

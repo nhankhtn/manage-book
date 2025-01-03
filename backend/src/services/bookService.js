@@ -7,7 +7,8 @@ const log = require("../utils/log");
 
 const updateBook = (bookData, callback) => {
   const { title, author, category, price, quantity } = bookData;
-  const slug = generateSlug(title);
+  const slug = generateSlug(title+" "+category+" "+author);
+  //console.log("slug:",slug);
   Book.getBooks({ slug }, (err, books) => {
     if (err) {
       return callback({ message: "Lỗi khi tìm sách" }, null);
@@ -77,11 +78,14 @@ const totalPrice = (
 
 // search book
 const search = ({ title, author, category, price }, callback) => {
-  const slug = generateSlug(title);
-
+  //const slug = generateSlug(title);
+  //console.log("skug",slug);
   const params = {};
-  if (slug !== undefined) {
-    params.slug = slug;
+  // if (slug !== undefined) {
+  //   params.slug = slug;
+  // }
+  if (title !== undefined) {
+    params.title = title;
   }
   if (author !== undefined) {
     params.author = author;

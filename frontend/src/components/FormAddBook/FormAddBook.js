@@ -8,12 +8,12 @@ export default function FormAddBook({ handleAdd }) {
 
   const [menuItems, setMenuItems] = useState([]);
   const [originalMenuItems, setOriginalMenuItems] = useState([
-    { 
+    {
       title: "Nhập sách mới",
       author: "",
       category: "",
       quantity: 0,
-      price: 0, 
+      price: 0,
     },
   ]);
   const [isOpen, setIsOpen] = useState(false)
@@ -51,7 +51,7 @@ export default function FormAddBook({ handleAdd }) {
   }
   const handleSearchChange = (e) => {
     const searchValue = e.target.value.toLowerCase()
-    const filteredItems = originalMenuItems.filter((item,index) => item.title.toLowerCase().includes(searchValue) || index === 0)
+    const filteredItems = originalMenuItems.filter((item, index) => item.title.toLowerCase().includes(searchValue) || index === 0)
     setMenuItems(filteredItems)
   }
   // handle click outside for input value
@@ -122,7 +122,7 @@ export default function FormAddBook({ handleAdd }) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.title}>Add Book</div>
+      <div className={styles.title}>Thêm sách</div>
 
       <div className={styles.dropdown} ref={dropdownRef}>
         <label className={styles.label}>
@@ -142,24 +142,24 @@ export default function FormAddBook({ handleAdd }) {
         <ul className={`${styles.dropdown_menu} ${isOpen ? styles.show : ''}`}>
           {menuItems && menuItems.map((item, index) => (
             <li key={index}>
-              <a 
-                className={styles.dropdown_item} 
+              <a
+                className={styles.dropdown_item}
                 href="#"
                 onClick={(e) => handleItemClick(e, item)}
               >
                 {item.title}
-                {index !==0 &&
+                {index !== 0 &&
                   <div className={styles.dropdown_item_info}>
-                  <div>
-                    Tác giả: <span>{item.author} &#x2022; </span>
+                    <div>
+                      Tác giả: <span>{item.author} &#x2022; </span>
+                    </div>
+                    <div>
+                      Thể loại: <span>{item.category}</span>
+                    </div>
                   </div>
-                  <div>
-                    Thể loại: <span>{item.category}</span>
-                  </div>
-                </div>
                 }
-               
-          
+
+
               </a>
             </li>
           ))}
@@ -209,7 +209,7 @@ export default function FormAddBook({ handleAdd }) {
           {errors.price && <div className={styles.error}>{errors.price}</div>}
         </div>
         <Button className={styles.submitBtn} id="btn-form-add-book" type="submit">
-          Submit
+          Xác nhận
         </Button>
       </form>
 
